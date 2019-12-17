@@ -14,6 +14,8 @@ from changes import (
 from diff.types.enum import EnumDiff
 from diff.types.object_type import ObjectType
 from diff.types.union_type import UnionType
+from diff.types.input_object_type import InputObjectType
+
 
 
 class SchemaComparator:
@@ -22,14 +24,8 @@ class SchemaComparator:
                       '__Directive', '__DirectiveLocation'}
 
     def __init__(self, old_schema, new_schema):
-        if None in (old_schema.query_type, new_schema.query_type):
-            raise ValueError("Invalid schema. Query object must be defined.")
-
         self.old_schema = old_schema
         self.new_schema = new_schema
-
-        self.old_query_fields = self.old_schema.query_type.fields
-        self.new_query_fields = self.new_schema.query_type.fields
 
         self.old_types = old_schema.type_map
         self.new_types = new_schema.type_map
@@ -90,7 +86,7 @@ class SchemaComparator:
             elif is_union_type(old):
                 changes += UnionType(old, new).diff()
             elif is_input_object_type(old):
-                pass
+                changes += InputObjectType(old, new).diff()
             elif is_object_type(old):
                 changes += ObjectType(old, new).diff()
             elif is_interface_type(old):
