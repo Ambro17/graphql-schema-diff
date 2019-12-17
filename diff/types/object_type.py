@@ -30,20 +30,3 @@ class ObjectType:
 
     def common_fields(self):
         return self.old_fields & self.new_fields
-
-        #
-        # added = new_values - old_values
-        # removed = old_values - new_values
-        # changes += added
-        # changes += removed
-        #
-        # common = old_values & new_values
-        # for enum in common:
-        #     old = old_enum.values[enum]
-        #     new = new_enum.values[enum]
-        #     if old.description != new.description:
-        #         changes += [(old, new)]
-        #     if old.deprecation_reason != new.deprecation_reason:
-        #         changes += [(old, new)]
-        #
-        # return changes

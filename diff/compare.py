@@ -17,7 +17,6 @@ from diff.types.union_type import UnionType
 from diff.types.input_object_type import InputObjectType
 
 
-
 class SchemaComparator:
     primitives = {'String', 'Int', 'Float', 'Boolean', 'ID'}
     internal_types = {'__Schema', '__Type', '__TypeKind', '__Field', '__InputValue', '__EnumValue',
