@@ -1,21 +1,5 @@
-import pytest
 from graphql import build_schema as schema
-from graphql import (
-    GraphQLField,
-    GraphQLBoolean,
-    GraphQLInt,
-    GraphQLString,
-    GraphQLObjectType,
-    GraphQLList,
-    GraphQLNonNull,
-    GraphQLID)
-
 from diff.compare import SchemaComparator
-from diff.types.field import Field
-
-# Aliases
-ListOf = GraphQLList
-NotNull = GraphQLNonNull
 
 
 def test_no_field_diff():

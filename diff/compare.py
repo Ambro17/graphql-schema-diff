@@ -17,10 +17,13 @@ from diff.types.object_type import ObjectType
 
 class SchemaComparator:
     primitives = {'String', 'Int', 'Float', 'Boolean', 'ID'}
-    internal_types = {'__Schema', '__Type', '__TypeKind', '__Field', '__InputValue', '__EnumValue', '__Directive',
-                      '__DirectiveLocation'}
+    internal_types = {'__Schema', '__Type', '__TypeKind', '__Field', '__InputValue', '__EnumValue',
+                      '__Directive', '__DirectiveLocation'}
 
     def __init__(self, old_schema, new_schema):
+        if None in (old_schema.query_type, new_schema.query_type):
+            raise ValueError("Invalid schema. Query object must be defined.")
+
         self.old_schema = old_schema
         self.new_schema = new_schema
 
@@ -82,7 +85,7 @@ class SchemaComparator:
             changes.append((old, new))
         else:
             if is_enum_type(old):
-                changes += EnumDiff()(old, new)
+                changes += EnumDiff(old, new)()
             elif is_union_type(old):
                 pass
             elif is_input_object_type(old):

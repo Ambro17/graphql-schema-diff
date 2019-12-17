@@ -1,4 +1,4 @@
-from diff.change_types import DescriptionChanged, DeprecationReasonChanged, FieldTypeChanged
+from changes import DescriptionChanged, DeprecationReasonChanged, FieldTypeChanged
 
 
 class Field:
