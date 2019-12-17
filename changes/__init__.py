@@ -301,6 +301,57 @@ class InputObjectTypeTypeChanged(Change):
         return f"{self.input.name}.{self.name}"
 
 
+#  ============== Arguments ==============
+
+class ArgumentDescriptionChanged(Change):
+    pass
+
+
+class ArgumentDefaultValueChanged(Change):
+    pass
+
+
+class ArgumentTypeChanged(Change):
+    def __init__(self, parent, field_name, argument_name, old_arg, new_arg):
+        self.parent = parent
+        self.field_name = field_name
+        self.argument_name = argument_name
+        self.old_arg = old_arg
+        self.new_arg = new_arg
+
+    def message(self):
+        return (
+            f"Type for argument '{self.argument_name}' on field '{self.parent}.{self.field_name}' "
+            f"changed from '{self.old_arg.type}' to '{self.new_arg.type}'"
+        )
+
+
+class FieldArgumentAdded(Change):
+    def __init__(self, parent, field_name, argument_name, arg_type):
+        self.parent = parent
+        self.field_name = field_name
+        self.argument_name = argument_name
+        self.arg_type = arg_type
+
+    def message(self):
+        return (
+            f"Added argument '{self.argument_name}' in "
+            f"'{self.parent.name}.{self.field_name}' with type {self.arg_type.type}"
+        )
+
+
+class FieldArgumentRemoved(Change):
+    def __init__(self, parent, field_name, argument_name):
+        self.parent = parent
+        self.field_name = field_name
+        self.argument_name = argument_name
+
+    def message(self):
+        return (
+            f"Removed argument '{self.argument_name}' from '{self.parent.name}.{self.field_name}'"
+        )
+
+
 class SchemaQueryChange(Change):
     def __init__(self, old, new):
         self.old_keys = list(old.fields.keys())
