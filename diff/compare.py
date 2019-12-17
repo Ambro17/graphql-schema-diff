@@ -13,6 +13,7 @@ from changes import (
 )
 from diff.types.enum import EnumDiff
 from diff.types.object_type import ObjectType
+from diff.types.union_type import UnionType
 
 
 class SchemaComparator:
@@ -87,13 +88,11 @@ class SchemaComparator:
             if is_enum_type(old):
                 changes += EnumDiff(old, new)()
             elif is_union_type(old):
-                pass
+                changes += UnionType(old, new).diff()
             elif is_input_object_type(old):
                 pass
             elif is_object_type(old):
                 changes += ObjectType(old, new).diff()
-                assert 1
-                assert 2
             elif is_interface_type(old):
                 pass
 

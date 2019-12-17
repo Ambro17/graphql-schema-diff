@@ -193,6 +193,34 @@ class EnumValueDeprecationReasonChanged(Change):
         return f"{self.enum.name}.{self.name}"
 
 
+#  ============== Union ==============
+
+class UnionMemberAdded():
+    def __init__(self, union, value):
+        self.criticality = Criticality.Breaking
+        self.union = union
+        self.value = value
+
+    def message(self):
+        return f"Union member '{self.value}' was added to '{self.union.name}' Union type"
+
+    def path(self):
+        return f"{self.union.name}.{self.value.name}"
+
+
+class UnionMemberRemoved():
+    def __init__(self, union, value):
+        self.criticality = Criticality.Breaking
+        self.union = union
+        self.value = value
+
+    def message(self):
+        return f"Union member '{self.value}' was removed from '{self.union.name}' Union type"
+
+    def path(self):
+        return f"{self.union.name}.{self.value.name}"
+
+
 class SchemaQueryChange(Change):
     def __init__(self, old, new):
         self.old_keys = list(old.fields.keys())
