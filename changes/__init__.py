@@ -195,7 +195,7 @@ class EnumValueDeprecationReasonChanged(Change):
 
 #  ============== Union ==============
 
-class UnionMemberAdded():
+class UnionMemberAdded(Change):
     def __init__(self, union, value):
         self.criticality = Criticality.Breaking
         self.union = union
@@ -208,7 +208,7 @@ class UnionMemberAdded():
         return f"{self.union.name}.{self.value.name}"
 
 
-class UnionMemberRemoved():
+class UnionMemberRemoved(Change):
     def __init__(self, union, value):
         self.criticality = Criticality.Breaking
         self.union = union
@@ -219,6 +219,86 @@ class UnionMemberRemoved():
 
     def path(self):
         return f"{self.union.name}.{self.value.name}"
+
+
+#  ============== Input Objects ==============
+
+
+class InputObjectTypeAdded(Change):
+    def __init__(self, input_object, value):
+        self.criticality = Criticality.Breaking
+        self.input_object = input_object
+        self.value = value
+
+    def message(self):
+        return f"Type '{self.value}' was added to input object type '{self.input_object}'"
+
+    def path(self):
+        return f"{self.input_object.name}.{self.value.name}"
+
+
+class InputObjectTypeRemoved(Change):
+    def __init__(self, input_object, value):
+        self.criticality = Criticality.Breaking
+        self.input_object = input_object
+        self.value = value
+
+    def message(self):
+        return f"Type '{self.value}' was removed from input object type '{self.input_object}'"
+
+    def path(self):
+        return f"{self.input_object.name}.{self.value.name}"
+
+
+class InputObjectTypeDescriptionChanged(Change):
+    def __init__(self, input, name, new_field, old_field):
+        self.input = input
+        self.name = name
+        self.new_field = new_field
+        self.old_field = old_field
+
+    def message(self):
+        return (
+            f"Description for Input field '{self.input.name}.{self.name}' "
+            f"changed from '{self.old_field.description}' to '{self.new_field.description}'"
+        )
+
+    def path(self):
+        return f"{self.input.name}.{self.name}"
+
+
+class InputTypeDefaultChanged(Change):
+    def __init__(self, input, name, new_field, old_field):
+        self.input = input
+        self.name = name
+        self.new_field = new_field
+        self.old_field = old_field
+
+    def message(self):
+        return (
+            f"Default value for Input field '{self.input.name}.{self.name}' "
+            f"changed from {self.old_field.default_value!r} to {self.new_field.default_value!r}"
+        )
+
+    def path(self):
+        return f"{self.input.name}.{self.name}"
+
+
+class InputObjectTypeTypeChanged(Change):
+    def __init__(self, input, name, new_field, old_field):
+        self.input = input
+        self.name = name
+        self.new_field = new_field
+        self.old_field = old_field
+
+    def message(self):
+        return (
+            f"'{self.input.name}.{self.name}' type changed from "
+            f"'{self.old_field.type}' to '{self.new_field.type}'"
+        )
+
+    def path(self):
+        return f"{self.input.name}.{self.name}"
 
 
 class SchemaQueryChange(Change):
