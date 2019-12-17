@@ -133,14 +133,3 @@ def test_description_changed():
     assert diff[0].message() == (
         "Description for enum value 'A' changed from 'My description' to 'My new description'"
     )
-
-
-def test_comparison_fails_if_no_query_root():
-    a = schema('''
-    enum MissingQuery {
-        A
-        B
-    }
-    ''')
-    with pytest.raises(Exception, match="Invalid schema. Query object must be defined."):
-        SchemaComparator(a, a).compare()
