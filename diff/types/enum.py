@@ -1,4 +1,4 @@
-from changes import (
+from diff.changes import (
     EnumValueAdded,
     EnumValueRemoved,
     EnumValueDescriptionChanged,

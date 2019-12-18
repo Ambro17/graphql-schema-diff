@@ -1,4 +1,4 @@
-from changes import UnionMemberAdded, UnionMemberRemoved
+from diff.changes import UnionMemberAdded, UnionMemberRemoved
 
 
 class UnionType:

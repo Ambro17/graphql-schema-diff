@@ -1,4 +1,4 @@
-from changes import ArgumentDescriptionChanged, ArgumentTypeChanged, ArgumentDefaultValueChanged
+from diff.changes import ArgumentDescriptionChanged, ArgumentTypeChanged, ArgumentDefaultValueChanged
 
 
 class Argument:

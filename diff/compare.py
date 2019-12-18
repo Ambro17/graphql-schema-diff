@@ -6,10 +6,7 @@ from graphql import (
     is_interface_type,
 )
 
-from changes import (
-    RemovedType,
-    AddedType,
-)
+from diff.changes import AddedType, RemovedType
 from diff.types.enum import EnumDiff
 from diff.types.interface import InterfaceType
 from diff.types.object_type import ObjectType
