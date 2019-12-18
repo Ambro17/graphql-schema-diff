@@ -77,6 +77,22 @@ def test_interface_field_description_changed():
     assert diff[0].message() == "'Person.age' description changed from 'desc' to 'other desc'"
 
 
+def test_interface_field_deprecation_reason_changed():
+    a = schema('''
+    interface Person {
+        age: Int @deprecated
+    }
+    ''')  # A default deprecation reason is appended on deprecation
+    b = schema('''
+    interface Person {
+        age: Int @deprecated(reason: "my reason")
+    }
+    ''')
+    diff = SchemaComparator(a, b).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == "'Person.age' deprecation reason changed from 'No longer supported' to 'my reason'"
+
+
 def test_type_implements_new_interface():
     a = schema("""
     interface InterfaceA {
