@@ -7,11 +7,11 @@ from graphql import (
 )
 
 from changes import (
-    SchemaQueryChange,
     RemovedType,
     AddedType,
 )
 from diff.types.enum import EnumDiff
+from diff.types.interface import InterfaceType
 from diff.types.object_type import ObjectType
 from diff.types.union_type import UnionType
 from diff.types.input_object_type import InputObjectType
@@ -34,6 +34,7 @@ class SchemaComparator:
 
     def compare(self):
         changes = []
+
         # Removed and added types
         changes += self.removed_types()
         changes += self.added_types()
@@ -41,8 +42,7 @@ class SchemaComparator:
         # Type diff for common types
         changes += self.common_type_changes()
 
-        # Schema and directive changes
-        # changes += self.schema_changes()
+        # Directive changes
         # changes += self.directive_changes()
 
         return changes
@@ -89,22 +89,7 @@ class SchemaComparator:
             elif is_object_type(old):
                 changes += ObjectType(old, new).diff()
             elif is_interface_type(old):
-                pass
-
-        return changes
-
-    def schema_changes(self):
-        changes = []
-        oldq = self.old_schema.query_type
-        newq = self.new_schema.query_type
-        if oldq != newq:
-            changes.append(SchemaQueryChange(oldq, newq))
-
-        if self.old_schema.mutation_type != self.new_schema.mutation_type:
-            changes.append((self.old_schema, self.new_schema))
-
-        if self.old_schema.subscription_type != self.new_schema.subscription_type:
-            changes.append((self.old_schema, self.new_schema))
+                changes += InterfaceType(old, new).diff()
 
         return changes
 
