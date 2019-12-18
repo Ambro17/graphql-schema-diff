@@ -54,7 +54,7 @@ class AddedType(Change):
         return f"Type '{self.type.name}' was added"
 
     def path(self):
-        return f'{self.name}'
+        return f'{self.type.type}'
 
 
 class DescriptionChanged(Change):
@@ -352,10 +352,114 @@ class FieldArgumentRemoved(Change):
         )
 
 
-class SchemaQueryChange(Change):
-    def __init__(self, old, new):
-        self.old_keys = list(old.fields.keys())
-        self.new_keys = list(new.fields.keys())
+#  ============== Interfaces ==============
+
+
+class InterfaceFieldAdded(Change):
+    def __init__(self, interface, field_name, field):
+        self.interface = interface
+        self.field_name = field_name
+        self.field = field
 
     def message(self):
-        return f'Root Query changed. Old fields: {self.old_keys}. New fields: {self.new_keys}'
+        return f"Field '{self.field_name}' of type '{self.field.type}' was added to interface '{self.interface}'"
+
+    def path(self):
+        return f"{self.interface.name}.{self.field_name}"
+
+
+class InterfaceFieldRemoved(Change):
+    def __init__(self, interface, field_name):
+        self.interface = interface
+        self.field_name = field_name
+
+    def message(self):
+        return f"Field '{self.field_name}' was removed from interface '{self.interface}'"
+
+    def path(self):
+        return f"{self.interface.name}.{self.field_name}"
+
+
+class AbstractInterfanceChange(Change):
+    def __init__(self, interface, field_name, old_field, new_field):
+        self.interface = interface
+        self.field_name = field_name
+        self.old_field = old_field
+        self.new_field = new_field
+
+    def path(self):
+        return f"{self.interface.name}.{self.field_name}"
+
+    def message(self):
+        raise NotImplementedError
+
+
+class InterfaceFieldTypeChanged(AbstractInterfanceChange):
+    def message(self):
+        return (
+            f"Field '{self.interface.name}.{self.field_name}' type "
+            f"changed from '{self.old_field.type}' to '{self.new_field.type}'"
+        )
+
+
+class NewInterfaceImplemented(Change):
+    def __init__(self, interface, field):
+        self.interface = interface
+        self.field = field
+
+    def message(self):
+        return f"{self.field.name!r} implements new interface {self.interface.name!r}"
+
+
+class DroppedInterfaceImplementation(Change):
+    def __init__(self, interface, field):
+        self.interface = interface
+        self.field = field
+
+    def message(self):
+        return f"{self.field.name!r} no longer implements interface {self.interface.name!r}"
+
+
+class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
+    def message(self):
+        return (
+            f"'{self.interface.name}.{self.field_name}' description changed "
+            f"from '{self.old_field.description}' to '{self.new_field.description}'"
+        )
+
+
+class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
+    def message(self):
+        return (
+            f"'{self.interface.name}.{self.field_name}' deprecation reason changed "
+            f"from {self.old_field.deprecation_reason!r} to {self.new_field.deprecation_reason!r}"
+        )
+
+
+#  ============== Interfaces ==============
+
+
+class ObjectTypeFieldAdded(Change):
+    def __init__(self, parent, field_name):
+        self.parent = parent
+        self.field_name = field_name
+
+    def message(self):
+        return f"Field {self.field_name!r} was added to object type {self.parent.name!r}"
+
+    def path(self):
+        return f"{self.parent.name}.{self.field_name}"
+
+
+class ObjectTypeFieldRemoved(Change):
+    def __init__(self, parent, field_name):
+        self.parent = parent
+        self.field_name = field_name
+
+    def message(self):
+        return f"Field {self.field_name!r} was removed from object type {self.parent.name!r}"
+
+    def path(self):
+        return f"{self.parent.name}.{self.field_name}"
+
+
