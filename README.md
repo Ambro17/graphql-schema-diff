@@ -1,0 +1,2 @@
+# schemadiff
+Compare GraphQL Schemas
