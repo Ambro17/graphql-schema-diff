@@ -175,7 +175,3 @@ def test_deprecation_reason_changed():
     assert len(diff) == 1
     expected_diff = ["Deprecation reason on field 'Query.b' changed from 'Not used' to 'Some string'"]
     assert [x.message() for x in diff] == expected_diff
-
-
-def test_type_comparison_must_be_done_with_string_as_equality_between_types_is_not_only_by_types():
-    assert False, "You must implement edge case of same type but different description"

@@ -105,9 +105,25 @@ def test_schema_query_fields_type_has_changes():
     assert [x.message() for x in diff] == expected_diff
 
 
-def test_schema_field_description_changed():
-    pass
+def test_schema_query_root_changed():
+    old_schema = schema('''
+    schema {
+        query: Query
+    }
 
+    type Query {
+        field: String!
+    }
+    ''')
+    new_schema = schema('''
+    schema {
+        query: NotTheSameQuery
+    }
 
-def test_schema_custom_type_added():
-    pass
+    type NotTheSameQuery {
+        field: String!
+    }
+    ''')
+    diff = SchemaComparator(old_schema, new_schema).compare()
+    assert diff and len(diff) == 2
+

@@ -1,4 +1,3 @@
-import pytest
 from graphql import build_schema as schema
 
 from diff.compare import SchemaComparator
