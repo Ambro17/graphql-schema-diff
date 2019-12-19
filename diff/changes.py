@@ -225,16 +225,17 @@ class UnionMemberRemoved(Change):
 
 
 class InputObjectTypeAdded(Change):
-    def __init__(self, input_object, value):
+    def __init__(self, input_object, field_name, field):
         self.criticality = Criticality.Breaking
         self.input_object = input_object
-        self.value = value
+        self.field_name = field_name
+        self.field = field
 
     def message(self):
-        return f"Type '{self.value}' was added to input object type '{self.input_object}'"
+        return f"Input Field '{self.field_name}: {self.field.type}' was added to input type '{self.input_object}'"
 
     def path(self):
-        return f"{self.input_object.name}.{self.value.name}"
+        return f"{self.input_object.name}.{self.field_name}"
 
 
 class InputObjectTypeRemoved(Change):
@@ -244,7 +245,7 @@ class InputObjectTypeRemoved(Change):
         self.value = value
 
     def message(self):
-        return f"Type '{self.value}' was removed from input object type '{self.input_object}'"
+        return f"Input Field '{self.value}' removed from input type '{self.input_object}'"
 
     def path(self):
         return f"{self.input_object.name}.{self.value.name}"

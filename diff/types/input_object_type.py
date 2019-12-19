@@ -22,8 +22,8 @@ class InputObjectType:
         added = new_field_names - old_field_names
         removed = old_field_names - new_field_names
 
-        changes.extend(InputObjectTypeAdded(self.type, value) for value in added)
-        changes.extend(InputObjectTypeRemoved(self.type, value) for value in removed)
+        changes.extend(InputObjectTypeAdded(self.type, field_name, self.new_fields[field_name]) for field_name in added)
+        changes.extend(InputObjectTypeRemoved(self.type, field_name) for field_name in removed)
 
         common_types = old_field_names & new_field_names
         for type_name in common_types:

@@ -167,3 +167,28 @@ def test_input_field_description_changed():
     assert diff[0].message() == (
         "Description for Input field 'Params.love' changed from 'abc' to 'His description'"
     )
+
+
+def test_input_field_added_field():
+    a = schema("""
+    input Recipe {
+        ingredients: [String]
+    }
+    """)
+    b = schema("""
+    input Recipe {
+        ingredients: [String]
+        love: Float
+    }
+    """)
+    diff = SchemaComparator(a, b).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == (
+        "Input Field 'love: Float' was added to input type 'Recipe'"
+    )
+
+    diff = SchemaComparator(b, a).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == (
+        "Input Field 'love' removed from input type 'Recipe'"
+    )
