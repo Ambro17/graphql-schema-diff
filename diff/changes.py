@@ -303,25 +303,39 @@ class InputObjectTypeTypeChanged(Change):
 
 #  ============== Arguments ==============
 
-class ArgumentDescriptionChanged(Change):
-    pass
 
-
-class ArgumentDefaultValueChanged(Change):
-    pass
-
-
-class ArgumentTypeChanged(Change):
-    def __init__(self, parent, field_name, argument_name, old_arg, new_arg):
-        self.parent = parent
-        self.field_name = field_name
-        self.argument_name = argument_name
+class AbstractArgumentChange(Change):
+    def __init__(self, parent_type, field, arg_name, old_arg, new_arg):
+        self.parent = parent_type
+        self.field_name = field
+        self.arg_name = arg_name
         self.old_arg = old_arg
         self.new_arg = new_arg
 
+    def path(self):
+        return f"{self.parent.name}.{self.field_name}"
+
+
+class ArgumentDescriptionChanged(AbstractArgumentChange):
     def message(self):
         return (
-            f"Type for argument '{self.argument_name}' on field '{self.parent}.{self.field_name}' "
+            f"Description for argument {self.arg_name!r} on field '{self.parent}.{self.field_name}' "
+            f"changed from {self.old_arg.description!r} to {self.new_arg.description!r}"
+        )
+
+
+class ArgumentDefaultValueChanged(AbstractArgumentChange):
+    def message(self):
+        return (
+            f"Default value for argument {self.arg_name!r} on field '{self.parent}.{self.field_name}' "
+            f"changed from {self.old_arg.default_value!r} to {self.new_arg.default_value!r}"
+        )
+
+
+class ArgumentTypeChanged(AbstractArgumentChange):
+    def message(self):
+        return (
+            f"Type for argument {self.arg_name!r} on field '{self.parent}.{self.field_name}' "
             f"changed from '{self.old_arg.type}' to '{self.new_arg.type}'"
         )
 
@@ -335,8 +349,8 @@ class FieldArgumentAdded(Change):
 
     def message(self):
         return (
-            f"Added argument '{self.argument_name}' in "
-            f"'{self.parent.name}.{self.field_name}' with type {self.arg_type.type}"
+            f"Argument '{self.argument_name}: {self.arg_type.type}' "
+            f"added to '{self.parent.name}.{self.field_name}'"
         )
 
 

@@ -2,17 +2,6 @@ from graphql import build_schema as schema
 
 from diff.compare import SchemaComparator
 
-"""
-assert "Type for argument `foo` on field `Query.a` changed from `String` to `Boolean`"
-assert "Type for argument `arg` on field `Query.a` changed from `[String]` to `String`"
-assert "Type for argument `arg` on field `Query.a` changed from `String!` to `String`"
-assert "Type for argument `arg` on field `Query.a` changed from `String` to `String!`"
-assert "Type for argument `arg` on field `Query.a` changed from `[String]!` to `[String]`"
-assert "Type for argument `arg` on field `Query.a` changed from `[String!]!` to `[String]!`"
-assert "Type for argument `arg` on field `Query.a` changed from `[String!]!` to `[String]`"
-assert "Type for argument `arg` on field `Query.a` changed from `[String!]!` to `[Boolean]`"
-"""
-
 
 def test_argument_type_changed():
     a = schema("""
@@ -48,10 +37,85 @@ def test_argument_added_removed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     assert diff[0].message() == (
-        "Added argument 'power' in 'Field.exp' with type Int"
+        "Argument 'power: Int' added to 'Field.exp'"
     )
 
     diff = SchemaComparator(b, a).compare()
     assert diff[0].message() == (
         "Removed argument 'power' from 'Field.exp'"
+    )
+
+
+def test_argument_description_changed():
+    a = schema('''
+    input Precision {
+        """result precision"""
+        decimals: Int
+    }
+    type Math {
+        sum(arg1: Precision): Float
+    }
+    ''')
+    b = schema('''
+    input Precision {
+        """new desc"""
+        decimals: Int
+    }
+    type Math {
+        sum(arg1: Precision): Float
+    }
+    ''')
+
+    diff = SchemaComparator(a, b).compare()
+    assert len(diff) == 1
+    assert diff[0].message() == (
+        "Description for Input field 'Precision.decimals' "
+        "changed from 'result precision' to 'new desc'"
+    )
+
+
+def test_argument_description_of_inner_type_changed():
+    a = schema('''
+    type TypeWithArgs {
+      field(
+        """abc"""
+        a: Int
+        b: String!
+      ): String
+    }
+    ''')
+    b = schema('''
+    type TypeWithArgs {
+      field(
+        """zzz wxYZ"""
+        a: Int
+        b: String!
+      ): String
+    }
+    ''')
+
+    diff = SchemaComparator(a, b).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == (
+        "Description for argument 'a' on field 'TypeWithArgs.field' "
+        "changed from 'abc' to 'zzz wxYZ'"
+    )
+
+
+def test_argument_default_value_changed():
+    a = schema("""
+    type Field {
+        exp(base: Int=0): Int
+    }
+    """)
+    b = schema("""
+    type Field {
+        exp(base: Int=1): Int
+    }
+    """)
+
+    diff = SchemaComparator(a, b).compare()
+    assert len(diff) == 1
+    assert diff[0].message() == (
+        "Default value for argument 'base' on field 'Field.exp' changed from 0 to 1"
     )

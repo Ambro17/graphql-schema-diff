@@ -175,3 +175,32 @@ def test_deprecation_reason_changed():
     assert len(diff) == 1
     expected_diff = ["Deprecation reason on field 'Query.b' changed from 'Not used' to 'Some string'"]
     assert [x.message() for x in diff] == expected_diff
+
+
+def test_added_removed_arguments():
+    a = schema("""
+    type Football {
+        skill: Float!
+    }
+    """)
+    b = schema("""
+    type Football {
+        skill(player: ID): Float!
+    }
+    """)
+    diff = SchemaComparator(a, b).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == "Argument 'player: ID' added to 'Football.skill'"
+
+    diff = SchemaComparator(b, a).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == "Removed argument 'player' from 'Football.skill'"
+
+    c = schema("""
+    type Football {
+        skill(player: ID, age: Int): Float!
+    }
+    """)
+    diff = SchemaComparator(b, c).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message() == "Argument 'age: Int' added to 'Football.skill'"

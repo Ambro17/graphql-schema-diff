@@ -13,11 +13,16 @@ class Argument:
     def diff(self):
         changes = []
         if self.old_arg.description != self.new_arg.description:
-            changes.append(ArgumentDescriptionChanged())
+            changes.append(ArgumentDescriptionChanged(
+                self.type, self.field_name, self.argument_name, self.old_arg, self.new_arg
+            ))
         if self.old_arg.default_value != self.new_arg.default_value:
-            changes.append(ArgumentDefaultValueChanged())
+            changes.append(ArgumentDefaultValueChanged(
+                self.type, self.field_name, self.argument_name, self.old_arg, self.new_arg
+            ))
         if str(self.old_arg.type) != str(self.new_arg.type):
-            changes.append(ArgumentTypeChanged(self.type, self.field_name, self.argument_name,
-                                               self.old_arg, self.new_arg))
+            changes.append(ArgumentTypeChanged(
+                self.type, self.field_name, self.argument_name, self.old_arg, self.new_arg
+            ))
 
         return changes

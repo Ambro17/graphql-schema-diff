@@ -37,7 +37,10 @@ class Field:
             FieldArgumentAdded(self.type, self.field_name, arg_name, self.new_field.args[arg_name])
             for arg_name in added
         )
-        changes.extend(FieldArgumentRemoved(self.type, self.field_name, arg_name) for arg_name in removed)
+        changes.extend(
+            FieldArgumentRemoved(self.type, self.field_name, arg_name)
+            for arg_name in removed
+        )
 
         common_arguments = self.common_arguments()
         for arg_name in common_arguments:
@@ -46,12 +49,6 @@ class Field:
             changes += Argument(self.type, self.field_name, arg_name, old_arg, new_arg).diff() or []
 
         return changes
-
-    def added_arguments(self):
-        return self.new_args - self.old_args
-
-    def dropped_arguments(self):
-        return self.old_args - self.new_args
 
     def common_arguments(self):
         return self.old_args & self.new_args
