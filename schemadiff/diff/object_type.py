@@ -1,10 +1,10 @@
-from diff.changes import (
+from schemadiff.changes import (
     ObjectTypeFieldAdded,
     ObjectTypeFieldRemoved,
     NewInterfaceImplemented,
     DroppedInterfaceImplementation,
 )
-from diff.types.field import Field
+from schemadiff.diff.field import Field
 
 
 class ObjectType:

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from diff.compare import Schema, SchemaComparator
+from schemadiff.compare import Schema, SchemaComparator
 
 TESTS_DATA = Path(__file__).parent / 'data'
 

@@ -1,11 +1,11 @@
-from diff.changes import (
+from schemadiff.changes import (
     DescriptionChanged,
     DeprecationReasonChanged,
     FieldTypeChanged,
     FieldArgumentAdded,
     FieldArgumentRemoved,
 )
-from diff.types.argument import Argument
+from schemadiff.diff.argument import Argument
 
 
 class Field:

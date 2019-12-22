@@ -1,4 +1,4 @@
-from diff.changes import (
+from schemadiff.changes import (
     EnumValueAdded,
     EnumValueRemoved,
     EnumValueDescriptionChanged,

@@ -1,5 +1,6 @@
 from graphql import build_schema as schema
-from diff.compare import SchemaComparator
+
+from schemadiff.compare import SchemaComparator
 
 
 def test_no_field_diff():

@@ -11,7 +11,7 @@ from graphql import (
 )
 from graphql.type.introspection import TypeFieldResolvers
 
-from diff.changes import (
+from schemadiff.changes import (
     AddedType,
     RemovedType,
     RemovedDirective,
@@ -19,12 +19,12 @@ from diff.changes import (
     TypeDescriptionChanged,
     TypeKindChanged,
 )
-from diff.types.directive import Directive
-from diff.types.enum import EnumDiff
-from diff.types.interface import InterfaceType
-from diff.types.object_type import ObjectType
-from diff.types.union_type import UnionType
-from diff.types.input_object_type import InputObjectType
+from schemadiff.diff.directive import Directive
+from schemadiff.diff.enum import EnumDiff
+from schemadiff.diff.interface import InterfaceType
+from schemadiff.diff.object_type import ObjectType
+from schemadiff.diff.union_type import UnionType
+from schemadiff.diff.input_object_type import InputObjectType
 
 type_kind = partial(TypeFieldResolvers.kind, _info={})
 
@@ -47,11 +47,11 @@ class SchemaComparator:
     def compare(self):
         changes = []
 
-        # Removed and added types
+        # Removed and added diff
         changes += self.removed_types()
         changes += self.added_types()
 
-        # Type diff for common types
+        # Type schemadiff for common diff
         changes += self.common_type_changes()
 
         # Directive changes

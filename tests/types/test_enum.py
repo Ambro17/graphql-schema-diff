@@ -1,6 +1,6 @@
 from graphql import build_schema as schema
 
-from diff.compare import SchemaComparator
+from schemadiff.compare import SchemaComparator
 
 
 def test_enums_added_and_removed():

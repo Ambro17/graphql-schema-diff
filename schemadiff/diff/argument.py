@@ -1,4 +1,4 @@
-from diff.changes import ArgumentDescriptionChanged, ArgumentTypeChanged, ArgumentDefaultValueChanged
+from schemadiff.changes import ArgumentDescriptionChanged, ArgumentTypeChanged, ArgumentDefaultValueChanged
 
 
 class Argument:

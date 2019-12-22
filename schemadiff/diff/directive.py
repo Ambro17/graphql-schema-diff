@@ -1,4 +1,4 @@
-from diff.changes import (
+from schemadiff.changes import (
     DirectiveDescriptionChanged,
     DirectiveLocationsChanged,
     DirectiveArgumentAdded,

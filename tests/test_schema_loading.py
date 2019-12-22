@@ -2,7 +2,7 @@ from pathlib import Path
 
 from graphql import is_schema
 
-from diff.compare import Schema
+from schemadiff.compare import Schema
 
 TESTS_DATA = Path(__file__).parent / 'data'
 

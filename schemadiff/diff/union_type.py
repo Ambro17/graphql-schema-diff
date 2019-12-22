@@ -1,4 +1,4 @@
-from diff.changes import UnionMemberAdded, UnionMemberRemoved
+from schemadiff.changes import UnionMemberAdded, UnionMemberRemoved
 
 
 class UnionType:
