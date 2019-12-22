@@ -14,8 +14,7 @@ def test_schema_no_diff():
     }
     """)
     diff = SchemaComparator(a_schema, a_schema).compare()
-    expected_diff = []
-    assert diff == expected_diff
+    assert diff == []
 
 
 def test_schema_added_type():
@@ -42,10 +41,9 @@ def test_schema_added_type():
     }
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
-    expected_diff = [
-        "Type `AddedType` was added",  # Type Int was also added but its ignored because its a primitive.
-    ]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff and len(diff) == 1
+    # Type Int was also added but its ignored because its a primitive.
+    assert diff[0].message() == "Type `AddedType` was added"
 
 
 def test_schema_removed_type():
@@ -73,10 +71,9 @@ def test_schema_removed_type():
     }
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
-    expected_diff = [
-        "Type `ToBeRemovedType` was removed",  # Type Int was also removed but it is ignored because it's a primitive.
-    ]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff and len(diff) == 1
+    # Type Int was also removed but it is ignored because it's a primitive.
+    assert diff[0].message() == "Type `ToBeRemovedType` was removed"
 
 
 def test_schema_query_fields_type_has_changes():
@@ -99,10 +96,8 @@ def test_schema_query_fields_type_has_changes():
     }
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
-    expected_diff = [
-        "Field `Query.field` changed type from `String!` to `Int!`"
-    ]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff and len(diff) == 1
+    assert diff[0].message() == "Field `Query.field` changed type from `String!` to `Int!`"
 
 
 def test_schema_query_root_changed():
@@ -126,7 +121,12 @@ def test_schema_query_root_changed():
     ''')
     diff = SchemaComparator(old_schema, new_schema).compare()
     assert diff and len(diff) == 2
-    assert False
+    expected_changes = {
+        "Type `Query` was removed",
+        "Type `NotTheSameQuery` was added"
+    }
+    for change in diff:
+        assert change.message() in expected_changes
 
 
 def test_named_typed_changed_type():
