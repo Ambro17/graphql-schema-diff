@@ -57,6 +57,35 @@ class AddedType(Change):
         return f'{self.type.type}'
 
 
+class TypeDescriptionChanged(Change):
+    def  __init__(self, type_name, old_desc, new_desc):
+        self.type = type_name
+        self.old_desc = old_desc
+        self.new_desc = new_desc
+
+    def message(self):
+        return (
+            f"Description for type `{self.type}` changed from "
+            f"`{self.old_desc}` to `{self.new_desc}`"
+        )
+
+    def path(self):
+        return self.type
+
+
+class TypeKindChanged(Change):
+    def __init__(self, type, old_kind, new_kind):
+        self.type = type
+        self.old_kind = old_kind
+        self.new_kind = new_kind
+
+    def message(self):
+        return f"`{self.type}` kind changed from `{self.old_kind.value.upper()}` to `{self.new_kind.value.upper()}`"
+
+    def path(self):
+        return self.type
+
+
 class DescriptionChanged(Change):
     def __init__(self, new_type, name, old_field, new_field):
         self.criticality = Criticality.NonBreaking

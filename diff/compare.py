@@ -1,3 +1,5 @@
+from functools import partial
+
 from graphql import (
     is_enum_type,
     is_union_type,
@@ -5,14 +7,24 @@ from graphql import (
     is_object_type,
     is_interface_type,
 )
+from graphql.type.introspection import TypeFieldResolvers
 
-from diff.changes import AddedType, RemovedType, RemovedDirective, AddedDirective
+from diff.changes import (
+    AddedType,
+    RemovedType,
+    RemovedDirective,
+    AddedDirective,
+    TypeDescriptionChanged,
+    TypeKindChanged,
+)
 from diff.types.directive import Directive
 from diff.types.enum import EnumDiff
 from diff.types.interface import InterfaceType
 from diff.types.object_type import ObjectType
 from diff.types.union_type import UnionType
 from diff.types.input_object_type import InputObjectType
+
+type_kind = partial(TypeFieldResolvers.kind, _info={})
 
 
 class SchemaComparator:
@@ -71,24 +83,24 @@ class SchemaComparator:
         return changes
 
     @staticmethod
-    def compare_types(old, new):
+    def compare_types(old_type, new_type):
         changes = []
-        if old.description != new.description:
-            # Add test for this
-            changes.append((old.description, new.description))
-        if type(old) != type(new):
-            changes.append((old, new))
+        if old_type.description != new_type.description:
+            changes.append(TypeDescriptionChanged(new_type.name, old_type.description, new_type.description))
+
+        if type_kind(old_type) != type_kind(new_type):
+            changes.append(TypeKindChanged(new_type, type_kind(old_type), type_kind(new_type)))
         else:
-            if is_enum_type(old):
-                changes += EnumDiff(old, new)()
-            elif is_union_type(old):
-                changes += UnionType(old, new).diff()
-            elif is_input_object_type(old):
-                changes += InputObjectType(old, new).diff()
-            elif is_object_type(old):
-                changes += ObjectType(old, new).diff()
-            elif is_interface_type(old):
-                changes += InterfaceType(old, new).diff()
+            if is_enum_type(old_type):
+                changes += EnumDiff(old_type, new_type).diff()
+            elif is_union_type(old_type):
+                changes += UnionType(old_type, new_type).diff()
+            elif is_input_object_type(old_type):
+                changes += InputObjectType(old_type, new_type).diff()
+            elif is_object_type(old_type):
+                changes += ObjectType(old_type, new_type).diff()
+            elif is_interface_type(old_type):
+                changes += InterfaceType(old_type, new_type).diff()
 
         return changes
 

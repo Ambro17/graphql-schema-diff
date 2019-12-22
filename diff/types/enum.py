@@ -13,7 +13,7 @@ class EnumDiff:
         self.old_values = old_enum.values
         self.new_values = new_enum.values
 
-    def __call__(self):
+    def diff(self):
         changes = []
         old_values = set(self.old_values)
         new_values = set(self.new_values)

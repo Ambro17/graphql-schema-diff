@@ -126,4 +126,21 @@ def test_schema_query_root_changed():
     ''')
     diff = SchemaComparator(old_schema, new_schema).compare()
     assert diff and len(diff) == 2
+    assert False
 
+
+def test_named_typed_changed_type():
+    a = schema("""
+    input QueryParams {
+        a: String!
+    }
+    """)
+    b = schema("""
+    type QueryParams {
+        a: String!
+    }
+    """)
+    diff = SchemaComparator(a, b).compare()
+    assert diff and len(diff) == 1
+    for change in diff:
+        assert change.message() == "`QueryParams` kind changed from `INPUT OBJECT` to `OBJECT`"
