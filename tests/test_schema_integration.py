@@ -55,6 +55,6 @@ def test_compare_from_schema_string_sdl():
         '`CType` implements new interface `AnInterface`',
         '`WithInterfaces` no longer implements interface `AnotherInterface`'
     }
-    messages = [change.message() for change in diff]
+    messages = [change.message for change in diff]
     for message in messages:
         assert message in expected_changes

@@ -37,10 +37,10 @@ def test_interface_field_added_and_removed():
 
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Field `favorite_number` of type `Float` was added to interface `Person`"
+    assert diff[0].message == "Field `favorite_number` of type `Float` was added to interface `Person`"
 
     diff = SchemaComparator(b, a).compare()
-    assert diff[0].message() == "Field `favorite_number` was removed from interface `Person`"
+    assert diff[0].message == "Field `favorite_number` was removed from interface `Person`"
 
 
 def test_interface_field_type_changed():
@@ -56,7 +56,7 @@ def test_interface_field_type_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Field `Person.age` type changed from `Int` to `Float!`"
+    assert diff[0].message == "Field `Person.age` type changed from `Int` to `Float!`"
 
 
 def test_interface_field_description_changed():
@@ -74,7 +74,7 @@ def test_interface_field_description_changed():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Person.age` description changed from `desc` to `other desc`"
+    assert diff[0].message == "`Person.age` description changed from `desc` to `other desc`"
 
 
 def test_interface_field_deprecation_reason_changed():
@@ -90,7 +90,7 @@ def test_interface_field_deprecation_reason_changed():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Person.age` deprecation reason changed from `No longer supported` to `my reason`"
+    assert diff[0].message == "`Person.age` deprecation reason changed from `No longer supported` to `my reason`"
 
 
 def test_type_implements_new_interface():
@@ -122,7 +122,7 @@ def test_type_implements_new_interface():
         "`MyType` implements new interface `InterfaceB`"
     }
     for change in diff:
-        assert change.message() in expected_diff
+        assert change.message in expected_diff
 
     diff = SchemaComparator(b, a).compare()
     assert diff and len(diff) == 3
@@ -132,4 +132,4 @@ def test_type_implements_new_interface():
         "`MyType` no longer implements interface `InterfaceB`"
     }
     for change in diff:
-        assert change.message() in expected_diff
+        assert change.message in expected_diff

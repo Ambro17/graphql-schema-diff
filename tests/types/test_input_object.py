@@ -35,7 +35,7 @@ def test_input_field_type_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Params.love` type changed from `Int` to `Float!`"
+    assert diff[0].message == "`Params.love` type changed from `Int` to `Float!`"
 
 
 def test_input_field_changed_from_list_to_scalar():
@@ -51,7 +51,7 @@ def test_input_field_changed_from_list_to_scalar():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Params.arg` type changed from `Int` to `[Int]`"
+    assert diff[0].message == "`Params.arg` type changed from `Int` to `[Int]`"
 
 
 def test_input_field_dropped_non_null_constraint():
@@ -67,7 +67,7 @@ def test_input_field_dropped_non_null_constraint():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Params.arg` type changed from `String!` to `String`"
+    assert diff[0].message == "`Params.arg` type changed from `String!` to `String`"
 
 
 def test_input_field_now_is_not_nullable():
@@ -83,7 +83,7 @@ def test_input_field_now_is_not_nullable():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Params.arg` type changed from `ID` to `ID!`"
+    assert diff[0].message == "`Params.arg` type changed from `ID` to `ID!`"
 
 
 def test_input_field_type_nullability_change_on_lists_of_the_same_underlying_types():
@@ -109,13 +109,13 @@ def test_input_field_type_nullability_change_on_lists_of_the_same_underlying_typ
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Params.arg` type changed from `[ID!]!` to `[ID!]`"
+    assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `[ID!]`"
 
     diff = SchemaComparator(a, c).compare()
-    assert diff[0].message() == "`Params.arg` type changed from `[ID!]!` to `[ID]`"
+    assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `[ID]`"
 
     diff = SchemaComparator(a, d).compare()
-    assert diff[0].message() == "`Params.arg` type changed from `[ID!]!` to `ID`"
+    assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `ID`"
 
 
 def test_input_field_inner_type_changed():
@@ -131,7 +131,7 @@ def test_input_field_inner_type_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Params.arg` type changed from `[Int]` to `[String]`"
+    assert diff[0].message == "`Params.arg` type changed from `[Int]` to `[String]`"
 
 
 def test_input_field_default_value_changed():
@@ -147,7 +147,7 @@ def test_input_field_default_value_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Default value for input field `Params.love` changed from `0` to `100`"
+    assert diff[0].message == "Default value for input field `Params.love` changed from `0` to `100`"
 
 
 def test_input_field_description_changed():
@@ -165,7 +165,7 @@ def test_input_field_description_changed():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Description for Input field `Params.love` changed from `abc` to `His description`"
     )
 
@@ -184,12 +184,12 @@ def test_input_field_added_field():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Input Field `love: Float` was added to input type `Recipe`"
     )
 
     diff = SchemaComparator(b, a).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Input Field `love` removed from input type `Recipe`"
     )

@@ -30,7 +30,7 @@ def test_enums_added_and_removed():
         "Enum value `C` was added to `Letters` enum",
         "Enum value `D` was added to `Letters` enum",
     }
-    assert {x.message() for x in diff} == expected_diff
+    assert {x.message for x in diff} == expected_diff
 
 
 def test_deprecated_enum_value():
@@ -54,7 +54,7 @@ def test_deprecated_enum_value():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message() == "Enum value `B` was deprecated with reason `Changed the alphabet`"
+    assert diff[0].message == "Enum value `B` was deprecated with reason `Changed the alphabet`"
 
 
 def test_deprecated_reason_changed():
@@ -78,7 +78,7 @@ def test_deprecated_reason_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Deprecation reason for enum value `B` changed from `a reason` to `a new reason`"
     )
 
@@ -103,7 +103,7 @@ def test_description_added():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Description for enum value `A` set to `My new description`"
     )
 
@@ -129,6 +129,6 @@ def test_description_changed():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Description for enum value `A` changed from `My description` to `My new description`"
     )

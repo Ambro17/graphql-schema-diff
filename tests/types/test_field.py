@@ -32,7 +32,7 @@ def test_field_type_changed():
     diff = SchemaComparator(a_schema, changed_schema).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `String!` to `Int`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_field_type_change_from_scalar_to_list_of_the_same_type():
@@ -49,7 +49,7 @@ def test_field_type_change_from_scalar_to_list_of_the_same_type():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `String` to `[String]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_field_nullability_changed():
@@ -66,12 +66,12 @@ def test_field_nullability_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `Int!` to `Int`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
     diff = SchemaComparator(b, a).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `Int` to `Int!`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_field_type_change_nullability_change_on_lists_of_same_type():
@@ -88,7 +88,7 @@ def test_field_type_change_nullability_change_on_lists_of_same_type():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `[Boolean]!` to `[Boolean]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_field_listof_nullability_of_inner_type_changed():
@@ -105,7 +105,7 @@ def test_field_listof_nullability_of_inner_type_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `[Int!]!` to `[Int]!`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_field_listof_nullability_of_inner_and_outer_types_changed():
@@ -122,7 +122,7 @@ def test_field_listof_nullability_of_inner_and_outer_types_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `[Float!]!` to `[Float]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_field_list_of_inner_type_changed():
@@ -139,7 +139,7 @@ def test_field_list_of_inner_type_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` changed type from `[Float!]!` to `[String]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_description_changed():
@@ -158,7 +158,7 @@ def test_description_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Field `Query.a` description changed from `some desc` to `once upon a time`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_deprecation_reason_changed():
@@ -175,7 +175,7 @@ def test_deprecation_reason_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     expected_diff = ["Deprecation reason on field `Query.b` changed from `Not used` to `Some string`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert [x.message for x in diff] == expected_diff
 
 
 def test_added_removed_arguments():
@@ -191,11 +191,11 @@ def test_added_removed_arguments():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Argument `player: ID` added to `Football.skill`"
+    assert diff[0].message == "Argument `player: ID` added to `Football.skill`"
 
     diff = SchemaComparator(b, a).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Removed argument `player` from `Football.skill`"
+    assert diff[0].message == "Removed argument `player` from `Football.skill`"
 
     c = schema("""
     type Football {
@@ -204,4 +204,4 @@ def test_added_removed_arguments():
     """)
     diff = SchemaComparator(b, c).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Argument `age: Int` added to `Football.skill`"
+    assert diff[0].message == "Argument `age: Int` added to `Football.skill`"

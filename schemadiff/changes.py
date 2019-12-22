@@ -1,4 +1,4 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from enum import Enum
 
 
@@ -8,7 +8,7 @@ class Criticality(Enum):
     Breaking = 'BREAKING'
 
 
-class Change:
+class Change(ABC):
 
     criticality = Criticality.Breaking
 
@@ -39,9 +39,11 @@ class RemovedType(Change):
     def __init__(self, type):
         self.type = type
 
+    @property
     def message(self):
         return f"Type `{self.type.name}` was removed"
 
+    @property
     def path(self):
         return f'{self.type.name}'
 
@@ -50,25 +52,29 @@ class AddedType(Change):
     def __init__(self, added_type):
         self.type = added_type
 
+    @property
     def message(self):
         return f"Type `{self.type.name}` was added"
 
+    @property
     def path(self):
         return f'{self.type.type}'
 
 
 class TypeDescriptionChanged(Change):
-    def  __init__(self, type_name, old_desc, new_desc):
+    def __init__(self, type_name, old_desc, new_desc):
         self.type = type_name
         self.old_desc = old_desc
         self.new_desc = new_desc
 
+    @property
     def message(self):
         return (
             f"Description for type `{self.type}` changed from "
             f"`{self.old_desc}` to `{self.new_desc}`"
         )
 
+    @property
     def path(self):
         return self.type
 
@@ -79,9 +85,11 @@ class TypeKindChanged(Change):
         self.old_kind = old_kind
         self.new_kind = new_kind
 
+    @property
     def message(self):
         return f"`{self.type}` kind changed from `{self.old_kind.value.upper()}` to `{self.new_kind.value.upper()}`"
 
+    @property
     def path(self):
         return self.type
 
@@ -94,12 +102,14 @@ class DescriptionChanged(Change):
         self.old_field = old_field
         self.new_field = new_field
 
+    @property
     def message(self):
         return (
             f"Field `{self.type.name}.{self.field_name}` description changed"
             f" from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
+    @property
     def path(self):
         return f'{self.type.name}.{self.new_field.name}'
 
@@ -113,12 +123,14 @@ class DeprecationReasonChanged(Change):
         self.old_field = old_field
         self.new_field = new_field
 
+    @property
     def message(self):
         return (
             f"Deprecation reason on field `{self.type}.{self.field_name}` changed "
             f"from `{self.old_field.deprecation_reason}` to `{self.new_field.deprecation_reason}`"
         )
 
+    @property
     def path(self):
         return f"{self.type.name}.{self.new_field.name}"
 
@@ -132,18 +144,16 @@ class FieldTypeChanged(Change):
         self.old_field = old_field
         self.new_field = new_field
 
+    @property
     def message(self):
         return (
             f"Field `{self.type}.{self.field_name}` changed type "
             f"from `{self.old_field.type}` to `{self.new_field.type}`"
         )
 
+    @property
     def path(self):
         return f"{self.type.name}.{self.new_field.name}"
-
-    def safe_change(self, old_field, new_field):
-        # TODO: Implement this
-        return True or old_field or new_field
 
 
 #  ============== ENUMS ==============
@@ -155,9 +165,11 @@ class EnumValueAdded(Change):
         self.enum = enum
         self.value = value
 
+    @property
     def message(self):
         return f"Enum value `{self.value}` was added to `{self.enum.name}` enum"
 
+    @property
     def path(self):
         return f"{self.enum.name}.{self.value.name}"
 
@@ -168,9 +180,11 @@ class EnumValueRemoved(Change):
         self.enum = enum
         self.value = value
 
+    @property
     def message(self):
         return f"Enum value `{self.value}` was removed from `{self.enum.name}` enum"
 
+    @property
     def path(self):
         return f"{self.enum.name}.{self.value.name}"
 
@@ -183,6 +197,7 @@ class EnumValueDescriptionChanged(Change):
         self.old_value = old_value
         self.new_value = new_value
 
+    @property
     def message(self):
         if not self.old_value.description:
             msg = f"Description for enum value `{self.name}` set to `{self.new_value.description}`"
@@ -193,6 +208,7 @@ class EnumValueDescriptionChanged(Change):
             )
         return msg
 
+    @property
     def path(self):
         return f"{self.enum.name}.{self.name}"
 
@@ -205,6 +221,7 @@ class EnumValueDeprecationReasonChanged(Change):
         self.old_value = old_value
         self.new_value = new_value
 
+    @property
     def message(self):
         if not self.old_value.deprecation_reason:
             msg = (
@@ -218,6 +235,7 @@ class EnumValueDeprecationReasonChanged(Change):
             )
         return msg
 
+    @property
     def path(self):
         return f"{self.enum.name}.{self.name}"
 
@@ -230,9 +248,11 @@ class UnionMemberAdded(Change):
         self.union = union
         self.value = value
 
+    @property
     def message(self):
         return f"Union member `{self.value}` was added to `{self.union.name}` Union type"
 
+    @property
     def path(self):
         return f"{self.union.name}.{self.value.name}"
 
@@ -243,9 +263,11 @@ class UnionMemberRemoved(Change):
         self.union = union
         self.value = value
 
+    @property
     def message(self):
         return f"Union member `{self.value}` was removed from `{self.union.name}` Union type"
 
+    @property
     def path(self):
         return f"{self.union.name}.{self.value.name}"
 
@@ -260,9 +282,11 @@ class InputObjectTypeAdded(Change):
         self.field_name = field_name
         self.field = field
 
+    @property
     def message(self):
         return f"Input Field `{self.field_name}: {self.field.type}` was added to input type `{self.input_object}`"
 
+    @property
     def path(self):
         return f"{self.input_object.name}.{self.field_name}"
 
@@ -273,9 +297,11 @@ class InputObjectTypeRemoved(Change):
         self.input_object = input_object
         self.value = value
 
+    @property
     def message(self):
         return f"Input Field `{self.value}` removed from input type `{self.input_object}`"
 
+    @property
     def path(self):
         return f"{self.input_object.name}.{self.value.name}"
 
@@ -287,12 +313,14 @@ class InputObjectTypeDescriptionChanged(Change):
         self.new_field = new_field
         self.old_field = old_field
 
+    @property
     def message(self):
         return (
             f"Description for Input field `{self.input.name}.{self.name}` "
             f"changed from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
+    @property
     def path(self):
         return f"{self.input.name}.{self.name}"
 
@@ -304,12 +332,14 @@ class InputTypeDefaultChanged(Change):
         self.new_field = new_field
         self.old_field = old_field
 
+    @property
     def message(self):
         return (
             f"Default value for input field `{self.input.name}.{self.name}` "
             f"changed from `{self.old_field.default_value!r}` to `{self.new_field.default_value!r}`"
         )
 
+    @property
     def path(self):
         return f"{self.input.name}.{self.name}"
 
@@ -321,12 +351,14 @@ class InputObjectTypeTypeChanged(Change):
         self.new_field = new_field
         self.old_field = old_field
 
+    @property
     def message(self):
         return (
             f"`{self.input.name}.{self.name}` type changed from "
             f"`{self.old_field.type}` to `{self.new_field.type}`"
         )
 
+    @property
     def path(self):
         return f"{self.input.name}.{self.name}"
 
@@ -342,11 +374,14 @@ class AbstractArgumentChange(Change):
         self.old_arg = old_arg
         self.new_arg = new_arg
 
+    @property
     def path(self):
         return f"{self.parent.name}.{self.field_name}"
 
 
 class ArgumentDescriptionChanged(AbstractArgumentChange):
+
+    @property
     def message(self):
         return (
             f"Description for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
@@ -355,6 +390,8 @@ class ArgumentDescriptionChanged(AbstractArgumentChange):
 
 
 class ArgumentDefaultValueChanged(AbstractArgumentChange):
+
+    @property
     def message(self):
         return (
             f"Default value for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
@@ -363,6 +400,8 @@ class ArgumentDefaultValueChanged(AbstractArgumentChange):
 
 
 class ArgumentTypeChanged(AbstractArgumentChange):
+
+    @property
     def message(self):
         return (
             f"Type for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
@@ -377,11 +416,17 @@ class FieldArgumentAdded(Change):
         self.argument_name = argument_name
         self.arg_type = arg_type
 
+
+    @property
     def message(self):
         return (
             f"Argument `{self.argument_name}: {self.arg_type.type}` "
             f"added to `{self.parent.name}.{self.field_name}`"
         )
+
+    @property
+    def path(self):
+        return f"{self.parent}.{self.field_name}"
 
 
 class FieldArgumentRemoved(Change):
@@ -390,11 +435,15 @@ class FieldArgumentRemoved(Change):
         self.field_name = field_name
         self.argument_name = argument_name
 
+    @property
     def message(self):
         return (
             f"Removed argument `{self.argument_name}` from `{self.parent.name}.{self.field_name}`"
         )
 
+    @property
+    def path(self):
+        return f"{self.parent}.{self.field_name}"
 
 #  ============== Interfaces ==============
 
@@ -405,9 +454,11 @@ class InterfaceFieldAdded(Change):
         self.field_name = field_name
         self.field = field
 
+    @property
     def message(self):
         return f"Field `{self.field_name}` of type `{self.field.type}` was added to interface `{self.interface}`"
 
+    @property
     def path(self):
         return f"{self.interface.name}.{self.field_name}"
 
@@ -417,9 +468,11 @@ class InterfaceFieldRemoved(Change):
         self.interface = interface
         self.field_name = field_name
 
+    @property
     def message(self):
         return f"Field `{self.field_name}` was removed from interface `{self.interface}`"
 
+    @property
     def path(self):
         return f"{self.interface.name}.{self.field_name}"
 
@@ -431,14 +484,14 @@ class AbstractInterfanceChange(Change):
         self.old_field = old_field
         self.new_field = new_field
 
+    @property
     def path(self):
         return f"{self.interface.name}.{self.field_name}"
 
-    def message(self):
-        raise NotImplementedError
-
 
 class InterfaceFieldTypeChanged(AbstractInterfanceChange):
+
+    @property
     def message(self):
         return (
             f"Field `{self.interface.name}.{self.field_name}` type "
@@ -447,24 +500,35 @@ class InterfaceFieldTypeChanged(AbstractInterfanceChange):
 
 
 class NewInterfaceImplemented(Change):
-    def __init__(self, interface, field):
+    def __init__(self, interface, type):
         self.interface = interface
-        self.field = field
+        self.type = type
 
+    @property
     def message(self):
-        return f"`{self.field.name}` implements new interface `{self.interface.name}`"
+        return f"`{self.type.name}` implements new interface `{self.interface.name}`"
+
+    @property
+    def path(self):
+        return self.type
 
 
 class DroppedInterfaceImplementation(Change):
-    def __init__(self, interface, field):
+    def __init__(self, interface, type):
         self.interface = interface
-        self.field = field
+        self.type = type
 
+    @property
     def message(self):
-        return f"`{self.field.name}` no longer implements interface `{self.interface.name}`"
+        return f"`{self.type.name}` no longer implements interface `{self.interface.name}`"
 
+    @property
+    def path(self):
+        return self.type
 
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
+
+    @property
     def message(self):
         return (
             f"`{self.interface.name}.{self.field_name}` description changed "
@@ -473,6 +537,8 @@ class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
 
 
 class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
+
+    @property
     def message(self):
         return (
             f"`{self.interface.name}.{self.field_name}` deprecation reason changed "
@@ -488,9 +554,11 @@ class ObjectTypeFieldAdded(Change):
         self.parent = parent
         self.field_name = field_name
 
+    @property
     def message(self):
         return f"Field `{self.field_name}` was added to object type `{self.parent.name}`"
 
+    @property
     def path(self):
         return f"{self.parent.name}.{self.field_name}"
 
@@ -500,9 +568,11 @@ class ObjectTypeFieldRemoved(Change):
         self.parent = parent
         self.field_name = field_name
 
+    @property
     def message(self):
         return f"Field `{self.field_name}` was removed from object type `{self.parent.name}`"
 
+    @property
     def path(self):
         return f"{self.parent.name}.{self.field_name}"
 
@@ -515,10 +585,12 @@ class AddedDirective(Change):
         self.directive_name = directive_name
         self.directive_locations = directive_locations
 
+    @property
     def message(self):
         locations = ' | '.join(loc.name for loc in self.directive_locations)
         return f"Directive `{self.directive_name}` was added to use on `{locations}`"
 
+    @property
     def path(self):
         return self.directive_name
 
@@ -527,9 +599,11 @@ class RemovedDirective(Change):
     def __init__(self, directive_name):
         self.directive_name = directive_name
 
+    @property
     def message(self):
         return f"Directive `{self.directive_name}` was removed"
 
+    @property
     def path(self):
         return self.directive_name
 
@@ -539,11 +613,16 @@ class DirectiveDescriptionChanged(Change):
         self.old = old
         self.new = new
 
+    @property
     def message(self):
         return (
             f"Description for directive `{self.new!s}` "
             f"changed from `{self.old.description}` to `{self.new.description}`"
         )
+
+    @property
+    def path(self):
+        return f"{self.new!s}"
 
 
 class DirectiveLocationsChanged(Change):
@@ -552,6 +631,7 @@ class DirectiveLocationsChanged(Change):
         self.old_locations = old_locations
         self.new_locations = new_locations
 
+    @property
     def message(self):
         return (
             f"Directive locations of `{self.directive!s}` changed "
@@ -559,6 +639,7 @@ class DirectiveLocationsChanged(Change):
             f"to `{' | '.join(l.name for l in self.new_locations)}`"
         )
 
+    @property
     def path(self):
         return self.directive.name
 
@@ -569,8 +650,13 @@ class DirectiveArgumentAdded(Change):
         self.arg_name = arg_name
         self.arg_type = arg_type
 
+    @property
     def message(self):
         return f"Added argument `{self.arg_name}: {self.arg_type.type}` to `{self.directive!s}` directive"
+
+    @property
+    def path(self):
+        return self.directive.name
 
 
 class DirectiveArgumentRemoved(Change):
@@ -579,9 +665,11 @@ class DirectiveArgumentRemoved(Change):
         self.arg_name = arg_name
         self.arg_type = arg_type
 
+    @property
     def message(self):
         return f"Removed argument `{self.arg_name}: {self.arg_type.type}` from `{self.directive!s}` directive"
 
+    @property
     def path(self):
         return self.directive.name
 
@@ -593,12 +681,14 @@ class DirectiveArgumentTypeChanged(Change):
         self.old_type = old_type
         self.new_type = new_type
 
+    @property
     def message(self):
         return (
             f"Type for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
             f"from `{self.old_type}` to `{self.new_type}`"
         )
 
+    @property
     def path(self):
         return self.directive.name
 
@@ -610,12 +700,14 @@ class DirectiveArgumentDefaultChanged(Change):
         self.old_default = old_default
         self.new_default = new_default
 
+    @property
     def message(self):
         return (
             f"Default value for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
             f"from `{self.old_default!r}` to `{self.new_default!r}`"
         )
 
+    @property
     def path(self):
         return self.directive.name
 
@@ -627,11 +719,13 @@ class DirectiveArgumentDescriptionChanged(Change):
         self.old_desc = old_desc
         self.new_desc = new_desc
 
+    @property
     def message(self):
         return (
             f"Description for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
             f"from `{self.old_desc}` to `{self.new_desc}`"
         )
 
+    @property
     def path(self):
         return self.directive.name
