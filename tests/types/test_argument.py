@@ -18,7 +18,7 @@ def test_argument_type_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     assert diff[0].message() == (
-        "Type for argument 'arg1' on field 'Math.sum' changed from 'Int' to 'Float'"
+        "Type for argument `arg1` on field `Math.sum` changed from `Int` to `Float`"
     )
 
 
@@ -37,12 +37,12 @@ def test_argument_added_removed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     assert diff[0].message() == (
-        "Argument 'power: Int' added to 'Field.exp'"
+        "Argument `power: Int` added to `Field.exp`"
     )
 
     diff = SchemaComparator(b, a).compare()
     assert diff[0].message() == (
-        "Removed argument 'power' from 'Field.exp'"
+        "Removed argument `power` from `Field.exp`"
     )
 
 
@@ -69,8 +69,8 @@ def test_argument_description_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     assert diff[0].message() == (
-        "Description for Input field 'Precision.decimals' "
-        "changed from 'result precision' to 'new desc'"
+        "Description for Input field `Precision.decimals` "
+        "changed from `result precision` to `new desc`"
     )
 
 
@@ -97,8 +97,8 @@ def test_argument_description_of_inner_type_changed():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message() == (
-        "Description for argument 'a' on field 'TypeWithArgs.field' "
-        "changed from 'abc' to 'zzz wxYZ'"
+        "Description for argument `a` on field `TypeWithArgs.field` "
+        "changed from `abc` to `zzz wxYZ`"
     )
 
 
@@ -117,5 +117,5 @@ def test_argument_default_value_changed():
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
     assert diff[0].message() == (
-        "Default value for argument 'base' on field 'Field.exp' changed from 0 to 1"
+        "Default value for argument `base` on field `Field.exp` changed from `0` to `1`"
     )

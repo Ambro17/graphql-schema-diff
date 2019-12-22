@@ -43,7 +43,7 @@ def test_schema_added_type():
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
     expected_diff = [
-        "Type 'AddedType' was added",  # Type Int was also added but its ignored because its a primitive.
+        "Type `AddedType` was added",  # Type Int was also added but its ignored because its a primitive.
     ]
     assert [x.message() for x in diff] == expected_diff
 
@@ -74,7 +74,7 @@ def test_schema_removed_type():
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
     expected_diff = [
-        "Type 'ToBeRemovedType' was removed",  # Type Int was also removed but it is ignored because it's a primitive.
+        "Type `ToBeRemovedType` was removed",  # Type Int was also removed but it is ignored because it's a primitive.
     ]
     assert [x.message() for x in diff] == expected_diff
 
@@ -100,7 +100,7 @@ def test_schema_query_fields_type_has_changes():
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
     expected_diff = [
-        "Field 'Query.field' changed type from 'String!' to 'Int!'"
+        "Field `Query.field` changed type from `String!` to `Int!`"
     ]
     assert [x.message() for x in diff] == expected_diff
 

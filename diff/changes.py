@@ -40,7 +40,7 @@ class RemovedType(Change):
         self.type = type
 
     def message(self):
-        return f"Type '{self.type.name}' was removed"
+        return f"Type `{self.type.name}` was removed"
 
     def path(self):
         return f'{self.type.name}'
@@ -51,7 +51,7 @@ class AddedType(Change):
         self.type = added_type
 
     def message(self):
-        return f"Type '{self.type.name}' was added"
+        return f"Type `{self.type.name}` was added"
 
     def path(self):
         return f'{self.type.type}'
@@ -67,8 +67,8 @@ class DescriptionChanged(Change):
 
     def message(self):
         return (
-            f"Field '{self.type.name}.{self.field_name}' description changed"
-            f" from '{self.old_field.description}' to '{self.new_field.description}'"
+            f"Field `{self.type.name}.{self.field_name}` description changed"
+            f" from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
     def path(self):
@@ -86,8 +86,8 @@ class DeprecationReasonChanged(Change):
 
     def message(self):
         return (
-            f"Deprecation reason on field '{self.type}.{self.field_name}' changed "
-            f"from '{self.old_field.deprecation_reason}' to '{self.new_field.deprecation_reason}'"
+            f"Deprecation reason on field `{self.type}.{self.field_name}` changed "
+            f"from `{self.old_field.deprecation_reason}` to `{self.new_field.deprecation_reason}`"
         )
 
     def path(self):
@@ -105,8 +105,8 @@ class FieldTypeChanged(Change):
 
     def message(self):
         return (
-            f"Field '{self.type}.{self.field_name}' changed type "
-            f"from '{self.old_field.type}' to '{self.new_field.type}'"
+            f"Field `{self.type}.{self.field_name}` changed type "
+            f"from `{self.old_field.type}` to `{self.new_field.type}`"
         )
 
     def path(self):
@@ -127,7 +127,7 @@ class EnumValueAdded(Change):
         self.value = value
 
     def message(self):
-        return f"Enum value '{self.value}' was added to '{self.enum.name}' enum"
+        return f"Enum value `{self.value}` was added to `{self.enum.name}` enum"
 
     def path(self):
         return f"{self.enum.name}.{self.value.name}"
@@ -140,7 +140,7 @@ class EnumValueRemoved(Change):
         self.value = value
 
     def message(self):
-        return f"Enum value '{self.value}' was removed from '{self.enum.name}' enum"
+        return f"Enum value `{self.value}` was removed from `{self.enum.name}` enum"
 
     def path(self):
         return f"{self.enum.name}.{self.value.name}"
@@ -156,11 +156,11 @@ class EnumValueDescriptionChanged(Change):
 
     def message(self):
         if not self.old_value.description:
-            msg = f"Description for enum value '{self.name}' set to '{self.new_value.description}'"
+            msg = f"Description for enum value `{self.name}` set to `{self.new_value.description}`"
         else:
             msg = (
-                f"Description for enum value '{self.name}' changed"
-                f" from '{self.old_value.description}' to '{self.new_value.description}'"
+                f"Description for enum value `{self.name}` changed"
+                f" from `{self.old_value.description}` to `{self.new_value.description}`"
             )
         return msg
 
@@ -179,13 +179,13 @@ class EnumValueDeprecationReasonChanged(Change):
     def message(self):
         if not self.old_value.deprecation_reason:
             msg = (
-                f"Enum value '{self.name}' was deprecated "
-                f"with reason '{self.new_value.deprecation_reason}'"
+                f"Enum value `{self.name}` was deprecated "
+                f"with reason `{self.new_value.deprecation_reason}`"
             )
         else:
             msg = (
-                f"Deprecation reason for enum value '{self.name}' changed "
-                f"from '{self.old_value.deprecation_reason}' to '{self.new_value.deprecation_reason}'"
+                f"Deprecation reason for enum value `{self.name}` changed "
+                f"from `{self.old_value.deprecation_reason}` to `{self.new_value.deprecation_reason}`"
             )
         return msg
 
@@ -202,7 +202,7 @@ class UnionMemberAdded(Change):
         self.value = value
 
     def message(self):
-        return f"Union member '{self.value}' was added to '{self.union.name}' Union type"
+        return f"Union member `{self.value}` was added to `{self.union.name}` Union type"
 
     def path(self):
         return f"{self.union.name}.{self.value.name}"
@@ -215,7 +215,7 @@ class UnionMemberRemoved(Change):
         self.value = value
 
     def message(self):
-        return f"Union member '{self.value}' was removed from '{self.union.name}' Union type"
+        return f"Union member `{self.value}` was removed from `{self.union.name}` Union type"
 
     def path(self):
         return f"{self.union.name}.{self.value.name}"
@@ -232,7 +232,7 @@ class InputObjectTypeAdded(Change):
         self.field = field
 
     def message(self):
-        return f"Input Field '{self.field_name}: {self.field.type}' was added to input type '{self.input_object}'"
+        return f"Input Field `{self.field_name}: {self.field.type}` was added to input type `{self.input_object}`"
 
     def path(self):
         return f"{self.input_object.name}.{self.field_name}"
@@ -245,7 +245,7 @@ class InputObjectTypeRemoved(Change):
         self.value = value
 
     def message(self):
-        return f"Input Field '{self.value}' removed from input type '{self.input_object}'"
+        return f"Input Field `{self.value}` removed from input type `{self.input_object}`"
 
     def path(self):
         return f"{self.input_object.name}.{self.value.name}"
@@ -260,8 +260,8 @@ class InputObjectTypeDescriptionChanged(Change):
 
     def message(self):
         return (
-            f"Description for Input field '{self.input.name}.{self.name}' "
-            f"changed from '{self.old_field.description}' to '{self.new_field.description}'"
+            f"Description for Input field `{self.input.name}.{self.name}` "
+            f"changed from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
     def path(self):
@@ -277,7 +277,7 @@ class InputTypeDefaultChanged(Change):
 
     def message(self):
         return (
-            f"Default value for Input field '{self.input.name}.{self.name}' "
+            f"Default value for Input field `{self.input.name}.{self.name}` "
             f"changed from {self.old_field.default_value!r} to {self.new_field.default_value!r}"
         )
 
@@ -294,8 +294,8 @@ class InputObjectTypeTypeChanged(Change):
 
     def message(self):
         return (
-            f"'{self.input.name}.{self.name}' type changed from "
-            f"'{self.old_field.type}' to '{self.new_field.type}'"
+            f"`{self.input.name}.{self.name}` type changed from "
+            f"`{self.old_field.type}` to `{self.new_field.type}`"
         )
 
     def path(self):
@@ -320,24 +320,24 @@ class AbstractArgumentChange(Change):
 class ArgumentDescriptionChanged(AbstractArgumentChange):
     def message(self):
         return (
-            f"Description for argument {self.arg_name!r} on field '{self.parent}.{self.field_name}' "
-            f"changed from {self.old_arg.description!r} to {self.new_arg.description!r}"
+            f"Description for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
+            f"changed from `{self.old_arg.description}` to `{self.new_arg.description}`"
         )
 
 
 class ArgumentDefaultValueChanged(AbstractArgumentChange):
     def message(self):
         return (
-            f"Default value for argument {self.arg_name!r} on field '{self.parent}.{self.field_name}' "
-            f"changed from {self.old_arg.default_value!r} to {self.new_arg.default_value!r}"
+            f"Default value for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
+            f"changed from `{self.old_arg.default_value!r}` to `{self.new_arg.default_value}`"
         )
 
 
 class ArgumentTypeChanged(AbstractArgumentChange):
     def message(self):
         return (
-            f"Type for argument {self.arg_name!r} on field '{self.parent}.{self.field_name}' "
-            f"changed from '{self.old_arg.type}' to '{self.new_arg.type}'"
+            f"Type for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
+            f"changed from `{self.old_arg.type}` to `{self.new_arg.type}`"
         )
 
 
@@ -350,8 +350,8 @@ class FieldArgumentAdded(Change):
 
     def message(self):
         return (
-            f"Argument '{self.argument_name}: {self.arg_type.type}' "
-            f"added to '{self.parent.name}.{self.field_name}'"
+            f"Argument `{self.argument_name}: {self.arg_type.type}` "
+            f"added to `{self.parent.name}.{self.field_name}`"
         )
 
 
@@ -363,7 +363,7 @@ class FieldArgumentRemoved(Change):
 
     def message(self):
         return (
-            f"Removed argument '{self.argument_name}' from '{self.parent.name}.{self.field_name}'"
+            f"Removed argument `{self.argument_name}` from `{self.parent.name}.{self.field_name}`"
         )
 
 
@@ -377,7 +377,7 @@ class InterfaceFieldAdded(Change):
         self.field = field
 
     def message(self):
-        return f"Field '{self.field_name}' of type '{self.field.type}' was added to interface '{self.interface}'"
+        return f"Field `{self.field_name}` of type `{self.field.type}` was added to interface `{self.interface}`"
 
     def path(self):
         return f"{self.interface.name}.{self.field_name}"
@@ -389,7 +389,7 @@ class InterfaceFieldRemoved(Change):
         self.field_name = field_name
 
     def message(self):
-        return f"Field '{self.field_name}' was removed from interface '{self.interface}'"
+        return f"Field `{self.field_name}` was removed from interface `{self.interface}`"
 
     def path(self):
         return f"{self.interface.name}.{self.field_name}"
@@ -412,8 +412,8 @@ class AbstractInterfanceChange(Change):
 class InterfaceFieldTypeChanged(AbstractInterfanceChange):
     def message(self):
         return (
-            f"Field '{self.interface.name}.{self.field_name}' type "
-            f"changed from '{self.old_field.type}' to '{self.new_field.type}'"
+            f"Field `{self.interface.name}.{self.field_name}` type "
+            f"changed from `{self.old_field.type}` to `{self.new_field.type}`"
         )
 
 
@@ -423,7 +423,7 @@ class NewInterfaceImplemented(Change):
         self.field = field
 
     def message(self):
-        return f"{self.field.name!r} implements new interface {self.interface.name!r}"
+        return f"`{self.field.name}` implements new interface `{self.interface.name}`"
 
 
 class DroppedInterfaceImplementation(Change):
@@ -432,22 +432,22 @@ class DroppedInterfaceImplementation(Change):
         self.field = field
 
     def message(self):
-        return f"{self.field.name!r} no longer implements interface {self.interface.name!r}"
+        return f"`{self.field.name}` no longer implements interface `{self.interface.name}`"
 
 
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
     def message(self):
         return (
-            f"'{self.interface.name}.{self.field_name}' description changed "
-            f"from '{self.old_field.description}' to '{self.new_field.description}'"
+            f"`{self.interface.name}.{self.field_name}` description changed "
+            f"from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
 
 class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
     def message(self):
         return (
-            f"'{self.interface.name}.{self.field_name}' deprecation reason changed "
-            f"from {self.old_field.deprecation_reason!r} to {self.new_field.deprecation_reason!r}"
+            f"`{self.interface.name}.{self.field_name}` deprecation reason changed "
+            f"from `{self.old_field.deprecation_reason}` to `{self.new_field.deprecation_reason}`"
         )
 
 
@@ -460,7 +460,7 @@ class ObjectTypeFieldAdded(Change):
         self.field_name = field_name
 
     def message(self):
-        return f"Field {self.field_name!r} was added to object type {self.parent.name!r}"
+        return f"Field `{self.field_name}` was added to object type `{self.parent.name}`"
 
     def path(self):
         return f"{self.parent.name}.{self.field_name}"
@@ -472,7 +472,7 @@ class ObjectTypeFieldRemoved(Change):
         self.field_name = field_name
 
     def message(self):
-        return f"Field {self.field_name!r} was removed from object type {self.parent.name!r}"
+        return f"Field `{self.field_name}` was removed from object type `{self.parent.name}`"
 
     def path(self):
         return f"{self.parent.name}.{self.field_name}"
