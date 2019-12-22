@@ -146,7 +146,7 @@ def test_input_field_default_value_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Default value for Input field `Params.love` changed from 0 to 100"
+    assert diff[0].message() == "Default value for input field `Params.love` changed from `0` to `100`"
 
 
 def test_input_field_description_changed():

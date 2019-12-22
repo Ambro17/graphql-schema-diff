@@ -1,0 +1,12 @@
+schema {
+    query: Query
+}
+
+type Query {
+    a: Int!
+    b: OtherType
+}
+
+type OtherType {
+    c: Boolean!
+}

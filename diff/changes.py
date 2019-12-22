@@ -306,8 +306,8 @@ class InputTypeDefaultChanged(Change):
 
     def message(self):
         return (
-            f"Default value for Input field `{self.input.name}.{self.name}` "
-            f"changed from {self.old_field.default_value!r} to {self.new_field.default_value!r}"
+            f"Default value for input field `{self.input.name}.{self.name}` "
+            f"changed from `{self.old_field.default_value!r}` to `{self.new_field.default_value!r}`"
         )
 
     def path(self):
@@ -358,7 +358,7 @@ class ArgumentDefaultValueChanged(AbstractArgumentChange):
     def message(self):
         return (
             f"Default value for argument `{self.arg_name}` on field `{self.parent}.{self.field_name}` "
-            f"changed from `{self.old_arg.default_value!r}` to `{self.new_arg.default_value}`"
+            f"changed from `{self.old_arg.default_value!r}` to `{self.new_arg.default_value!r}`"
         )
 
 
@@ -596,7 +596,7 @@ class DirectiveArgumentTypeChanged(Change):
     def message(self):
         return (
             f"Type for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
-            f"from `{self.old_type!s}` to `{self.new_type!s}`"
+            f"from `{self.old_type}` to `{self.new_type}`"
         )
 
     def path(self):

@@ -6,6 +6,8 @@ from graphql import (
     is_input_object_type,
     is_object_type,
     is_interface_type,
+    build_schema,
+    GraphQLSchema
 )
 from graphql.type.introspection import TypeFieldResolvers
 
@@ -152,16 +154,13 @@ class SchemaComparator:
 class Schema:
     """Represents a GraphQL Schema loaded from a string or file."""
 
-    def __init__(self):
-        pass
+    @classmethod
+    def from_sdl(cls, schema_string: str) -> GraphQLSchema:
+        return build_schema(schema_string)
 
     @classmethod
-    def from_sdl(cls):
-        return cls()
+    def from_file(cls, filepath: str) -> GraphQLSchema:
+        with open(filepath, encoding='utf-8') as f:
+            schema_string = f.read()
 
-    @classmethod
-    def from_file(cls):
-        return cls()
-
-    def __eq__(self, other):
-        return False
+        return cls.from_sdl(schema_string)

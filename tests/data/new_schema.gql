@@ -1,0 +1,64 @@
+schema {
+    query: Query
+}
+input AInput {
+    # changed
+    a: Int = 1
+    c: String!
+}
+# Query Root description changed
+type Query {
+    # This description has been changed
+    a: String!
+    b: Int!
+}
+input BType {
+    a: String!
+}
+type CType implements AnInterface {
+    a(arg: Int): String @deprecated(reason: "cuz")
+    b: Int!
+    d(arg: Int = 10): String
+}
+type DType {
+    b: Int!
+}
+union MyUnion = CType | DType
+interface AnInterface {
+    interfaceField: Int!
+}
+interface AnotherInterface {
+    b: Int
+}
+type WithInterfaces implements AnInterface {
+    a: String!
+}
+type WithArguments {
+    a(
+        # Description for a
+        a: Int
+        b: String!
+    ): String
+    b(arg: Int = 2): String
+}
+enum Options {
+    # Stuff
+    A
+    B
+    D
+    E @deprecated
+    F @deprecated(reason: "New")
+}
+
+# New
+directive @yolo(
+    # someArg does stuff
+    someArg: String!
+
+    anotherArg: String! = "Test"
+) on FIELD | FIELD_DEFINITION
+
+directive @yolo2(
+    # Included when true.
+    someArg: String!
+) on FIELD
