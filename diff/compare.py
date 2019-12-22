@@ -6,7 +6,8 @@ from graphql import (
     is_interface_type,
 )
 
-from diff.changes import AddedType, RemovedType
+from diff.changes import AddedType, RemovedType, RemovedDirective, AddedDirective
+from diff.types.directive import Directive
 from diff.types.enum import EnumDiff
 from diff.types.interface import InterfaceType
 from diff.types.object_type import ObjectType
@@ -40,7 +41,7 @@ class SchemaComparator:
         changes += self.common_type_changes()
 
         # Directive changes
-        # changes += self.directive_changes()
+        changes += self.directive_changes()
 
         return changes
 
@@ -73,6 +74,7 @@ class SchemaComparator:
     def compare_types(old, new):
         changes = []
         if old.description != new.description:
+            # Add test for this
             changes.append((old.description, new.description))
         if type(old) != type(new):
             changes.append((old, new))
@@ -98,31 +100,38 @@ class SchemaComparator:
         return changes
 
     def removed_directives(self):
+        new_directive_names = {x.name for x in self.new_directives}
         return [
-            x
-            for x in self.old_directives
-            if x not in self.new_directives
+            RemovedDirective(directive)
+            for directive in self.old_directives
+            if directive.name not in new_directive_names
         ]
 
     def added_directives(self):
+        old_directive_names = {x.name for x in self.old_directives}
         return [
-            x
-            for x in self.new_directives
-            if x not in self.old_directives
+            AddedDirective(directive, directive.locations)
+            for directive in self.new_directives
+            if directive.name not in old_directive_names
         ]
 
     def common_directives_changes(self):
+        old_directive_names = {x.name for x in self.old_directives}
+        new_directive_names = {x.name for x in self.new_directives}
+        old_directives = {
+            x.name: x
+            for x in self.old_directives
+        }
+        new_directives = {
+            x.name: x
+            for x in self.new_directives
+        }
+
         changes = []
-        directives = (x.name for x in self.old_directives if x.name in self.new_directives)
-        for directive in directives:
-            old_directive = self.old_directives[directive.name]
-            new_directive = self.new_directives[directive.name]
-            changes += self.compare_directives(old_directive, new_directive)
+        for directive_name in old_directive_names & new_directive_names:
+            changes += Directive(old_directives[directive_name], new_directives[directive_name]).diff()
 
         return changes
-
-    def compare_directives(self, x, y):
-        return []
 
     def is_primitive(self, atype):
         return atype in self.primitives

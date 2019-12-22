@@ -451,7 +451,7 @@ class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
         )
 
 
-#  ============== Interfaces ==============
+#  ============== Object Type ==============
 
 
 class ObjectTypeFieldAdded(Change):
@@ -478,3 +478,131 @@ class ObjectTypeFieldRemoved(Change):
         return f"{self.parent.name}.{self.field_name}"
 
 
+#  ============== Directives ==============
+
+
+class AddedDirective(Change):
+    def __init__(self, directive_name, directive_locations):
+        self.directive_name = directive_name
+        self.directive_locations = directive_locations
+
+    def message(self):
+        locations = ' | '.join(loc.name for loc in self.directive_locations)
+        return f"Directive `{self.directive_name}` was added to use on `{locations}`"
+
+    def path(self):
+        return self.directive_name
+
+
+class RemovedDirective(Change):
+    def __init__(self, directive_name):
+        self.directive_name = directive_name
+
+    def message(self):
+        return f"Directive `{self.directive_name}` was removed"
+
+    def path(self):
+        return self.directive_name
+
+
+class DirectiveDescriptionChanged(Change):
+    def __init__(self, old, new):
+        self.old = old
+        self.new = new
+
+    def message(self):
+        return (
+            f"Description for directive `{self.new!s}` "
+            f"changed from `{self.old.description}` to `{self.new.description}`"
+        )
+
+
+class DirectiveLocationsChanged(Change):
+    def __init__(self, directive, old_locations, new_locations):
+        self.directive = directive
+        self.old_locations = old_locations
+        self.new_locations = new_locations
+
+    def message(self):
+        return (
+            f"Directive locations of `{self.directive!s}` changed "
+            f"from `{' | '.join(l.name for l in self.old_locations)}` "
+            f"to `{' | '.join(l.name for l in self.new_locations)}`"
+        )
+
+    def path(self):
+        return self.directive.name
+
+
+class DirectiveArgumentAdded(Change):
+    def __init__(self, directive, arg_name, arg_type):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.arg_type = arg_type
+
+    def message(self):
+        return f"Added argument `{self.arg_name}: {self.arg_type.type}` to `{self.directive!s}` directive"
+
+
+class DirectiveArgumentRemoved(Change):
+    def __init__(self, directive, arg_name, arg_type):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.arg_type = arg_type
+
+    def message(self):
+        return f"Removed argument `{self.arg_name}: {self.arg_type.type}` from `{self.directive!s}` directive"
+
+    def path(self):
+        return self.directive.name
+
+
+class DirectiveArgumentTypeChanged(Change):
+    def __init__(self, directive, arg_name, old_type, new_type):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_type = old_type
+        self.new_type = new_type
+
+    def message(self):
+        return (
+            f"Type for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
+            f"from `{self.old_type!s}` to `{self.new_type!s}`"
+        )
+
+    def path(self):
+        return self.directive.name
+
+
+class DirectiveArgumentDefaultChanged(Change):
+    def __init__(self, directive, arg_name, old_default, new_default):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_default = old_default
+        self.new_default = new_default
+
+    def message(self):
+        return (
+            f"Default value for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
+            f"from `{self.old_default!r}` to `{self.new_default!r}`"
+        )
+
+    def path(self):
+        return self.directive.name
+
+
+class DirectiveArgumentDescriptionChanged(Change):
+    def __init__(self, directive, arg_name, old_desc, new_desc):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_desc = old_desc
+        self.new_desc = new_desc
+
+    def message(self):
+        return (
+            f"Description for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
+            f"from `{self.old_desc}` to `{self.new_desc}`"
+        )
+
+    def path(self):
+        return self.directive.name
