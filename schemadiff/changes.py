@@ -91,7 +91,7 @@ class TypeKindChanged(Change):
 
     @property
     def path(self):
-        return self.type
+        return f"{self.type}"
 
 
 class DescriptionChanged(Change):
@@ -254,7 +254,7 @@ class UnionMemberAdded(Change):
 
     @property
     def path(self):
-        return f"{self.union.name}.{self.value.name}"
+        return f"{self.union.name}"
 
 
 class UnionMemberRemoved(Change):
@@ -269,7 +269,7 @@ class UnionMemberRemoved(Change):
 
     @property
     def path(self):
-        return f"{self.union.name}.{self.value.name}"
+        return f"{self.union.name}"
 
 
 #  ============== Input Objects ==============

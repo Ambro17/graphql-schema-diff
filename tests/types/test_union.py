@@ -46,8 +46,9 @@ def test_add_type_to_union():
     diff = SchemaComparator(two_types, three_types).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Union member `Unknown` was added to `Outcome` Union type"
+    assert diff[0].path == 'Outcome'
 
     diff = SchemaComparator(three_types, two_types).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Union member `Unknown` was removed from `Outcome` Union type"
-
+    assert diff[0].path == 'Outcome'

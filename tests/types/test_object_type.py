@@ -18,10 +18,12 @@ def test_object_type_added_field():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Field `b` was added to object type `MyType`"
+    assert diff[0].path == 'MyType.b'
 
     diff = SchemaComparator(b, a).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Field `b` was removed from object type `MyType`"
+    assert diff[0].path == 'MyType.b'
 
 
 def test_object_type_description_changed():
@@ -40,3 +42,21 @@ def test_object_type_description_changed():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Description for type `MyType` changed from `docstring` to `my new docstring`"
+    assert diff[0].path == 'MyType'
+
+
+def test_type_kind_change():
+    atype = schema('''
+    type MyType{
+        a: Int
+    }
+    ''')
+    input_type = schema('''
+    input MyType{
+        a: Int
+    }
+    ''')
+    diff = SchemaComparator(atype, input_type).compare()
+    assert diff and len(diff) == 1
+    assert diff[0].message == "`MyType` kind changed from `OBJECT` to `INPUT OBJECT`"
+    assert diff[0].path == 'MyType'
