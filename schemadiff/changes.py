@@ -21,7 +21,7 @@ class Change(ABC):
         return self.criticality.value == Criticality.Dangerous
 
     @property
-    def nonbreaking(self):
+    def safe(self):
         return self.criticality.value == Criticality.NonBreaking
 
     @property
