@@ -40,11 +40,13 @@ def test_argument_added_removed():
     assert diff[0].message == (
         "Argument `power: Int` added to `Field.exp`"
     )
+    assert diff[0].path == 'Field.exp'
 
     diff = SchemaComparator(b, a).compare()
     assert diff[0].message == (
         "Removed argument `power` from `Field.exp`"
     )
+    assert diff[0].path == 'Field.exp'
 
 
 def test_argument_description_changed():
@@ -73,6 +75,7 @@ def test_argument_description_changed():
         "Description for Input field `Precision.decimals` "
         "changed from `result precision` to `new desc`"
     )
+    assert diff[0].path == 'Precision.decimals'
 
 
 def test_argument_description_of_inner_type_changed():
@@ -101,6 +104,7 @@ def test_argument_description_of_inner_type_changed():
         "Description for argument `a` on field `TypeWithArgs.field` "
         "changed from `abc` to `zzz wxYZ`"
     )
+    assert diff[0].path == 'TypeWithArgs.field'
 
 
 def test_argument_default_value_changed():
@@ -120,3 +124,4 @@ def test_argument_default_value_changed():
     assert diff[0].message == (
         "Default value for argument `base` on field `Field.exp` changed from `0` to `1`"
     )
+    assert diff[0].path == 'Field.exp'

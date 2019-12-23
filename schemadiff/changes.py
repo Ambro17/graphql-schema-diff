@@ -526,6 +526,7 @@ class DroppedInterfaceImplementation(Change):
     def path(self):
         return self.type
 
+
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
 
     @property
@@ -580,35 +581,34 @@ class ObjectTypeFieldRemoved(Change):
 #  ============== Directives ==============
 
 
-class AddedDirective(Change):
-    def __init__(self, directive_name, directive_locations):
-        self.directive_name = directive_name
+class DirectiveChange(Change):
+
+    @property
+    def path(self):
+        return f"{self.directive}"
+
+
+class AddedDirective(DirectiveChange):
+    def __init__(self, directive, directive_locations):
+        self.directive = directive
         self.directive_locations = directive_locations
 
     @property
     def message(self):
         locations = ' | '.join(loc.name for loc in self.directive_locations)
-        return f"Directive `{self.directive_name}` was added to use on `{locations}`"
-
-    @property
-    def path(self):
-        return self.directive_name
+        return f"Directive `{self.directive}` was added to use on `{locations}`"
 
 
-class RemovedDirective(Change):
-    def __init__(self, directive_name):
-        self.directive_name = directive_name
+class RemovedDirective(DirectiveChange):
+    def __init__(self, directive):
+        self.directive = directive
 
     @property
     def message(self):
-        return f"Directive `{self.directive_name}` was removed"
-
-    @property
-    def path(self):
-        return self.directive_name
+        return f"Directive `{self.directive}` was removed"
 
 
-class DirectiveDescriptionChanged(Change):
+class DirectiveDescriptionChanged(DirectiveChange):
     def __init__(self, old, new):
         self.old = old
         self.new = new
@@ -622,10 +622,10 @@ class DirectiveDescriptionChanged(Change):
 
     @property
     def path(self):
-        return f"{self.new!s}"
+        return f"{self.new}"
 
 
-class DirectiveLocationsChanged(Change):
+class DirectiveLocationsChanged(DirectiveChange):
     def __init__(self, directive, old_locations, new_locations):
         self.directive = directive
         self.old_locations = old_locations
@@ -639,12 +639,8 @@ class DirectiveLocationsChanged(Change):
             f"to `{' | '.join(l.name for l in self.new_locations)}`"
         )
 
-    @property
-    def path(self):
-        return self.directive.name
 
-
-class DirectiveArgumentAdded(Change):
+class DirectiveArgumentAdded(DirectiveChange):
     def __init__(self, directive, arg_name, arg_type):
         self.directive = directive
         self.arg_name = arg_name
@@ -654,12 +650,8 @@ class DirectiveArgumentAdded(Change):
     def message(self):
         return f"Added argument `{self.arg_name}: {self.arg_type.type}` to `{self.directive!s}` directive"
 
-    @property
-    def path(self):
-        return self.directive.name
 
-
-class DirectiveArgumentRemoved(Change):
+class DirectiveArgumentRemoved(DirectiveChange):
     def __init__(self, directive, arg_name, arg_type):
         self.directive = directive
         self.arg_name = arg_name
@@ -669,12 +661,8 @@ class DirectiveArgumentRemoved(Change):
     def message(self):
         return f"Removed argument `{self.arg_name}: {self.arg_type.type}` from `{self.directive!s}` directive"
 
-    @property
-    def path(self):
-        return self.directive.name
 
-
-class DirectiveArgumentTypeChanged(Change):
+class DirectiveArgumentTypeChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_type, new_type):
         self.directive = directive
         self.arg_name = arg_name
@@ -688,12 +676,8 @@ class DirectiveArgumentTypeChanged(Change):
             f"from `{self.old_type}` to `{self.new_type}`"
         )
 
-    @property
-    def path(self):
-        return self.directive.name
 
-
-class DirectiveArgumentDefaultChanged(Change):
+class DirectiveArgumentDefaultChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_default, new_default):
         self.directive = directive
         self.arg_name = arg_name
@@ -707,12 +691,8 @@ class DirectiveArgumentDefaultChanged(Change):
             f"from `{self.old_default!r}` to `{self.new_default!r}`"
         )
 
-    @property
-    def path(self):
-        return self.directive.name
 
-
-class DirectiveArgumentDescriptionChanged(Change):
+class DirectiveArgumentDescriptionChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_desc, new_desc):
         self.directive = directive
         self.arg_name = arg_name
@@ -725,7 +705,3 @@ class DirectiveArgumentDescriptionChanged(Change):
             f"Description for argument `{self.arg_name}` on `{self.directive!s}` directive changed "
             f"from `{self.old_desc}` to `{self.new_desc}`"
         )
-
-    @property
-    def path(self):
-        return self.directive.name
