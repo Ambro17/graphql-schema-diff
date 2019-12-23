@@ -171,7 +171,7 @@ class EnumValueAdded(Change):
 
     @property
     def path(self):
-        return f"{self.enum.name}.{self.value.name}"
+        return f"{self.enum.name}.{self.value}"
 
 
 class EnumValueRemoved(Change):
@@ -186,7 +186,7 @@ class EnumValueRemoved(Change):
 
     @property
     def path(self):
-        return f"{self.enum.name}.{self.value.name}"
+        return f"{self.enum.name}.{self.value}"
 
 
 class EnumValueDescriptionChanged(Change):
