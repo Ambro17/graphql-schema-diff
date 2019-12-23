@@ -36,6 +36,9 @@ class Change(ABC):
 
 
 class RemovedType(Change):
+
+    criticality = Criticality.Breaking
+
     def __init__(self, type):
         self.type = type
 
@@ -49,6 +52,9 @@ class RemovedType(Change):
 
 
 class AddedType(Change):
+
+    criticality = Criticality.NonBreaking
+
     def __init__(self, added_type):
         self.type = added_type
 
@@ -62,6 +68,9 @@ class AddedType(Change):
 
 
 class TypeDescriptionChanged(Change):
+
+    criticality = Criticality.NonBreaking
+
     def __init__(self, type_name, old_desc, new_desc):
         self.type = type_name
         self.old_desc = old_desc
@@ -95,6 +104,9 @@ class TypeKindChanged(Change):
 
 
 class DescriptionChanged(Change):
+
+    criticality = Criticality.NonBreaking
+
     def __init__(self, new_type, name, old_field, new_field):
         self.criticality = Criticality.NonBreaking
         self.type = new_type
@@ -116,8 +128,9 @@ class DescriptionChanged(Change):
 
 class DeprecationReasonChanged(Change):
 
+    criticality = Criticality.NonBreaking
+
     def __init__(self, type, name, old_field, new_field):
-        self.criticality = Criticality.NonBreaking
         self.type = type
         self.field_name = name
         self.old_field = old_field
@@ -190,6 +203,9 @@ class EnumValueRemoved(Change):
 
 
 class EnumValueDescriptionChanged(Change):
+
+    criticality = Criticality.NonBreaking
+
     def __init__(self, enum, name, old_value, new_value):
         self.criticality = Criticality.NonBreaking
         self.enum = enum
@@ -214,6 +230,9 @@ class EnumValueDescriptionChanged(Change):
 
 
 class EnumValueDeprecationReasonChanged(Change):
+
+    criticality = Criticality.NonBreaking
+
     def __init__(self, enum, name, old_value, new_value):
         self.criticality = Criticality.NonBreaking
         self.enum = enum
@@ -307,6 +326,8 @@ class InputObjectTypeRemoved(Change):
 
 
 class InputObjectTypeDescriptionChanged(Change):
+    criticality = Criticality.NonBreaking
+
     def __init__(self, input, name, new_field, old_field):
         self.input = input
         self.name = name
@@ -380,6 +401,7 @@ class AbstractArgumentChange(Change):
 
 
 class ArgumentDescriptionChanged(AbstractArgumentChange):
+    criticality = Criticality.NonBreaking
 
     @property
     def message(self):
@@ -528,6 +550,7 @@ class DroppedInterfaceImplementation(Change):
 
 
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
+    criticality = Criticality.NonBreaking
 
     @property
     def message(self):
@@ -538,6 +561,7 @@ class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
 
 
 class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
+    criticality = Criticality.NonBreaking
 
     @property
     def message(self):
@@ -589,6 +613,7 @@ class DirectiveChange(Change):
 
 
 class AddedDirective(DirectiveChange):
+
     def __init__(self, directive, directive_locations):
         self.directive = directive
         self.directive_locations = directive_locations
@@ -600,6 +625,7 @@ class AddedDirective(DirectiveChange):
 
 
 class RemovedDirective(DirectiveChange):
+
     def __init__(self, directive):
         self.directive = directive
 
@@ -609,6 +635,8 @@ class RemovedDirective(DirectiveChange):
 
 
 class DirectiveDescriptionChanged(DirectiveChange):
+    criticality = Criticality.NonBreaking
+
     def __init__(self, old, new):
         self.old = old
         self.new = new
@@ -693,6 +721,8 @@ class DirectiveArgumentDefaultChanged(DirectiveChange):
 
 
 class DirectiveArgumentDescriptionChanged(DirectiveChange):
+    criticality = Criticality.NonBreaking
+
     def __init__(self, directive, arg_name, old_desc, new_desc):
         self.directive = directive
         self.arg_name = arg_name
