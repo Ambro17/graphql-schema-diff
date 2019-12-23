@@ -38,9 +38,11 @@ def test_interface_field_added_and_removed():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Field `favorite_number` of type `Float` was added to interface `Person`"
+    assert diff[0].path == 'Person.favorite_number'
 
     diff = SchemaComparator(b, a).compare()
     assert diff[0].message == "Field `favorite_number` was removed from interface `Person`"
+    assert diff[0].path == 'Person.favorite_number'
 
 
 def test_interface_field_type_changed():
@@ -57,6 +59,7 @@ def test_interface_field_type_changed():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "Field `Person.age` type changed from `Int` to `Float!`"
+    assert diff[0].path == 'Person.age'
 
 
 def test_interface_field_description_changed():
@@ -75,6 +78,7 @@ def test_interface_field_description_changed():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "`Person.age` description changed from `desc` to `other desc`"
+    assert diff[0].path == 'Person.age'
 
 
 def test_interface_field_deprecation_reason_changed():
@@ -91,6 +95,7 @@ def test_interface_field_deprecation_reason_changed():
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
     assert diff[0].message == "`Person.age` deprecation reason changed from `No longer supported` to `my reason`"
+    assert diff[0].path == 'Person.age'
 
 
 def test_type_implements_new_interface():
@@ -121,8 +126,10 @@ def test_type_implements_new_interface():
         "Type `InterfaceB` was added",
         "`MyType` implements new interface `InterfaceB`"
     }
+    expected_paths = {'InterfaceB', 'MyType', 'MyType.b'}
     for change in diff:
         assert change.message in expected_diff
+        assert change.path in expected_paths
 
     diff = SchemaComparator(b, a).compare()
     assert diff and len(diff) == 3
@@ -131,5 +138,7 @@ def test_type_implements_new_interface():
         "Type `InterfaceB` was removed",
         "`MyType` no longer implements interface `InterfaceB`"
     }
+    expected_paths = {'InterfaceB', 'MyType', 'MyType.b'}
     for change in diff:
         assert change.message in expected_diff
+        assert change.path in expected_paths

@@ -58,7 +58,7 @@ class AddedType(Change):
 
     @property
     def path(self):
-        return f'{self.type.type}'
+        return f'{self.type.name}'
 
 
 class TypeDescriptionChanged(Change):
@@ -288,7 +288,7 @@ class InputObjectTypeAdded(Change):
 
     @property
     def path(self):
-        return f"{self.input_object.name}.{self.field_name}"
+        return f"{self.input_object}.{self.field_name}"
 
 
 class InputObjectTypeRemoved(Change):
@@ -303,7 +303,7 @@ class InputObjectTypeRemoved(Change):
 
     @property
     def path(self):
-        return f"{self.input_object.name}.{self.value.name}"
+        return f"{self.input_object}.{self.value}"
 
 
 class InputObjectTypeDescriptionChanged(Change):
@@ -510,7 +510,7 @@ class NewInterfaceImplemented(Change):
 
     @property
     def path(self):
-        return self.type
+        return f"{self.type}"
 
 
 class DroppedInterfaceImplementation(Change):
@@ -524,7 +524,7 @@ class DroppedInterfaceImplementation(Change):
 
     @property
     def path(self):
-        return self.type
+        return f"{self.type}"
 
 
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
