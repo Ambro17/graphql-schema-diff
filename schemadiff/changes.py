@@ -111,7 +111,7 @@ class DescriptionChanged(Change):
 
     @property
     def path(self):
-        return f'{self.type.name}.{self.new_field.name}'
+        return f'{self.type}.{self.field_name}'
 
 
 class DeprecationReasonChanged(Change):
@@ -132,7 +132,7 @@ class DeprecationReasonChanged(Change):
 
     @property
     def path(self):
-        return f"{self.type.name}.{self.new_field.name}"
+        return f"{self.type}.{self.field_name}"
 
 
 class FieldTypeChanged(Change):
@@ -153,7 +153,7 @@ class FieldTypeChanged(Change):
 
     @property
     def path(self):
-        return f"{self.type.name}.{self.new_field.name}"
+        return f"{self.type}.{self.field_name}"
 
 
 #  ============== ENUMS ==============
