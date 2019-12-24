@@ -97,7 +97,7 @@ def test_schema_query_fields_type_has_changes():
     """)
     diff = SchemaComparator(old_schema, new_schema).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message == "Field `Query.field` changed type from `String!` to `Int!`"
+    assert diff[0].message == "`Query.field` type changed from `String!` to `Int!`"
 
 
 def test_schema_query_root_changed():

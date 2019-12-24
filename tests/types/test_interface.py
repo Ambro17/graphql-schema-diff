@@ -58,7 +58,7 @@ def test_interface_field_type_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message == "Field `Person.age` type changed from `Int` to `Float!`"
+    assert diff[0].message == "`Person.age` type changed from `Int` to `Float!`"
     assert diff[0].path == 'Person.age'
 
 
@@ -94,7 +94,9 @@ def test_interface_field_deprecation_reason_changed():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert diff and len(diff) == 1
-    assert diff[0].message == "`Person.age` deprecation reason changed from `No longer supported` to `my reason`"
+    assert diff[0].message == (
+        "Deprecation reason on field `Person.age` changed from `No longer supported` to `my reason`"
+    )
     assert diff[0].path == 'Person.age'
 
 

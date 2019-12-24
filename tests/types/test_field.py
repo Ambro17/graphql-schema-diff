@@ -31,7 +31,7 @@ def test_field_type_changed():
     """)
     diff = SchemaComparator(a_schema, changed_schema).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `String!` to `Int`"
+    assert diff[0].message == "`Query.a` type changed from `String!` to `Int`"
     assert diff[0].path == 'Query.a'
 
 
@@ -48,7 +48,7 @@ def test_field_type_change_from_scalar_to_list_of_the_same_type():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `String` to `[String]`"
+    assert diff[0].message == "`Query.a` type changed from `String` to `[String]`"
     assert diff[0].path == 'Query.a'
 
 
@@ -65,12 +65,12 @@ def test_field_nullability_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `Int!` to `Int`"
+    assert diff[0].message == "`Query.a` type changed from `Int!` to `Int`"
     assert diff[0].path == 'Query.a'
 
     diff = SchemaComparator(b, a).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `Int` to `Int!`"
+    assert diff[0].message == "`Query.a` type changed from `Int` to `Int!`"
     assert diff[0].path == 'Query.a'
 
 
@@ -87,7 +87,7 @@ def test_field_type_change_nullability_change_on_lists_of_same_type():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `[Boolean]!` to `[Boolean]`"
+    assert diff[0].message == "`Query.a` type changed from `[Boolean]!` to `[Boolean]`"
     assert diff[0].path == 'Query.a'
 
 
@@ -104,7 +104,7 @@ def test_field_listof_nullability_of_inner_type_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `[Int!]!` to `[Int]!`"
+    assert diff[0].message == "`Query.a` type changed from `[Int!]!` to `[Int]!`"
     assert diff[0].path == 'Query.a'
 
 
@@ -121,7 +121,7 @@ def test_field_listof_nullability_of_inner_and_outer_types_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `[Float!]!` to `[Float]`"
+    assert diff[0].message == "`Query.a` type changed from `[Float!]!` to `[Float]`"
     assert diff[0].path == 'Query.a'
 
 
@@ -138,7 +138,7 @@ def test_field_list_of_inner_type_changed():
     """)
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` changed type from `[Float!]!` to `[String]`"
+    assert diff[0].message == "`Query.a` type changed from `[Float!]!` to `[String]`"
     assert diff[0].path == 'Query.a'
 
 
@@ -157,7 +157,7 @@ def test_description_changed():
     ''')
     diff = SchemaComparator(a, b).compare()
     assert len(diff) == 1
-    assert diff[0].message == "Field `Query.a` description changed from `some desc` to `once upon a time`"
+    assert diff[0].message == "`Query.a` description changed from `some desc` to `once upon a time`"
     assert diff[0].path == 'Query.a'
 
 
