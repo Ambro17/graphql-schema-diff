@@ -1,7 +1,4 @@
-from schemadiff.changes import (
-    InterfaceFieldAdded,
-    InterfaceFieldRemoved,
-)
+from schemadiff.changes.interface import InterfaceFieldAdded, InterfaceFieldRemoved
 from schemadiff.diff.field import Field
 
 

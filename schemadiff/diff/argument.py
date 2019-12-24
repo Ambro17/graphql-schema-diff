@@ -1,4 +1,4 @@
-from schemadiff.changes import (
+from schemadiff.changes.argument import (
     FieldArgumentDescriptionChanged,
     FieldArgumentTypeChanged,
     FieldArgumentDefaultValueChanged,

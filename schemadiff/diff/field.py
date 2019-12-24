@@ -1,9 +1,9 @@
-from schemadiff.changes import (
+from schemadiff.changes.field import (
     FieldDescriptionChanged,
     FieldDeprecationReasonChanged,
     FieldTypeChanged,
     FieldArgumentAdded,
-    FieldArgumentRemoved,
+    FieldArgumentRemoved
 )
 from schemadiff.diff.argument import Argument
 

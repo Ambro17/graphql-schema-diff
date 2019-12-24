@@ -11,11 +11,10 @@ from graphql import (
 )
 from graphql.type.introspection import TypeFieldResolvers
 
-from schemadiff.changes import (
+from schemadiff.changes.directive import RemovedDirective, AddedDirective
+from schemadiff.changes.type import (
     AddedType,
     RemovedType,
-    RemovedDirective,
-    AddedDirective,
     TypeDescriptionChanged,
     TypeKindChanged,
 )
