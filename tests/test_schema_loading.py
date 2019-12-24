@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from graphql import is_schema
+import pytest
+from graphql import is_schema, GraphQLSyntaxError
 
 from schemadiff.graphql_schema import GraphQLSchema
 
@@ -32,3 +33,14 @@ def test_load_from_string():
     schema = GraphQLSchema.from_sdl(schema_string)
     assert is_schema(schema)
     assert len(schema.query_type.fields) == 2
+
+
+def test_load_invalid_schema():
+    with pytest.raises(TypeError, match="Unknown type 'InvalidType'"):
+        schema = GraphQLSchema.from_file(TESTS_DATA / 'invalid_schema.gql')
+
+
+@pytest.mark.parametrize("schema", ["", "{}", "\n{}\n", "[]"])
+def test_load_empty_schema(schema):
+    with pytest.raises(GraphQLSyntaxError):
+        schema = GraphQLSchema.from_sdl(schema)
