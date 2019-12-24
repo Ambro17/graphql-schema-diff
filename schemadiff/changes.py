@@ -1,6 +1,9 @@
 from abc import abstractmethod, ABC
 from enum import Enum
 
+from attr import dataclass
+from graphql import is_wrapping_type, is_non_null_type, is_list_type
+
 
 class Criticality(Enum):
     NonBreaking = 'NON_BREAKING'
@@ -8,21 +11,85 @@ class Criticality(Enum):
     Breaking = 'BREAKING'
 
 
+@dataclass
+class ApiChange:
+    level: Criticality
+    reason: str
+
+    @classmethod
+    def breaking(cls, reason):
+        return cls(level=Criticality.Breaking, reason=reason)
+
+    @classmethod
+    def dangerous(cls, reason):
+        return cls(level=Criticality.Dangerous, reason=reason)
+
+    @classmethod
+    def safe(cls, reason="This change won't break any preexisting query"):
+        return cls(level=Criticality.NonBreaking, reason=reason)
+
+
+def is_safe_type_change(old_type, new_type) -> bool:
+    """Depending on the old an new type, a field type change may be breaking, dangerous or safe
+
+    * If both fields are 'leafs' in the sense they don't wrap an inner type, just compare their type.
+    * If the new type has a non-null constraint, check that it was already non-null and compare against the contained
+      type. If the contraint is new, just compare with old_type
+    * If the old type is a list and the new one too, compare their inner types
+      If the new type has a non-null constraint, compare against the wrapped type
+    """
+    if not is_wrapping_type(old_type) and not is_wrapping_type(new_type):
+        return str(old_type) == str(new_type)
+    if is_non_null_type(new_type):
+        # Grab the inner type it it also was non null.
+        of_type = old_type.of_type if is_non_null_type(old_type) else old_type
+        return is_safe_type_change(of_type, new_type.of_type)
+
+    if is_list_type(old_type):
+        # If both types are lists, compare their inner type.
+        # If the new type has a non-null constraint, compare with its inner type (may be a list or not)
+        return (
+            (
+                    is_list_type(new_type) and is_safe_type_change(old_type.of_type, new_type.of_type)
+            )
+            or
+            (
+                    is_non_null_type(new_type) and is_safe_type_change(old_type, new_type.of_type)
+            )
+        )
+
+    return False
+
+
+def is_safe_change_for_input_value(old_type, new_type):
+    if not is_wrapping_type(old_type) and not is_wrapping_type(new_type):
+        return str(old_type) == str(new_type)
+    if is_list_type(old_type) and is_list_type(new_type):
+        return is_safe_change_for_input_value(old_type.of_type, new_type.of_type)
+
+    if is_non_null_type(old_type):
+        # Grab the inner type it it also was non null.
+        of_type = new_type.of_type if is_non_null_type(new_type) else new_type
+        return is_safe_type_change(old_type.of_type, of_type)
+
+    return False
+
+
 class Change(ABC):
 
-    criticality = Criticality.Breaking
+    criticality: ApiChange
 
     @property
     def breaking(self):
-        return self.criticality.value == Criticality.Breaking
+        return self.criticality.level == Criticality.Breaking
 
     @property
     def dangerous(self):
-        return self.criticality.value == Criticality.Dangerous
+        return self.criticality.level == Criticality.Dangerous
 
     @property
     def safe(self):
-        return self.criticality.value == Criticality.NonBreaking
+        return self.criticality.level == Criticality.NonBreaking
 
     @property
     @abstractmethod
@@ -37,7 +104,10 @@ class Change(ABC):
 
 class RemovedType(Change):
 
-    criticality = Criticality.Breaking
+    criticality = ApiChange.breaking(
+        "Removing a type is a breaking change. "
+        "It is preferable to deprecate and remove all references to this type first."
+    )
 
     def __init__(self, type):
         self.type = type
@@ -53,7 +123,7 @@ class RemovedType(Change):
 
 class AddedType(Change):
 
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, added_type):
         self.type = added_type
@@ -69,7 +139,7 @@ class AddedType(Change):
 
 class TypeDescriptionChanged(Change):
 
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, type_name, old_desc, new_desc):
         self.type = type_name
@@ -89,6 +159,13 @@ class TypeDescriptionChanged(Change):
 
 
 class TypeKindChanged(Change):
+    criticality = ApiChange.breaking(
+        "Changing the kind of a type is a breaking change because "
+        "it can cause existing queries to error. "
+        "For example, turning an object type to a scalar type "
+        "would break queries that define a selection set for this type."
+    )
+
     def __init__(self, type, old_kind, new_kind):
         self.type = type
         self.old_kind = old_kind
@@ -103,9 +180,9 @@ class TypeKindChanged(Change):
         return f"{self.type}"
 
 
-class DescriptionChanged(Change):
+class FieldDescriptionChanged(Change):
 
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, new_type, name, old_field, new_field):
         self.criticality = Criticality.NonBreaking
@@ -117,7 +194,7 @@ class DescriptionChanged(Change):
     @property
     def message(self):
         return (
-            f"Field `{self.type.name}.{self.field_name}` description changed"
+            f"`{self.type.name}.{self.field_name}` description changed"
             f" from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
@@ -126,9 +203,9 @@ class DescriptionChanged(Change):
         return f'{self.type}.{self.field_name}'
 
 
-class DeprecationReasonChanged(Change):
+class FieldDeprecationReasonChanged(Change):
 
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, type, name, old_field, new_field):
         self.type = type
@@ -151,7 +228,9 @@ class DeprecationReasonChanged(Change):
 class FieldTypeChanged(Change):
 
     def __init__(self, type, field_name, old_field, new_field):
-        self.criticality = Criticality.Breaking
+        self.criticality = ApiChange.safe() \
+                           if is_safe_type_change(old_field, new_field)\
+                           else ApiChange.breaking(reason="This type change may break existing queries")
         self.type = type
         self.field_name = field_name
         self.old_field = old_field
@@ -160,7 +239,7 @@ class FieldTypeChanged(Change):
     @property
     def message(self):
         return (
-            f"Field `{self.type}.{self.field_name}` changed type "
+            f"`{self.type}.{self.field_name}` type changed "
             f"from `{self.old_field.type}` to `{self.new_field.type}`"
         )
 
@@ -174,7 +253,10 @@ class FieldTypeChanged(Change):
 
 class EnumValueAdded(Change):
     def __init__(self, enum, value):
-        self.criticality = Criticality.Breaking
+        self.criticality = ApiChange.dangerous(
+            "Adding an enum value may break existing clients that were not "
+            "programming defensively against an added case when querying an enum."
+        )
         self.enum = enum
         self.value = value
 
@@ -189,7 +271,9 @@ class EnumValueAdded(Change):
 
 class EnumValueRemoved(Change):
     def __init__(self, enum, value):
-        self.criticality = Criticality.Breaking
+        self.criticality = ApiChange.breaking(
+            "Removing an enum value will break existing queries that use this enum value"
+        )
         self.enum = enum
         self.value = value
 
@@ -204,10 +288,9 @@ class EnumValueRemoved(Change):
 
 class EnumValueDescriptionChanged(Change):
 
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, enum, name, old_value, new_value):
-        self.criticality = Criticality.NonBreaking
         self.enum = enum
         self.name = name
         self.old_value = old_value
@@ -231,10 +314,9 @@ class EnumValueDescriptionChanged(Change):
 
 class EnumValueDeprecationReasonChanged(Change):
 
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, enum, name, old_value, new_value):
-        self.criticality = Criticality.NonBreaking
         self.enum = enum
         self.name = name
         self.old_value = old_value
@@ -262,8 +344,13 @@ class EnumValueDeprecationReasonChanged(Change):
 #  ============== Union ==============
 
 class UnionMemberAdded(Change):
+
+    criticality = ApiChange.dangerous(
+        "Adding a possible type to Unions may break existing clients "
+        "that were not programming defensively against a new possible type."
+    )
+
     def __init__(self, union, value):
-        self.criticality = Criticality.Breaking
         self.union = union
         self.value = value
 
@@ -277,8 +364,13 @@ class UnionMemberAdded(Change):
 
 
 class UnionMemberRemoved(Change):
+
+    criticality = ApiChange.breaking(
+        'Removing a union member from a union can break '
+        'queries that use this union member in a fragment spread'
+    )
+
     def __init__(self, union, value):
-        self.criticality = Criticality.Breaking
         self.union = union
         self.value = value
 
@@ -294,9 +386,21 @@ class UnionMemberRemoved(Change):
 #  ============== Input Objects ==============
 
 
-class InputObjectTypeAdded(Change):
+class InputFieldAdded(Change):
+
+    BREAKING_MSG = (
+        "Adding a non-null field to an existing input type will cause existing "
+        "queries that use this input type to break because they will "
+        "not provide a value for this new field."
+    )
+
     def __init__(self, input_object, field_name, field):
-        self.criticality = Criticality.Breaking
+        self.criticality = (
+            ApiChange.safe()
+            if is_non_null_type(field.type) is False
+            else ApiChange.breaking(self.BREAKING_MSG)
+        )
+
         self.input_object = input_object
         self.field_name = field_name
         self.field = field
@@ -310,9 +414,13 @@ class InputObjectTypeAdded(Change):
         return f"{self.input_object}.{self.field_name}"
 
 
-class InputObjectTypeRemoved(Change):
+class InputFieldRemoved(Change):
+
+    criticality = ApiChange.breaking(
+        'Removing an input field will break queries that use this input field.'
+    )
+
     def __init__(self, input_object, value):
-        self.criticality = Criticality.Breaking
         self.input_object = input_object
         self.value = value
 
@@ -325,8 +433,9 @@ class InputObjectTypeRemoved(Change):
         return f"{self.input_object}.{self.value}"
 
 
-class InputObjectTypeDescriptionChanged(Change):
-    criticality = Criticality.NonBreaking
+class InputFieldDescriptionChanged(Change):
+
+    criticality = ApiChange.safe()
 
     def __init__(self, input, name, new_field, old_field):
         self.input = input
@@ -346,7 +455,13 @@ class InputObjectTypeDescriptionChanged(Change):
         return f"{self.input.name}.{self.name}"
 
 
-class InputTypeDefaultChanged(Change):
+class InputFieldDefaultChanged(Change):
+
+    criticality = ApiChange.dangerous(
+        "Changing the default value for an argument may change the runtime "
+        "behaviour of a field if it was never provided."
+    )
+
     def __init__(self, input, name, new_field, old_field):
         self.input = input
         self.name = name
@@ -365,8 +480,15 @@ class InputTypeDefaultChanged(Change):
         return f"{self.input.name}.{self.name}"
 
 
-class InputObjectTypeTypeChanged(Change):
+class InputFieldTypeChanged(Change):
     def __init__(self, input, name, new_field, old_field):
+        self.criticality = (
+            ApiChange.safe()
+            if is_safe_change_for_input_value(old_field, new_field)
+            else ApiChange.breaking(
+                "Changing the type of an input field can break existing queries that use this field"
+            )
+        )
         self.input = input
         self.name = name
         self.new_field = new_field
@@ -387,7 +509,7 @@ class InputObjectTypeTypeChanged(Change):
 #  ============== Arguments ==============
 
 
-class AbstractArgumentChange(Change):
+class FieldAbstractArgumentChange(Change):
     def __init__(self, parent_type, field, arg_name, old_arg, new_arg):
         self.parent = parent_type
         self.field_name = field
@@ -400,8 +522,9 @@ class AbstractArgumentChange(Change):
         return f"{self.parent.name}.{self.field_name}"
 
 
-class ArgumentDescriptionChanged(AbstractArgumentChange):
-    criticality = Criticality.NonBreaking
+class FieldArgumentDescriptionChanged(FieldAbstractArgumentChange):
+
+    criticality = ApiChange.safe()
 
     @property
     def message(self):
@@ -411,7 +534,11 @@ class ArgumentDescriptionChanged(AbstractArgumentChange):
         )
 
 
-class ArgumentDefaultValueChanged(AbstractArgumentChange):
+class FieldArgumentDefaultValueChanged(FieldAbstractArgumentChange):
+    criticality = ApiChange.dangerous(
+        "Changing the default value for an argument may change the runtime "
+        "behaviour of a field if it was never provided."
+    )
 
     @property
     def message(self):
@@ -421,7 +548,17 @@ class ArgumentDefaultValueChanged(AbstractArgumentChange):
         )
 
 
-class ArgumentTypeChanged(AbstractArgumentChange):
+class FieldArgumentTypeChanged(FieldAbstractArgumentChange):
+
+    def __init__(self, parent_type, field, arg_name, old_arg, new_arg):
+        super().__init__(parent_type, field, arg_name, old_arg, new_arg)
+        self.criticality = (
+                ApiChange.safe()
+                if is_safe_change_for_input_value(old_arg.type, new_arg.type)
+                else ApiChange.breaking(
+                    "Changing the type of a field's argument can break existing queries that use this argument."
+                )
+        )
 
     @property
     def message(self):
@@ -433,6 +570,10 @@ class ArgumentTypeChanged(AbstractArgumentChange):
 
 class FieldArgumentAdded(Change):
     def __init__(self, parent, field_name, argument_name, arg_type):
+        self.criticality = ApiChange.safe() if not is_non_null_type(arg_type.type) else ApiChange.breaking(
+            "Adding a required argument to an existing field is a breaking "
+            "change because it will break existing uses of this field"
+        )
         self.parent = parent
         self.field_name = field_name
         self.argument_name = argument_name
@@ -452,6 +593,11 @@ class FieldArgumentAdded(Change):
 
 
 class FieldArgumentRemoved(Change):
+
+    criticality = ApiChange.breaking(
+        "Removing a field argument will break queries that use this argument"
+    )
+
     def __init__(self, parent, field_name, argument_name):
         self.parent = parent
         self.field_name = field_name
@@ -471,6 +617,12 @@ class FieldArgumentRemoved(Change):
 
 
 class InterfaceFieldAdded(Change):
+
+    criticality = ApiChange.dangerous(
+        "Adding an interface to an object type may break existing clients " 
+        "that were not programming defensively against a new possible type."
+    )
+
     def __init__(self, interface, field_name, field):
         self.interface = interface
         self.field_name = field_name
@@ -486,6 +638,12 @@ class InterfaceFieldAdded(Change):
 
 
 class InterfaceFieldRemoved(Change):
+
+    criticality = ApiChange.dangerous(
+        "Removing an interface from an object type can break existing "
+        "queries that use this in a fragment spread."
+    )
+
     def __init__(self, interface, field_name):
         self.interface = interface
         self.field_name = field_name
@@ -522,6 +680,12 @@ class InterfaceFieldTypeChanged(AbstractInterfanceChange):
 
 
 class NewInterfaceImplemented(Change):
+
+    criticality = ApiChange.dangerous(
+        "Adding an interface to an object type may break existing clients "
+        "that were not programming defensively against a new possible type."
+    )
+
     def __init__(self, interface, type):
         self.interface = interface
         self.type = type
@@ -536,6 +700,12 @@ class NewInterfaceImplemented(Change):
 
 
 class DroppedInterfaceImplementation(Change):
+
+    criticality = ApiChange.breaking(
+        "Removing an interface from an object type can break existing queries "
+        "that use this in a fragment spread."
+    )
+
     def __init__(self, interface, type):
         self.interface = interface
         self.type = type
@@ -575,6 +745,9 @@ class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
 
 
 class ObjectTypeFieldAdded(Change):
+
+    criticality = ApiChange.safe()
+
     def __init__(self, parent, field_name):
         self.parent = parent
         self.field_name = field_name
@@ -589,9 +762,19 @@ class ObjectTypeFieldAdded(Change):
 
 
 class ObjectTypeFieldRemoved(Change):
-    def __init__(self, parent, field_name):
+
+    def __init__(self, parent, field_name, field):
         self.parent = parent
         self.field_name = field_name
+        self.field = field
+        self.criticality = (
+            ApiChange.dangerous(
+                "Removing deprecated fields without sufficient time for clients "
+                "to update their queries may break their code"
+            ) if field.deprecation_reason else ApiChange.breaking(
+                "Removing a field is a breaking change. It is preferable to deprecate the field before removing it."
+            )
+        )
 
     @property
     def message(self):
@@ -614,6 +797,8 @@ class DirectiveChange(Change):
 
 class AddedDirective(DirectiveChange):
 
+    criticality = ApiChange.safe()
+
     def __init__(self, directive, directive_locations):
         self.directive = directive
         self.directive_locations = directive_locations
@@ -626,6 +811,8 @@ class AddedDirective(DirectiveChange):
 
 class RemovedDirective(DirectiveChange):
 
+    criticality = ApiChange.breaking("Removing a directive may break clients that depend on them.")
+
     def __init__(self, directive):
         self.directive = directive
 
@@ -635,7 +822,7 @@ class RemovedDirective(DirectiveChange):
 
 
 class DirectiveDescriptionChanged(DirectiveChange):
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, old, new):
         self.old = old
@@ -658,6 +845,16 @@ class DirectiveLocationsChanged(DirectiveChange):
         self.directive = directive
         self.old_locations = old_locations
         self.new_locations = new_locations
+        self.criticality = (
+            ApiChange.safe() if self._only_additions() else ApiChange.breaking(
+                "Removing a directive location will break any instance of its usage. "
+                "Be sure no one uses it before removing it"
+            )
+        )
+
+    def _only_additions(self):
+        new_location_names = {l.name for l in self.new_locations}
+        return all(l.name in new_location_names for l in self.old_locations)
 
     @property
     def message(self):
@@ -670,6 +867,9 @@ class DirectiveLocationsChanged(DirectiveChange):
 
 class DirectiveArgumentAdded(DirectiveChange):
     def __init__(self, directive, arg_name, arg_type):
+        self.criticality = ApiChange.safe() if not is_non_null_type(arg_type.type) else ApiChange.breaking(
+            "Adding a non nullable directive argument will break existing usages of the directive"
+        )
         self.directive = directive
         self.arg_name = arg_name
         self.arg_type = arg_type
@@ -680,6 +880,9 @@ class DirectiveArgumentAdded(DirectiveChange):
 
 
 class DirectiveArgumentRemoved(DirectiveChange):
+
+    criticality = ApiChange.breaking("Removing a directive argument will break existing usages of the argument")
+
     def __init__(self, directive, arg_name, arg_type):
         self.directive = directive
         self.arg_name = arg_name
@@ -692,6 +895,11 @@ class DirectiveArgumentRemoved(DirectiveChange):
 
 class DirectiveArgumentTypeChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_type, new_type):
+        self.criticality = (
+            ApiChange.breaking("Changing the argument type is a breaking change")
+            if not is_safe_change_for_input_value(old_type, new_type)
+            else ApiChange.safe("Changing an input field from non-null to null is considered non-breaking")
+        )
         self.directive = directive
         self.arg_name = arg_name
         self.old_type = old_type
@@ -707,6 +915,10 @@ class DirectiveArgumentTypeChanged(DirectiveChange):
 
 class DirectiveArgumentDefaultChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_default, new_default):
+        self.criticality = ApiChange.dangerous(
+            "Changing the default value for an argument may change the runtime "
+            "behaviour of a field if it was never provided."
+          )
         self.directive = directive
         self.arg_name = arg_name
         self.old_default = old_default
@@ -721,7 +933,7 @@ class DirectiveArgumentDefaultChanged(DirectiveChange):
 
 
 class DirectiveArgumentDescriptionChanged(DirectiveChange):
-    criticality = Criticality.NonBreaking
+    criticality = ApiChange.safe()
 
     def __init__(self, directive, arg_name, old_desc, new_desc):
         self.directive = directive
