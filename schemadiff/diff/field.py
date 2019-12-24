@@ -1,6 +1,6 @@
 from schemadiff.changes import (
-    DescriptionChanged,
-    DeprecationReasonChanged,
+    FieldDescriptionChanged,
+    FieldDeprecationReasonChanged,
     FieldTypeChanged,
     FieldArgumentAdded,
     FieldArgumentRemoved,
@@ -22,10 +22,10 @@ class Field:
         changes = []
 
         if self.old_field.description != self.new_field.description:
-            changes.append(DescriptionChanged(self.type, self.field_name, self.old_field, self.new_field))
+            changes.append(FieldDescriptionChanged(self.type, self.field_name, self.old_field, self.new_field))
 
         if self.old_field.deprecation_reason != self.new_field.deprecation_reason:
-            changes.append(DeprecationReasonChanged(self.type, self.field_name, self.old_field, self.new_field))
+            changes.append(FieldDeprecationReasonChanged(self.type, self.field_name, self.old_field, self.new_field))
 
         if str(self.old_field.type) != str(self.new_field.type):
             changes.append(FieldTypeChanged(self.type, self.field_name, self.old_field, self.new_field))

@@ -1,4 +1,8 @@
-from schemadiff.changes import ArgumentDescriptionChanged, ArgumentTypeChanged, ArgumentDefaultValueChanged
+from schemadiff.changes import (
+    FieldArgumentDescriptionChanged,
+    FieldArgumentTypeChanged,
+    FieldArgumentDefaultValueChanged,
+)
 
 
 class Argument:
@@ -13,15 +17,15 @@ class Argument:
     def diff(self):
         changes = []
         if self.old_arg.description != self.new_arg.description:
-            changes.append(ArgumentDescriptionChanged(
+            changes.append(FieldArgumentDescriptionChanged(
                 self.type, self.field_name, self.argument_name, self.old_arg, self.new_arg
             ))
         if self.old_arg.default_value != self.new_arg.default_value:
-            changes.append(ArgumentDefaultValueChanged(
+            changes.append(FieldArgumentDefaultValueChanged(
                 self.type, self.field_name, self.argument_name, self.old_arg, self.new_arg
             ))
         if str(self.old_arg.type) != str(self.new_arg.type):
-            changes.append(ArgumentTypeChanged(
+            changes.append(FieldArgumentTypeChanged(
                 self.type, self.field_name, self.argument_name, self.old_arg, self.new_arg
             ))
 
