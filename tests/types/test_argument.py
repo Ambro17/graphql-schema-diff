@@ -1,6 +1,6 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.diff.schema import Schema
 
 
 def test_argument_type_changed():
@@ -15,7 +15,7 @@ def test_argument_type_changed():
     }
     """)
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Type for argument `arg1` on field `Math.sum` changed from `Int` to `Float`"
@@ -35,14 +35,14 @@ def test_argument_added_removed():
     }
     """)
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Argument `power: Int` added to `Field.exp`"
     )
     assert diff[0].path == 'Field.exp'
 
-    diff = SchemaComparator(b, a).compare()
+    diff = Schema(b, a).diff()
     assert diff[0].message == (
         "Removed argument `power` from `Field.exp`"
     )
@@ -69,7 +69,7 @@ def test_argument_description_changed():
     }
     ''')
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Description for Input field `Precision.decimals` "
@@ -98,7 +98,7 @@ def test_argument_description_of_inner_type_changed():
     }
     ''')
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == (
         "Description for argument `a` on field `TypeWithArgs.field` "
@@ -119,7 +119,7 @@ def test_argument_default_value_changed():
     }
     """)
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Default value for argument `base` on field `Field.exp` changed from `0` to `1`"

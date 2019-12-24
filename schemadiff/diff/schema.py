@@ -28,7 +28,7 @@ from schemadiff.diff.input_object_type import InputObjectType
 type_kind = partial(TypeFieldResolvers.kind, _info={})
 
 
-class SchemaComparator:
+class Schema:
     primitives = {'String', 'Int', 'Float', 'Boolean', 'ID'}
     internal_types = {'__Schema', '__Type', '__TypeKind', '__Field', '__InputValue', '__EnumValue',
                       '__Directive', '__DirectiveLocation'}
@@ -43,14 +43,14 @@ class SchemaComparator:
         self.old_directives = old_schema.directives
         self.new_directives = new_schema.directives
 
-    def compare(self):
+    def diff(self):
         changes = []
 
-        # Removed and added diff
+        # Removed and added types
         changes += self.removed_types()
         changes += self.added_types()
 
-        # Type schemadiff for common diff
+        # Type changes for common types
         changes += self.common_type_changes()
 
         # Directive changes
@@ -148,18 +148,3 @@ class SchemaComparator:
 
     def is_primitive(self, atype):
         return atype in self.primitives
-
-
-class Schema:
-    """Represents a GraphQL Schema loaded from a string or file."""
-
-    @classmethod
-    def from_sdl(cls, schema_string: str) -> GraphQLSchema:
-        return build_schema(schema_string)
-
-    @classmethod
-    def from_file(cls, filepath: str) -> GraphQLSchema:
-        with open(filepath, encoding='utf-8') as f:
-            schema_string = f.read()
-
-        return cls.from_sdl(schema_string)

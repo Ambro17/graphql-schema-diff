@@ -1,6 +1,6 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.diff.schema import Schema
 
 
 def test_enums_added_and_removed():
@@ -23,7 +23,7 @@ def test_enums_added_and_removed():
         D
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 3
     expected_diff = {
         "Enum value `B` was removed from `Letters` enum",
@@ -55,7 +55,7 @@ def test_deprecated_enum_value():
         B @deprecated(reason: "Changed the alphabet")
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == "Enum value `B` was deprecated with reason `Changed the alphabet`"
     assert diff[0].path == 'Letters.B'
@@ -80,7 +80,7 @@ def test_deprecated_reason_changed():
         B @deprecated(reason: "a new reason")
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Deprecation reason for enum value `B` changed from `a reason` to `a new reason`"
@@ -106,7 +106,7 @@ def test_description_added():
         A
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Description for enum value `A` set to `My new description`"
@@ -133,7 +133,7 @@ def test_description_changed():
         A
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
     assert diff[0].message == (
         "Description for enum value `A` changed from `My description` to `My new description`"

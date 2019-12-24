@@ -1,6 +1,6 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.diff.schema import Schema
 
 
 def test_added_removed_directive():
@@ -15,12 +15,12 @@ def test_added_removed_directive():
         a: String
     }
     """)
-    diff = SchemaComparator(no_directive, one_directive).compare()
+    diff = Schema(no_directive, one_directive).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == "Directive `@somedir` was added to use on `FIELD_DEFINITION`"
     assert diff[0].path == '@somedir'
 
-    diff = SchemaComparator(one_directive, no_directive).compare()
+    diff = Schema(one_directive, no_directive).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == "Directive `@somedir` was removed"
     assert diff[0].path == '@somedir'
@@ -31,7 +31,7 @@ def test_added_removed_directive():
         a: String
     }
     """)
-    diff = SchemaComparator(no_directive, two_locations).compare()
+    diff = Schema(no_directive, two_locations).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == "Directive `@somedir` was added to use on `FIELD_DEFINITION | QUERY`"
     assert diff[0].path == '@somedir'
@@ -64,7 +64,7 @@ def test_description_changed():
         a: String
     }
     ''')
-    diff = SchemaComparator(old_desc, new_desc).compare()
+    diff = Schema(old_desc, new_desc).diff()
     assert diff and len(diff) == 3
     expected_diff = {
         "Description for directive `@somedir` changed from `directive desc` to `updated desc`",
@@ -90,7 +90,7 @@ def test_directive_location_added_and_removed():
         a: String
     }
     """)
-    diff = SchemaComparator(one_location, two_locations).compare()
+    diff = Schema(one_location, two_locations).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Directive locations of `@somedir` changed from `FIELD_DEFINITION` to `FIELD_DEFINITION | FIELD`"
@@ -98,7 +98,7 @@ def test_directive_location_added_and_removed():
     assert diff[0].message == expected_message
     assert diff[0].path == '@somedir'
 
-    diff = SchemaComparator(two_locations, one_location).compare()
+    diff = Schema(two_locations, one_location).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Directive locations of `@somedir` changed from `FIELD_DEFINITION | FIELD` to `FIELD_DEFINITION`"
@@ -120,7 +120,7 @@ def test_directive_argument_changes():
         a: String
     }
     """)
-    diff = SchemaComparator(name_arg, id_arg).compare()
+    diff = Schema(name_arg, id_arg).diff()
     assert diff and len(diff) == 2
     expected_message = (
         'Removed argument `name: String` from `@somedir` directive'
@@ -152,7 +152,7 @@ def test_directive_description_changed():
         a: String
     }
     ''')
-    diff = SchemaComparator(no_desc, with_desc).compare()
+    diff = Schema(no_desc, with_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Description for directive `@my_directive` changed from `None` to `directive desc`'
@@ -160,7 +160,7 @@ def test_directive_description_changed():
     assert diff[0].message == expected_message
     assert diff[0].path == '@my_directive'
 
-    diff = SchemaComparator(with_desc, new_desc).compare()
+    diff = Schema(with_desc, new_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Description for directive `@my_directive` changed from `directive desc` to `new description`'
@@ -168,7 +168,7 @@ def test_directive_description_changed():
     assert diff[0].message == expected_message
     assert diff[0].path == '@my_directive'
 
-    diff = SchemaComparator(with_desc, no_desc).compare()
+    diff = Schema(with_desc, no_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Description for directive `@my_directive` changed from `directive desc` to `None`'
@@ -191,7 +191,7 @@ def test_directive_default_value_changed():
     }
     """)
 
-    diff = SchemaComparator(default_100, default_0).compare()
+    diff = Schema(default_100, default_0).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Default value for argument `number` on `@limit` directive changed from `100` to `0`'
@@ -214,7 +214,7 @@ def test_directive_argument_type_changed():
     }
     """)
 
-    diff = SchemaComparator(int_arg, float_arg).compare()
+    diff = Schema(int_arg, float_arg).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Type for argument `number` on `@limit` directive changed from `Int` to `Float`"
@@ -254,7 +254,7 @@ def test_directive_argument_description_changed():
     }
     """)
 
-    diff = SchemaComparator(no_desc, a_desc).compare()
+    diff = Schema(no_desc, a_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Description for argument `number` on `@limit` directive changed from `None` to `number limit`"
@@ -262,7 +262,7 @@ def test_directive_argument_description_changed():
     assert diff[0].message == expected_message
     assert diff[0].path == '@limit'
 
-    diff = SchemaComparator(a_desc, other_desc).compare()
+    diff = Schema(a_desc, other_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Description for argument `number` on `@limit` directive changed from `number limit` to `field limit`"
@@ -270,7 +270,7 @@ def test_directive_argument_description_changed():
     assert diff[0].message == expected_message
     assert diff[0].path == '@limit'
 
-    diff = SchemaComparator(other_desc, no_desc).compare()
+    diff = Schema(other_desc, no_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Description for argument `number` on `@limit` directive changed from `field limit` to `None`"

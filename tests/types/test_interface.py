@@ -1,6 +1,6 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.diff.schema import Schema
 
 
 def test_interface_no_changes():
@@ -16,7 +16,7 @@ def test_interface_no_changes():
       name: String
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert not diff
 
 
@@ -35,12 +35,12 @@ def test_interface_field_added_and_removed():
     }
     """)
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == "Field `favorite_number` of type `Float` was added to interface `Person`"
     assert diff[0].path == 'Person.favorite_number'
 
-    diff = SchemaComparator(b, a).compare()
+    diff = Schema(b, a).diff()
     assert diff[0].message == "Field `favorite_number` was removed from interface `Person`"
     assert diff[0].path == 'Person.favorite_number'
 
@@ -56,7 +56,7 @@ def test_interface_field_type_changed():
       age: Float!
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == "`Person.age` type changed from `Int` to `Float!`"
     assert diff[0].path == 'Person.age'
@@ -75,7 +75,7 @@ def test_interface_field_description_changed():
         age: Int
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == "`Person.age` description changed from `desc` to `other desc`"
     assert diff[0].path == 'Person.age'
@@ -92,7 +92,7 @@ def test_interface_field_deprecation_reason_changed():
         age: Int @deprecated(reason: "my reason")
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
     assert diff[0].message == (
         "Deprecation reason on field `Person.age` changed from `No longer supported` to `my reason`"
@@ -121,7 +121,7 @@ def test_type_implements_new_interface():
         b: String
     }    
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 3
     expected_diff = {
         "Field `b` was added to object type `MyType`",
@@ -133,7 +133,7 @@ def test_type_implements_new_interface():
         assert change.message in expected_diff
         assert change.path in expected_paths
 
-    diff = SchemaComparator(b, a).compare()
+    diff = Schema(b, a).diff()
     assert diff and len(diff) == 3
     expected_diff = {
         "Field `b` was removed from object type `MyType`",
