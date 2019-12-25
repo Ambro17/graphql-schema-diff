@@ -5,7 +5,7 @@ class RemovedType(Change):
 
     criticality = ApiChange.breaking(
         "Removing a type is a breaking change. "
-        "It is preferable to deprecate and remove all references to this type first."
+        "It is preferred to deprecate and remove all references to this type first."
     )
 
     def __init__(self, type):
