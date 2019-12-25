@@ -74,7 +74,7 @@ def test_argument_added_removed():
     )
     assert diff[0].path == 'Field.exp'
     assert diff[0].criticality.level == Criticality.NonBreaking
-    assert diff[0].criticality.reason == SAFE_CHANGE_MSG
+    assert diff[0].criticality.reason == "Adding an optional argument is a safe change"
 
     diff = Schema(b, a).diff()
     assert diff[0].message == (

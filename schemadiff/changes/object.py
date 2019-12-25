@@ -29,7 +29,7 @@ class ObjectTypeFieldRemoved(Change):
                 "Removing deprecated fields without sufficient time for clients "
                 "to update their queries may break their code"
             ) if field.deprecation_reason else ApiChange.breaking(
-                "Removing a field is a breaking change. It is preferable to deprecate the field before removing it."
+                "Removing a field is a breaking change. It is preferred to deprecate the field before removing it."
             )
         )
 
