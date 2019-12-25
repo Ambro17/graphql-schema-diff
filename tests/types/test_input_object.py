@@ -1,6 +1,9 @@
 from graphql import build_schema as schema
 
+from schemadiff.changes import ApiChange
 from schemadiff.diff.schema import Schema
+
+ERROR = 'Changing the type of an input field can break existing queries that use this field'
 
 
 def test_input_field_no_diff():
@@ -37,6 +40,9 @@ def test_input_field_type_changed():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.love` type changed from `Int` to `Float!`"
     assert diff[0].path == 'Params.love'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Changing the type of an input field can break existing queries that use this field'
+    )
 
 
 def test_input_field_changed_from_list_to_scalar():
@@ -54,6 +60,9 @@ def test_input_field_changed_from_list_to_scalar():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `Int` to `[Int]`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Changing the type of an input field can break existing queries that use this field'
+    )
 
 
 def test_input_field_dropped_non_null_constraint():
@@ -71,6 +80,9 @@ def test_input_field_dropped_non_null_constraint():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `String!` to `String`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Changing the type of an input field can break existing queries that use this field'
+    )
 
 
 def test_input_field_now_is_not_nullable():
@@ -88,6 +100,7 @@ def test_input_field_now_is_not_nullable():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `ID` to `ID!`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(ERROR)
 
 
 def test_input_field_type_nullability_change_on_lists_of_the_same_underlying_types():
@@ -115,14 +128,17 @@ def test_input_field_type_nullability_change_on_lists_of_the_same_underlying_typ
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `[ID!]`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(ERROR)
 
     diff = Schema(a, c).diff()
     assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `[ID]`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(ERROR)
 
     diff = Schema(a, d).diff()
     assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `ID`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(ERROR)
 
 
 def test_input_field_inner_type_changed():
@@ -140,6 +156,7 @@ def test_input_field_inner_type_changed():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `[Int]` to `[String]`"
     assert diff[0].path == 'Params.arg'
+    assert diff[0].criticality == ApiChange.breaking(ERROR)
 
 
 def test_input_field_default_value_changed():
@@ -157,6 +174,10 @@ def test_input_field_default_value_changed():
     assert diff and len(diff) == 1
     assert diff[0].message == "Default value for input field `Params.love` changed from `0` to `100`"
     assert diff[0].path == 'Params.love'
+    assert diff[0].criticality == ApiChange.dangerous(
+        'Changing the default value for an argument may change '
+        'the runtime behaviour of a field if it was never provided.'
+    )
 
 
 def test_input_field_description_changed():
@@ -178,6 +199,7 @@ def test_input_field_description_changed():
         "Description for Input field `Params.love` changed from `abc` to `His description`"
     )
     assert diff[0].path == 'Params.love'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_input_field_added_field():
@@ -198,6 +220,7 @@ def test_input_field_added_field():
         "Input Field `love: Float` was added to input type `Recipe`"
     )
     assert diff[0].path == 'Recipe.love'
+    assert diff[0].criticality == ApiChange.safe()
 
     diff = Schema(b, a).diff()
     assert diff and len(diff) == 1
@@ -205,3 +228,30 @@ def test_input_field_added_field():
         "Input Field `love` removed from input type `Recipe`"
     )
     assert diff[0].path == 'Recipe.love'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Removing an input field will break queries that use this input field.'
+    )
+
+
+def test_add_non_null_input_field():
+    a = schema("""
+    input Recipe {
+        ingredients: [String]
+    }
+    """)
+    b = schema("""
+    input Recipe {
+        ingredients: [String]
+        love: Float!
+    }
+    """)
+    diff = Schema(a, b).diff()
+    assert diff and len(diff) == 1
+    assert diff[0].message == (
+        "Input Field `love: Float!` was added to input type `Recipe`"
+    )
+    assert diff[0].path == 'Recipe.love'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Adding a non-null field to an existing input type will cause existing '
+        'queries that use this input type to break because they will not provide a value for this new field.'
+    )
