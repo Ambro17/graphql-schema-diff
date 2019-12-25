@@ -3,10 +3,10 @@ schema {
 }
 
 type Query {
-    a: Int!
     b: Field
+    c: Float
 }
 
 type Field {
-    calculus(x: Int=0): Int!
+    calculus(x: Int=100): Int!
 }

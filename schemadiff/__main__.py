@@ -24,7 +24,7 @@ def parse_args():
 def format_change_by_criticality(change: Change) -> str:
     icon_by_criticality = {
         Criticality.Breaking: '❌',
-        Criticality.Dangerous: '⚠️',
+        Criticality.Dangerous: '🚸',
         Criticality.NonBreaking: '✅',
     }
     icon = icon_by_criticality[change.criticality.level]
