@@ -16,6 +16,8 @@ class ApiChange:
     level: Criticality
     reason: str
 
+    SAFE_CHANGE = "This change won't break any preexisting query"
+
     @classmethod
     def breaking(cls, reason):
         return cls(level=Criticality.Breaking, reason=reason)
@@ -25,7 +27,7 @@ class ApiChange:
         return cls(level=Criticality.Dangerous, reason=reason)
 
     @classmethod
-    def safe(cls, reason="This change won't break any preexisting query"):
+    def safe(cls, reason=SAFE_CHANGE):
         return cls(level=Criticality.NonBreaking, reason=reason)
 
 
