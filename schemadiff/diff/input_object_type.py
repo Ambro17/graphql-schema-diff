@@ -1,9 +1,9 @@
-from schemadiff.changes import (
-    InputObjectTypeAdded,
-    InputObjectTypeRemoved,
-    InputObjectTypeDescriptionChanged,
-    InputTypeDefaultChanged,
-    InputObjectTypeTypeChanged,
+from schemadiff.changes.input import (
+    InputFieldAdded,
+    InputFieldRemoved,
+    InputFieldDescriptionChanged,
+    InputFieldDefaultChanged,
+    InputFieldTypeChanged,
 )
 
 
@@ -22,18 +22,18 @@ class InputObjectType:
         added = new_field_names - old_field_names
         removed = old_field_names - new_field_names
 
-        changes.extend(InputObjectTypeAdded(self.type, field_name, self.new_fields[field_name]) for field_name in added)
-        changes.extend(InputObjectTypeRemoved(self.type, field_name) for field_name in removed)
+        changes.extend(InputFieldAdded(self.type, field_name, self.new_fields[field_name]) for field_name in added)
+        changes.extend(InputFieldRemoved(self.type, field_name) for field_name in removed)
 
         common_types = old_field_names & new_field_names
         for type_name in common_types:
             old = self.old_fields[type_name]
             new = self.new_fields[type_name]
             if str(old.type) != str(new.type):
-                changes.append(InputObjectTypeTypeChanged(self.type, type_name, new, old))
+                changes.append(InputFieldTypeChanged(self.type, type_name, new, old))
             if old.description != new.description:
-                changes.append(InputObjectTypeDescriptionChanged(self.type, type_name, new, old))
+                changes.append(InputFieldDescriptionChanged(self.type, type_name, new, old))
             if old.default_value != new.default_value:
-                changes.append(InputTypeDefaultChanged(self.type, type_name, new, old))
+                changes.append(InputFieldDefaultChanged(self.type, type_name, new, old))
 
         return changes

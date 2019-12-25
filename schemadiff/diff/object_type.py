@@ -1,9 +1,5 @@
-from schemadiff.changes import (
-    ObjectTypeFieldAdded,
-    ObjectTypeFieldRemoved,
-    NewInterfaceImplemented,
-    DroppedInterfaceImplementation,
-)
+from schemadiff.changes.object import ObjectTypeFieldAdded, ObjectTypeFieldRemoved
+from schemadiff.changes.interface import NewInterfaceImplemented, DroppedInterfaceImplementation
 from schemadiff.diff.field import Field
 
 
@@ -26,7 +22,8 @@ class ObjectType:
         added = self.new_fields - self.old_fields
         removed = self.old_fields - self.new_fields
         changes.extend(ObjectTypeFieldAdded(self.new, field_name) for field_name in added)
-        changes.extend(ObjectTypeFieldRemoved(self.new, field_name) for field_name in removed)
+        changes.extend(ObjectTypeFieldRemoved(self.new, field_name, self.old.fields[field_name])
+                       for field_name in removed)
 
         # Added and removed interfaces
         added = self.added_interfaces()

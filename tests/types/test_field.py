@@ -1,6 +1,7 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.changes import ApiChange
+from schemadiff.diff.schema import Schema
 
 
 def test_no_field_diff():
@@ -14,7 +15,7 @@ def test_no_field_diff():
         b: Int!
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert not diff
 
 
@@ -29,10 +30,11 @@ def test_field_type_changed():
         a: Int
     }
     """)
-    diff = SchemaComparator(a_schema, changed_schema).compare()
+    diff = Schema(a_schema, changed_schema).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `String!` to `Int`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `String!` to `Int`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_field_type_change_from_scalar_to_list_of_the_same_type():
@@ -46,10 +48,11 @@ def test_field_type_change_from_scalar_to_list_of_the_same_type():
         a: [String]
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `String` to `[String]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `String` to `[String]`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_field_nullability_changed():
@@ -63,15 +66,17 @@ def test_field_nullability_changed():
         a: Int
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `Int!` to `Int`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `Int!` to `Int`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
-    diff = SchemaComparator(b, a).compare()
+    diff = Schema(b, a).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `Int` to `Int!`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `Int` to `Int!`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_field_type_change_nullability_change_on_lists_of_same_type():
@@ -85,10 +90,11 @@ def test_field_type_change_nullability_change_on_lists_of_same_type():
         a: [Boolean]
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `[Boolean]!` to `[Boolean]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `[Boolean]!` to `[Boolean]`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_field_listof_nullability_of_inner_type_changed():
@@ -102,10 +108,11 @@ def test_field_listof_nullability_of_inner_type_changed():
         a: [Int]!
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `[Int!]!` to `[Int]!`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `[Int!]!` to `[Int]!`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_field_listof_nullability_of_inner_and_outer_types_changed():
@@ -119,10 +126,11 @@ def test_field_listof_nullability_of_inner_and_outer_types_changed():
         a: [Float]
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `[Float!]!` to `[Float]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `[Float!]!` to `[Float]`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_field_list_of_inner_type_changed():
@@ -136,10 +144,11 @@ def test_field_list_of_inner_type_changed():
         a: [String]
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` changed type from `[Float!]!` to `[String]`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` type changed from `[Float!]!` to `[String]`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
 
 
 def test_description_changed():
@@ -155,10 +164,11 @@ def test_description_changed():
         a: String
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    expected_diff = ["Field `Query.a` description changed from `some desc` to `once upon a time`"]
-    assert [x.message() for x in diff] == expected_diff
+    assert diff[0].message == "`Query.a` description changed from `some desc` to `once upon a time`"
+    assert diff[0].path == 'Query.a'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_deprecation_reason_changed():
@@ -172,10 +182,11 @@ def test_deprecation_reason_changed():
         b: Int! @deprecated(reason: "Some string")
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
-    assert len(diff) == 1
-    expected_diff = ["Deprecation reason on field `Query.b` changed from `Not used` to `Some string`"]
-    assert [x.message() for x in diff] == expected_diff
+    diff = Schema(a, b).diff()
+    assert diff and len(diff) == 1
+    assert diff[0].message == "Deprecation reason on field `Query.b` changed from `Not used` to `Some string`"
+    assert diff[0].path == 'Query.b'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_added_removed_arguments():
@@ -189,19 +200,27 @@ def test_added_removed_arguments():
         skill(player: ID): Float!
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Argument `player: ID` added to `Football.skill`"
+    assert diff[0].message == "Argument `player: ID` added to `Football.skill`"
+    assert diff[0].path == 'Football.skill'
+    assert diff[0].criticality == ApiChange.safe('Adding an optional argument is a safe change')
 
-    diff = SchemaComparator(b, a).compare()
+    diff = Schema(b, a).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Removed argument `player` from `Football.skill`"
+    assert diff[0].message == "Removed argument `player` from `Football.skill`"
+    assert diff[0].path == 'Football.skill'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Removing a field argument will break queries that use this argument'
+    )
 
     c = schema("""
     type Football {
         skill(player: ID, age: Int): Float!
     }
     """)
-    diff = SchemaComparator(b, c).compare()
+    diff = Schema(b, c).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Argument `age: Int` added to `Football.skill`"
+    assert diff[0].message == "Argument `age: Int` added to `Football.skill`"
+    assert diff[0].path == 'Football.skill'
+    assert diff[0].criticality == ApiChange.safe('Adding an optional argument is a safe change')

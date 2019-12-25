@@ -1,6 +1,7 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.changes import ApiChange
+from schemadiff.diff.schema import Schema
 
 
 def test_added_removed_directive():
@@ -15,13 +16,17 @@ def test_added_removed_directive():
         a: String
     }
     """)
-    diff = SchemaComparator(no_directive, one_directive).compare()
+    diff = Schema(no_directive, one_directive).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Directive `@somedir` was added to use on `FIELD_DEFINITION`"
+    assert diff[0].message == "Directive `@somedir` was added to use on `FIELD_DEFINITION`"
+    assert diff[0].path == '@somedir'
+    assert diff[0].criticality == ApiChange.safe()
 
-    diff = SchemaComparator(one_directive, no_directive).compare()
+    diff = Schema(one_directive, no_directive).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Directive `@somedir` was removed"
+    assert diff[0].message == "Directive `@somedir` was removed"
+    assert diff[0].path == '@somedir'
+    assert diff[0].criticality == ApiChange.breaking('Removing a directive may break clients that depend on them.')
 
     two_locations = schema("""
     directive @somedir on FIELD_DEFINITION | QUERY
@@ -29,9 +34,11 @@ def test_added_removed_directive():
         a: String
     }
     """)
-    diff = SchemaComparator(no_directive, two_locations).compare()
+    diff = Schema(no_directive, two_locations).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Directive `@somedir` was added to use on `FIELD_DEFINITION | QUERY`"
+    assert diff[0].message == "Directive `@somedir` was added to use on `FIELD_DEFINITION | QUERY`"
+    assert diff[0].path == '@somedir'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_description_changed():
@@ -61,15 +68,18 @@ def test_description_changed():
         a: String
     }
     ''')
-    diff = SchemaComparator(old_desc, new_desc).compare()
+    diff = Schema(old_desc, new_desc).diff()
     assert diff and len(diff) == 3
     expected_diff = {
         "Description for directive `@somedir` changed from `directive desc` to `updated desc`",
         "Description for directive `@nodesc` changed from `None` to `added desc`",
         "Description for directive `@toberemoveddesc` changed from `to be removed` to `None`",
     }
+    expected_paths = {'@somedir', '@nodesc', '@toberemoveddesc'}
     for change in diff:
-        assert change.message() in expected_diff
+        assert change.message in expected_diff
+        assert change.path in expected_paths
+        assert change.criticality == ApiChange.safe()
 
 
 def test_directive_location_added_and_removed():
@@ -85,19 +95,25 @@ def test_directive_location_added_and_removed():
         a: String
     }
     """)
-    diff = SchemaComparator(one_location, two_locations).compare()
+    diff = Schema(one_location, two_locations).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Directive locations of `@somedir` changed from `FIELD_DEFINITION` to `FIELD_DEFINITION | FIELD`"
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@somedir'
+    assert diff[0].criticality == ApiChange.safe()
 
-    diff = SchemaComparator(two_locations, one_location).compare()
+    diff = Schema(two_locations, one_location).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Directive locations of `@somedir` changed from `FIELD_DEFINITION | FIELD` to `FIELD_DEFINITION`"
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@somedir'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Removing a directive location will break any instance of its usage. Be sure no one uses it before removing it'
+    )
 
 
 def test_directive_argument_changes():
@@ -113,14 +129,18 @@ def test_directive_argument_changes():
         a: String
     }
     """)
-    diff = SchemaComparator(name_arg, id_arg).compare()
+    diff = Schema(name_arg, id_arg).diff()
     assert diff and len(diff) == 2
     expected_message = (
         'Removed argument `name: String` from `@somedir` directive'
         "Added argument `id: ID` to `@somedir` directive"
     )
     for change in diff:
-        assert change.message() in expected_message
+        assert change.message in expected_message
+        assert change.path == '@somedir'
+        assert change.criticality == ApiChange.breaking(
+            'Removing a directive argument will break existing usages of the argument'
+        ) if 'Removed' in change.message else ApiChange.safe()
 
 
 def test_directive_description_changed():
@@ -144,26 +164,32 @@ def test_directive_description_changed():
         a: String
     }
     ''')
-    diff = SchemaComparator(no_desc, with_desc).compare()
+    diff = Schema(no_desc, with_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Description for directive `@my_directive` changed from `None` to `directive desc`'
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@my_directive'
+    assert diff[0].criticality == ApiChange.safe()
 
-    diff = SchemaComparator(with_desc, new_desc).compare()
+    diff = Schema(with_desc, new_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Description for directive `@my_directive` changed from `directive desc` to `new description`'
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@my_directive'
+    assert diff[0].criticality == ApiChange.safe()
 
-    diff = SchemaComparator(with_desc, no_desc).compare()
+    diff = Schema(with_desc, no_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Description for directive `@my_directive` changed from `directive desc` to `None`'
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@my_directive'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_directive_default_value_changed():
@@ -180,12 +206,17 @@ def test_directive_default_value_changed():
     }
     """)
 
-    diff = SchemaComparator(default_100, default_0).compare()
+    diff = Schema(default_100, default_0).diff()
     assert diff and len(diff) == 1
     expected_message = (
         'Default value for argument `number` on `@limit` directive changed from `100` to `0`'
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@limit'
+    assert diff[0].criticality == ApiChange.dangerous(
+        'Changing the default value for an argument may change '
+        'the runtime behaviour of a field if it was never provided.'
+    )
 
 
 def test_directive_argument_type_changed():
@@ -202,12 +233,14 @@ def test_directive_argument_type_changed():
     }
     """)
 
-    diff = SchemaComparator(int_arg, float_arg).compare()
+    diff = Schema(int_arg, float_arg).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Type for argument `number` on `@limit` directive changed from `Int` to `Float`"
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@limit'
+    assert diff[0].criticality == ApiChange.breaking('Changing the argument type is a breaking change')
 
 
 def test_directive_argument_description_changed():
@@ -241,23 +274,29 @@ def test_directive_argument_description_changed():
     }
     """)
 
-    diff = SchemaComparator(no_desc, a_desc).compare()
+    diff = Schema(no_desc, a_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Description for argument `number` on `@limit` directive changed from `None` to `number limit`"
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@limit'
+    assert diff[0].criticality == ApiChange.safe()
 
-    diff = SchemaComparator(a_desc, other_desc).compare()
+    diff = Schema(a_desc, other_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Description for argument `number` on `@limit` directive changed from `number limit` to `field limit`"
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@limit'
+    assert diff[0].criticality == ApiChange.safe()
 
-    diff = SchemaComparator(other_desc, no_desc).compare()
+    diff = Schema(other_desc, no_desc).diff()
     assert diff and len(diff) == 1
     expected_message = (
         "Description for argument `number` on `@limit` directive changed from `field limit` to `None`"
     )
-    assert diff[0].message() == expected_message
+    assert diff[0].message == expected_message
+    assert diff[0].path == '@limit'
+    assert diff[0].criticality == ApiChange.safe()

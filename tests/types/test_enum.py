@@ -1,9 +1,10 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.changes import ApiChange
+from schemadiff.diff.schema import Schema
 
 
-def test_enums_added_and_removed():
+def test_enum_value_removed():
     a = schema("""
     type Query {
         a: String
@@ -19,18 +20,53 @@ def test_enums_added_and_removed():
     }
     enum Letters {
         A
+    }
+    """)
+    diff = Schema(a, b).diff()
+    assert len(diff) == 1
+    change = diff[0]
+    assert change.message == "Enum value `B` was removed from `Letters` enum"
+    assert change.path == 'Letters'
+    assert change.criticality == ApiChange.breaking(
+        'Removing an enum value will break existing queries that use this enum value'
+    )
+
+
+def test_enums_added():
+    a = schema("""
+    type Query {
+        a: String
+    }
+    enum Letters {
+        A
+        B
+    }
+    """)
+    b = schema("""
+    type Query {
+        a: String
+    }
+    enum Letters {
+        A
+        B
         C
         D
     }
     """)
-    diff = SchemaComparator(a, b).compare()
-    assert len(diff) == 3
+    diff = Schema(a, b).diff()
+    assert len(diff) == 2
     expected_diff = {
-        "Enum value `B` was removed from `Letters` enum",
         "Enum value `C` was added to `Letters` enum",
         "Enum value `D` was added to `Letters` enum",
     }
-    assert {x.message() for x in diff} == expected_diff
+    expected_paths = {'Letters.C', 'Letters.D'}
+    for change in diff:
+        assert change.message in expected_diff
+        assert change.path in expected_paths
+        assert change.criticality == ApiChange.dangerous(
+            "Adding an enum value may break existing clients that "
+            "were not programming defensively against an added case when querying an enum."
+        )
 
 
 def test_deprecated_enum_value():
@@ -52,9 +88,13 @@ def test_deprecated_enum_value():
         B @deprecated(reason: "Changed the alphabet")
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    assert diff[0].message() == "Enum value `B` was deprecated with reason `Changed the alphabet`"
+    assert diff[0].message == "Enum value `B` was deprecated with reason `Changed the alphabet`"
+    assert diff[0].path == 'Letters.B'
+    assert diff[0].criticality == ApiChange.safe(
+        "A deprecated field can still be used by clients and will give them time to adapt their queries"
+    )
 
 
 def test_deprecated_reason_changed():
@@ -76,10 +116,14 @@ def test_deprecated_reason_changed():
         B @deprecated(reason: "a new reason")
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Deprecation reason for enum value `B` changed from `a reason` to `a new reason`"
+    )
+    assert diff[0].path == 'Letters.B'
+    assert diff[0].criticality == ApiChange.safe(
+        "A deprecated field can still be used by clients and will give them time to adapt their queries"
     )
 
 
@@ -101,11 +145,13 @@ def test_description_added():
         A
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Description for enum value `A` set to `My new description`"
     )
+    assert diff[0].path == 'Letters.A'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_description_changed():
@@ -127,8 +173,10 @@ def test_description_changed():
         A
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert len(diff) == 1
-    assert diff[0].message() == (
+    assert diff[0].message == (
         "Description for enum value `A` changed from `My description` to `My new description`"
     )
+    assert diff[0].path == 'Letters.A'
+    assert diff[0].criticality == ApiChange.safe()

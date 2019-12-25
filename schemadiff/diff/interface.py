@@ -1,10 +1,5 @@
-from schemadiff.changes import (
-    InterfaceFieldAdded,
-    InterfaceFieldRemoved,
-    InterfaceFieldTypeChanged,
-    InterfaceFieldDescriptionChanged,
-    InterfaceFieldDeprecationReasonChanged,
-)
+from schemadiff.changes.interface import InterfaceFieldAdded, InterfaceFieldRemoved
+from schemadiff.diff.field import Field
 
 
 class InterfaceType:
@@ -29,17 +24,6 @@ class InterfaceType:
             old_field = self.old_face.fields[field_name]
             new_field = self.new_face.fields[field_name]
 
-            if str(old_field.type) != str(new_field.type):
-                changes.append(InterfaceFieldTypeChanged(
-                    self.new_face, field_name, old_field, new_field
-                ))
-            if old_field.description != new_field.description:
-                changes.append(InterfaceFieldDescriptionChanged(
-                    self.new_face, field_name, old_field, new_field
-                ))
-            if old_field.deprecation_reason != new_field.deprecation_reason:
-                changes.append(InterfaceFieldDeprecationReasonChanged(
-                    self.new_face, field_name, old_field, new_field
-                ))
+            changes += Field(self.new_face, field_name, old_field, new_field).diff() or []
 
         return changes

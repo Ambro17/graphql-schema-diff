@@ -1,6 +1,7 @@
 from graphql import build_schema as schema
 
-from schemadiff.compare import SchemaComparator
+from schemadiff.changes import ApiChange
+from schemadiff.diff.schema import Schema
 
 
 def test_interface_no_changes():
@@ -16,7 +17,7 @@ def test_interface_no_changes():
       name: String
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert not diff
 
 
@@ -35,12 +36,21 @@ def test_interface_field_added_and_removed():
     }
     """)
 
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Field `favorite_number` of type `Float` was added to interface `Person`"
+    assert diff[0].message == "Field `favorite_number` of type `Float` was added to interface `Person`"
+    assert diff[0].path == 'Person.favorite_number'
+    assert diff[0].criticality == ApiChange.dangerous(
+        'Adding an interface to an object type may break existing clients '
+        'that were not programming defensively against a new possible type.'
+    )
 
-    diff = SchemaComparator(b, a).compare()
-    assert diff[0].message() == "Field `favorite_number` was removed from interface `Person`"
+    diff = Schema(b, a).diff()
+    assert diff[0].message == "Field `favorite_number` was removed from interface `Person`"
+    assert diff[0].path == 'Person.favorite_number'
+    assert diff[0].criticality == ApiChange.dangerous(
+        'Removing an interface field can break existing queries that use this in a fragment spread.'
+    )
 
 
 def test_interface_field_type_changed():
@@ -54,9 +64,13 @@ def test_interface_field_type_changed():
       age: Float!
     }
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "Field `Person.age` type changed from `Int` to `Float!`"
+    assert diff[0].message == "`Person.age` type changed from `Int` to `Float!`"
+    assert diff[0].path == 'Person.age'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Changing a field type will break queries that assume its type'
+    )
 
 
 def test_interface_field_description_changed():
@@ -72,9 +86,11 @@ def test_interface_field_description_changed():
         age: Int
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Person.age` description changed from `desc` to `other desc`"
+    assert diff[0].message == "`Person.age` description changed from `desc` to `other desc`"
+    assert diff[0].path == 'Person.age'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_interface_field_deprecation_reason_changed():
@@ -88,9 +104,13 @@ def test_interface_field_deprecation_reason_changed():
         age: Int @deprecated(reason: "my reason")
     }
     ''')
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 1
-    assert diff[0].message() == "`Person.age` deprecation reason changed from `No longer supported` to `my reason`"
+    assert diff[0].message == (
+        "Deprecation reason on field `Person.age` changed from `No longer supported` to `my reason`"
+    )
+    assert diff[0].path == 'Person.age'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_type_implements_new_interface():
@@ -114,22 +134,26 @@ def test_type_implements_new_interface():
         b: String
     }    
     """)
-    diff = SchemaComparator(a, b).compare()
+    diff = Schema(a, b).diff()
     assert diff and len(diff) == 3
     expected_diff = {
         "Field `b` was added to object type `MyType`",
         "Type `InterfaceB` was added",
         "`MyType` implements new interface `InterfaceB`"
     }
+    expected_paths = {'InterfaceB', 'MyType', 'MyType.b'}
     for change in diff:
-        assert change.message() in expected_diff
+        assert change.message in expected_diff
+        assert change.path in expected_paths
 
-    diff = SchemaComparator(b, a).compare()
+    diff = Schema(b, a).diff()
     assert diff and len(diff) == 3
     expected_diff = {
         "Field `b` was removed from object type `MyType`",
         "Type `InterfaceB` was removed",
         "`MyType` no longer implements interface `InterfaceB`"
     }
+    expected_paths = {'InterfaceB', 'MyType', 'MyType.b'}
     for change in diff:
-        assert change.message() in expected_diff
+        assert change.message in expected_diff
+        assert change.path in expected_paths
