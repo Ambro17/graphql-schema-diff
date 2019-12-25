@@ -52,7 +52,7 @@ class FieldTypeChanged(Change):
     def __init__(self, type, field_name, old_field, new_field):
         self.criticality = ApiChange.safe() \
                            if is_safe_type_change(old_field, new_field)\
-                           else ApiChange.breaking(reason="This type change may break existing queries")
+                           else ApiChange.breaking('Changing a field type will break queries that assume its type')
         self.type = type
         self.field_name = field_name
         self.old_field = old_field
@@ -72,7 +72,7 @@ class FieldTypeChanged(Change):
 
 class FieldArgumentAdded(Change):
     def __init__(self, parent, field_name, argument_name, arg_type):
-        self.criticality = ApiChange.safe()\
+        self.criticality = ApiChange.safe('Adding an optional argument is a safe change')\
                            if not is_non_null_type(arg_type.type)\
                            else ApiChange.breaking("Adding a required argument to an existing field is a breaking "
                                                    "change because it will break existing uses of this field")
