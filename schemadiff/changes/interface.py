@@ -25,7 +25,7 @@ class InterfaceFieldAdded(Change):
 class InterfaceFieldRemoved(Change):
 
     criticality = ApiChange.dangerous(
-        "Removing an interface from an object type can break existing "
+        "Removing an interface field can break existing "
         "queries that use this in a fragment spread."
     )
 
@@ -116,7 +116,7 @@ class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
 
 
 class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
-    criticality = ApiChange.breaking("improve this logic to check if was deprecated before")
+    criticality = ApiChange.breaking('Breaking change')  # TODO: Improve this logic to check if it was deprecated before
 
     @property
     def message(self):

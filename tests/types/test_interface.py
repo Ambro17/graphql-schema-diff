@@ -1,5 +1,6 @@
 from graphql import build_schema as schema
 
+from schemadiff.changes import ApiChange
 from schemadiff.diff.schema import Schema
 
 
@@ -39,10 +40,17 @@ def test_interface_field_added_and_removed():
     assert diff and len(diff) == 1
     assert diff[0].message == "Field `favorite_number` of type `Float` was added to interface `Person`"
     assert diff[0].path == 'Person.favorite_number'
+    assert diff[0].criticality == ApiChange.dangerous(
+        'Adding an interface to an object type may break existing clients '
+        'that were not programming defensively against a new possible type.'
+    )
 
     diff = Schema(b, a).diff()
     assert diff[0].message == "Field `favorite_number` was removed from interface `Person`"
     assert diff[0].path == 'Person.favorite_number'
+    assert diff[0].criticality == ApiChange.dangerous(
+        'Removing an interface field can break existing queries that use this in a fragment spread.'
+    )
 
 
 def test_interface_field_type_changed():
@@ -60,6 +68,9 @@ def test_interface_field_type_changed():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Person.age` type changed from `Int` to `Float!`"
     assert diff[0].path == 'Person.age'
+    assert diff[0].criticality == ApiChange.breaking(
+        'Changing a field type will break queries that assume its type'
+    )
 
 
 def test_interface_field_description_changed():
@@ -79,6 +90,7 @@ def test_interface_field_description_changed():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Person.age` description changed from `desc` to `other desc`"
     assert diff[0].path == 'Person.age'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_interface_field_deprecation_reason_changed():
@@ -98,6 +110,7 @@ def test_interface_field_deprecation_reason_changed():
         "Deprecation reason on field `Person.age` changed from `No longer supported` to `my reason`"
     )
     assert diff[0].path == 'Person.age'
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_type_implements_new_interface():
