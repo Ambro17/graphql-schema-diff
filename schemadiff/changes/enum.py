@@ -33,7 +33,7 @@ class EnumValueRemoved(Change):
 
     @property
     def path(self):
-        return f"{self.enum.name}.{self.value}"
+        return f"{self.enum.name}"
 
 
 class EnumValueDescriptionChanged(Change):
@@ -64,7 +64,9 @@ class EnumValueDescriptionChanged(Change):
 
 class EnumValueDeprecationReasonChanged(Change):
 
-    criticality = ApiChange.safe()
+    criticality = ApiChange.safe(
+        "A deprecated field can still be used by clients and will give them time to adapt their queries"
+    )
 
     def __init__(self, enum, name, old_value, new_value):
         self.enum = enum
