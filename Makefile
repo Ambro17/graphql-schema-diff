@@ -1,6 +1,6 @@
 .PHONY: test test-coverage flake8
 
-WORK_DIR=.
+WORK_DIR=./schemadiff
 
 test:
 	pytest

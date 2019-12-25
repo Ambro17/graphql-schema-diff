@@ -105,3 +105,22 @@ def test_cli_exits_normally_by_default_when_strict_or_tolerant_mode_is_specified
     stdout = capsys.readouterr()
     assert '❌ Field `a` was removed from object type `Query`\n' in stdout.out
     assert len(stdout.out.split('\n')) == 2
+
+
+def test_tolerant_mode_doesnt_allow_breaking_changes(capsys):
+    SCHEMA_FILE = 'tests/data/simple_schema.gql'
+    BREAKING_CHANGES_SCHEMA = 'tests/data/simple_schema_breaking_changes.gql'
+    tolerant_args = parse_args([
+        '-o', SCHEMA_FILE,
+        '-n', BREAKING_CHANGES_SCHEMA,
+        '--tolerant'
+    ])
+    default_args = parse_args([
+        '-o', SCHEMA_FILE,
+        '-n', BREAKING_CHANGES_SCHEMA,
+    ])
+    exit_code = main(tolerant_args)
+    assert exit_code == 1
+
+    exit_code = main(default_args)
+    assert exit_code == 0
