@@ -6,8 +6,13 @@ from schemadiff.diff.schema import Schema
 from schemadiff.graphql_schema import GraphQLSchema
 
 
+def cli():
+    args = parse_args(sys.argv[1:])
+    return main(args)
+
+
 def parse_args(arguments):
-    parser = argparse.ArgumentParser(description='Mi cli')
+    parser = argparse.ArgumentParser(description='Schema comparator')
     parser.add_argument('-o', '--old-schema',
                         dest='old_schema',
                         type=argparse.FileType('r', encoding='UTF-8'),
@@ -27,7 +32,7 @@ def parse_args(arguments):
     return parser.parse_args(arguments)
 
 
-def main(args):
+def main(args) -> int:
     # Load schemas from file path args
     old_schema = GraphQLSchema.from_sdl(args.old_schema.read())
     new_schema = GraphQLSchema.from_sdl(args.new_schema.read())
@@ -58,7 +63,7 @@ def format_change_by_criticality(change: Change) -> str:
     return f"{icon} {change.message}"
 
 
-def exit_code(changes, strict, tolerant):
+def exit_code(changes, strict, tolerant) -> int:
     exit_code = 0
     if strict and any(change.breaking or change.dangerous for change in changes):
         exit_code = 1
@@ -69,5 +74,4 @@ def exit_code(changes, strict, tolerant):
 
 
 if __name__ == '__main__':
-    args = parse_args(sys.argv[1:])
-    sys.exit(main(args))
+    sys.exit(cli())
