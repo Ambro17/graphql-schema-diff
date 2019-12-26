@@ -76,7 +76,7 @@ def test_field_nullability_changed():
     assert len(diff) == 1
     assert diff[0].message == "`Query.a` type changed from `Int` to `Int!`"
     assert diff[0].path == 'Query.a'
-    assert diff[0].criticality == ApiChange.breaking('Changing a field type will break queries that assume its type')
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_field_type_change_nullability_change_on_lists_of_same_type():
@@ -224,3 +224,27 @@ def test_added_removed_arguments():
     assert diff[0].message == "Argument `age: Int` added to `Football.skill`"
     assert diff[0].path == 'Football.skill'
     assert diff[0].criticality == ApiChange.safe('Adding an optional argument is a safe change')
+
+
+def test_field_type_change_is_safe():
+    non_nullable_schema = schema("""
+    type Query {
+        a: Int!
+    }
+    """)
+    nullable_schema = schema("""
+    type Query {
+        a: Int
+    }
+    """)
+    # Dropping the non-null constraint is a breaking change because clients may have assumed it could never be null
+    diff = Schema(non_nullable_schema, nullable_schema).diff()
+    assert len(diff) == 1
+    assert diff[0].criticality == ApiChange.breaking(
+        'Changing a field type will break queries that assume its type'
+    )
+
+    # But if it was already nullable, they already had to handle that case.
+    diff = Schema(nullable_schema, non_nullable_schema).diff()
+    assert len(diff) == 1
+    assert diff[0].criticality == ApiChange.safe()

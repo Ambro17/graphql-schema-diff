@@ -6,8 +6,6 @@ from graphql import (
     is_input_object_type,
     is_object_type,
     is_interface_type,
-    build_schema,
-    GraphQLSchema
 )
 from graphql.type.introspection import TypeFieldResolvers
 

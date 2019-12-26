@@ -101,7 +101,7 @@ class InputFieldTypeChanged(Change):
     def __init__(self, input, name, new_field, old_field):
         self.criticality = (
             ApiChange.safe()
-            if is_safe_change_for_input_value(old_field, new_field)
+            if is_safe_change_for_input_value(old_field.type, new_field.type)
             else ApiChange.breaking(
                 "Changing the type of an input field can break existing queries that use this field"
             )

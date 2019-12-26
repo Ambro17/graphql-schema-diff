@@ -50,8 +50,8 @@ class FieldDeprecationReasonChanged(Change):
 class FieldTypeChanged(Change):
 
     def __init__(self, type, field_name, old_field, new_field):
-        self.criticality = ApiChange.safe() \
-                           if is_safe_type_change(old_field, new_field)\
+        self.criticality = ApiChange.safe()\
+                           if is_safe_type_change(old_field.type, new_field.type)\
                            else ApiChange.breaking('Changing a field type will break queries that assume its type')
         self.type = type
         self.field_name = field_name

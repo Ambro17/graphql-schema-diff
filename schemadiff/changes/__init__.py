@@ -37,7 +37,7 @@ def is_safe_type_change(old_type, new_type) -> bool:
     * If both fields are 'leafs' in the sense they don't wrap an inner type, just compare their type.
     * If the new type has a non-null constraint, check that it was already non-null and compare against the contained
       type. If the contraint is new, just compare with old_type
-    * If the old type is a list and the new one too, compare their inner types
+    * If the old type is a list and the new one too, compare their inner type
       If the new type has a non-null constraint, compare against the wrapped type
     """
     if not is_wrapping_type(old_type) and not is_wrapping_type(new_type):

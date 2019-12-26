@@ -80,9 +80,7 @@ def test_input_field_dropped_non_null_constraint():
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `String!` to `String`"
     assert diff[0].path == 'Params.arg'
-    assert diff[0].criticality == ApiChange.breaking(
-        'Changing the type of an input field can break existing queries that use this field'
-    )
+    assert diff[0].criticality == ApiChange.safe()
 
 
 def test_input_field_now_is_not_nullable():
@@ -128,7 +126,7 @@ def test_input_field_type_nullability_change_on_lists_of_the_same_underlying_typ
     assert diff and len(diff) == 1
     assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `[ID!]`"
     assert diff[0].path == 'Params.arg'
-    assert diff[0].criticality == ApiChange.breaking(ERROR)
+    assert diff[0].criticality == ApiChange.safe()  # Because dropping the non-null constraint will not break anything
 
     diff = Schema(a, c).diff()
     assert diff[0].message == "`Params.arg` type changed from `[ID!]!` to `[ID]`"
