@@ -1,9 +1,9 @@
-from schemadiff.changes import Change, ApiChange
+from schemadiff.changes import Change, Criticality
 
 
 class RemovedType(Change):
 
-    criticality = ApiChange.breaking(
+    criticality = Criticality.breaking(
         "Removing a type is a breaking change. "
         "It is preferred to deprecate and remove all references to this type first."
     )
@@ -22,7 +22,7 @@ class RemovedType(Change):
 
 class AddedType(Change):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, added_type):
         self.type = added_type
@@ -38,7 +38,7 @@ class AddedType(Change):
 
 class TypeDescriptionChanged(Change):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, type_name, old_desc, new_desc):
         self.type = type_name
@@ -58,7 +58,7 @@ class TypeDescriptionChanged(Change):
 
 
 class TypeKindChanged(Change):
-    criticality = ApiChange.breaking(
+    criticality = Criticality.breaking(
         "Changing the kind of a type is a breaking change because "
         "it can cause existing queries to error. "
         "For example, turning an object type to a scalar type "

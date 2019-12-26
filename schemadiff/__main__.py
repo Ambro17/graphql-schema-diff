@@ -1,9 +1,9 @@
 import sys
 import argparse
 
-from schemadiff.changes import Change, Criticality
 from schemadiff.diff.schema import Schema
 from schemadiff.graphql_schema import GraphQLSchema
+from schemadiff.formatting import format_diff
 
 
 def cli():
@@ -43,24 +43,6 @@ def main(args) -> int:
     print(format_diff(diff))
 
     return exit_code(diff, args.strict, args.tolerant)
-
-
-def format_diff(changes: [Change]) -> str:
-    changes = '\n'.join(
-        format_change_by_criticality(change)
-        for change in changes
-    )
-    return changes or '🎉 Both schemas are equal!'
-
-
-def format_change_by_criticality(change: Change) -> str:
-    icon_by_criticality = {
-        Criticality.Breaking: '❌',
-        Criticality.Dangerous: '🚸',
-        Criticality.NonBreaking: '✅',
-    }
-    icon = icon_by_criticality[change.criticality.level]
-    return f"{icon} {change.message}"
 
 
 def exit_code(changes, strict, tolerant) -> int:

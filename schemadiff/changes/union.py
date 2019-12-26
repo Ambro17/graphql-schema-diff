@@ -1,9 +1,9 @@
-from schemadiff.changes import Change, ApiChange
+from schemadiff.changes import Change, Criticality
 
 
 class UnionMemberAdded(Change):
 
-    criticality = ApiChange.dangerous(
+    criticality = Criticality.dangerous(
         "Adding a possible type to Unions may break existing clients "
         "that were not programming defensively against a new possible type."
     )
@@ -23,7 +23,7 @@ class UnionMemberAdded(Change):
 
 class UnionMemberRemoved(Change):
 
-    criticality = ApiChange.breaking(
+    criticality = Criticality.breaking(
         'Removing a union member from a union can break '
         'queries that use this union member in a fragment spread'
     )

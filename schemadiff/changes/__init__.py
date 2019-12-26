@@ -5,30 +5,34 @@ from attr import dataclass
 from graphql import is_wrapping_type, is_non_null_type, is_list_type
 
 
-class Criticality(Enum):
+class CriticalityLevel(Enum):
     NonBreaking = 'NON_BREAKING'
     Dangerous = 'DANGEROUS'
     Breaking = 'BREAKING'
 
 
-@dataclass
-class ApiChange:
-    level: Criticality
+@dataclass(repr=False)
+class Criticality:
+    level: CriticalityLevel
     reason: str
 
     SAFE_CHANGE = "This change won't break any preexisting query"
 
     @classmethod
     def breaking(cls, reason):
-        return cls(level=Criticality.Breaking, reason=reason)
+        return cls(level=CriticalityLevel.Breaking, reason=reason)
 
     @classmethod
     def dangerous(cls, reason):
-        return cls(level=Criticality.Dangerous, reason=reason)
+        return cls(level=CriticalityLevel.Dangerous, reason=reason)
 
     @classmethod
     def safe(cls, reason=SAFE_CHANGE):
-        return cls(level=Criticality.NonBreaking, reason=reason)
+        return cls(level=CriticalityLevel.NonBreaking, reason=reason)
+
+    def __repr__(self):
+        # Replace repr because of attrs bug https://github.com/python-attrs/attrs/issues/95
+        return f"Criticality(level={self.level}, reason={self.reason})"
 
 
 def is_safe_type_change(old_type, new_type) -> bool:
@@ -79,19 +83,19 @@ def is_safe_change_for_input_value(old_type, new_type):
 
 class Change(ABC):
 
-    criticality: ApiChange
+    criticality: Criticality
 
     @property
     def breaking(self):
-        return self.criticality.level == Criticality.Breaking
+        return self.criticality.level == CriticalityLevel.Breaking
 
     @property
     def dangerous(self):
-        return self.criticality.level == Criticality.Dangerous
+        return self.criticality.level == CriticalityLevel.Dangerous
 
     @property
     def safe(self):
-        return self.criticality.level == Criticality.NonBreaking
+        return self.criticality.level == CriticalityLevel.NonBreaking
 
     @property
     @abstractmethod
@@ -102,3 +106,9 @@ class Change(ABC):
     @abstractmethod
     def path(self):
         """Path to the affected schema member"""
+
+    def __repr__(self):
+        return f"Change(criticality={self.criticality!r}, message={self.message!r}, path={self.path!r})"
+
+    def __str__(self):
+        return self.message

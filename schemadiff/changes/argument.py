@@ -1,6 +1,4 @@
-from graphql import is_non_null_type
-
-from schemadiff.changes import Change, ApiChange, is_safe_change_for_input_value
+from schemadiff.changes import Change, Criticality, is_safe_change_for_input_value
 
 
 class FieldAbstractArgumentChange(Change):
@@ -18,7 +16,7 @@ class FieldAbstractArgumentChange(Change):
 
 class FieldArgumentDescriptionChanged(FieldAbstractArgumentChange):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     @property
     def message(self):
@@ -29,7 +27,7 @@ class FieldArgumentDescriptionChanged(FieldAbstractArgumentChange):
 
 
 class FieldArgumentDefaultValueChanged(FieldAbstractArgumentChange):
-    criticality = ApiChange.dangerous(
+    criticality = Criticality.dangerous(
         "Changing the default value for an argument may change the runtime "
         "behaviour of a field if it was never provided."
     )
@@ -47,9 +45,9 @@ class FieldArgumentTypeChanged(FieldAbstractArgumentChange):
     def __init__(self, parent_type, field, arg_name, old_arg, new_arg):
         super().__init__(parent_type, field, arg_name, old_arg, new_arg)
         self.criticality = (
-                ApiChange.safe()
+                Criticality.safe()
                 if is_safe_change_for_input_value(old_arg.type, new_arg.type)
-                else ApiChange.breaking(
+                else Criticality.breaking(
                     "Changing the type of a field's argument can break existing queries that use this argument."
                 )
         )

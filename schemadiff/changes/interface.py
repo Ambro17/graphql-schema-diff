@@ -1,9 +1,9 @@
-from schemadiff.changes import Change, ApiChange
+from schemadiff.changes import Change, Criticality
 
 
 class InterfaceFieldAdded(Change):
 
-    criticality = ApiChange.dangerous(
+    criticality = Criticality.dangerous(
         "Adding an interface to an object type may break existing clients " 
         "that were not programming defensively against a new possible type."
     )
@@ -24,7 +24,7 @@ class InterfaceFieldAdded(Change):
 
 class InterfaceFieldRemoved(Change):
 
-    criticality = ApiChange.dangerous(
+    criticality = Criticality.dangerous(
         "Removing an interface field can break existing "
         "queries that use this in a fragment spread."
     )
@@ -66,7 +66,7 @@ class InterfaceFieldTypeChanged(AbstractInterfanceChange):
 
 class NewInterfaceImplemented(Change):
 
-    criticality = ApiChange.dangerous(
+    criticality = Criticality.dangerous(
         "Adding an interface to an object type may break existing clients "
         "that were not programming defensively against a new possible type."
     )
@@ -86,7 +86,7 @@ class NewInterfaceImplemented(Change):
 
 class DroppedInterfaceImplementation(Change):
 
-    criticality = ApiChange.breaking(
+    criticality = Criticality.breaking(
         "Removing an interface from an object type can break existing queries "
         "that use this in a fragment spread."
     )
@@ -105,7 +105,7 @@ class DroppedInterfaceImplementation(Change):
 
 
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     @property
     def message(self):
@@ -116,7 +116,7 @@ class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
 
 
 class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
-    criticality = ApiChange.breaking('Breaking change')  # TODO: Improve this logic to check if it was deprecated before
+    criticality = Criticality.breaking('Breaking change')  # TODO: Improve this logic to check if it was deprecated before
 
     @property
     def message(self):

@@ -1,6 +1,6 @@
 from graphql import is_non_null_type
 
-from schemadiff.changes import Change, ApiChange, is_safe_change_for_input_value
+from schemadiff.changes import Change, Criticality, is_safe_change_for_input_value
 
 
 class DirectiveChange(Change):
@@ -12,7 +12,7 @@ class DirectiveChange(Change):
 
 class AddedDirective(DirectiveChange):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, directive, directive_locations):
         self.directive = directive
@@ -26,7 +26,7 @@ class AddedDirective(DirectiveChange):
 
 class RemovedDirective(DirectiveChange):
 
-    criticality = ApiChange.breaking("Removing a directive may break clients that depend on them.")
+    criticality = Criticality.breaking("Removing a directive may break clients that depend on them.")
 
     def __init__(self, directive):
         self.directive = directive
@@ -37,7 +37,7 @@ class RemovedDirective(DirectiveChange):
 
 
 class DirectiveDescriptionChanged(DirectiveChange):
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, old, new):
         self.old = old
@@ -61,7 +61,7 @@ class DirectiveLocationsChanged(DirectiveChange):
         self.old_locations = old_locations
         self.new_locations = new_locations
         self.criticality = (
-            ApiChange.safe() if self._only_additions() else ApiChange.breaking(
+            Criticality.safe() if self._only_additions() else Criticality.breaking(
                 "Removing a directive location will break any instance of its usage. "
                 "Be sure no one uses it before removing it"
             )
@@ -82,7 +82,7 @@ class DirectiveLocationsChanged(DirectiveChange):
 
 class DirectiveArgumentAdded(DirectiveChange):
     def __init__(self, directive, arg_name, arg_type):
-        self.criticality = ApiChange.safe() if not is_non_null_type(arg_type.type) else ApiChange.breaking(
+        self.criticality = Criticality.safe() if not is_non_null_type(arg_type.type) else Criticality.breaking(
             "Adding a non nullable directive argument will break existing usages of the directive"
         )
         self.directive = directive
@@ -96,7 +96,7 @@ class DirectiveArgumentAdded(DirectiveChange):
 
 class DirectiveArgumentRemoved(DirectiveChange):
 
-    criticality = ApiChange.breaking("Removing a directive argument will break existing usages of the argument")
+    criticality = Criticality.breaking("Removing a directive argument will break existing usages of the argument")
 
     def __init__(self, directive, arg_name, arg_type):
         self.directive = directive
@@ -111,9 +111,9 @@ class DirectiveArgumentRemoved(DirectiveChange):
 class DirectiveArgumentTypeChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_type, new_type):
         self.criticality = (
-            ApiChange.breaking("Changing the argument type is a breaking change")
+            Criticality.breaking("Changing the argument type is a breaking change")
             if not is_safe_change_for_input_value(old_type, new_type)
-            else ApiChange.safe("Changing an input field from non-null to null is considered non-breaking")
+            else Criticality.safe("Changing an input field from non-null to null is considered non-breaking")
         )
         self.directive = directive
         self.arg_name = arg_name
@@ -130,7 +130,7 @@ class DirectiveArgumentTypeChanged(DirectiveChange):
 
 class DirectiveArgumentDefaultChanged(DirectiveChange):
     def __init__(self, directive, arg_name, old_default, new_default):
-        self.criticality = ApiChange.dangerous(
+        self.criticality = Criticality.dangerous(
             "Changing the default value for an argument may change the runtime "
             "behaviour of a field if it was never provided."
           )
@@ -148,7 +148,7 @@ class DirectiveArgumentDefaultChanged(DirectiveChange):
 
 
 class DirectiveArgumentDescriptionChanged(DirectiveChange):
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, directive, arg_name, old_desc, new_desc):
         self.directive = directive

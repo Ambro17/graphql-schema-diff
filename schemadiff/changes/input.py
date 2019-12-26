@@ -1,6 +1,6 @@
 from graphql import is_non_null_type
 
-from schemadiff.changes import Change, ApiChange, is_safe_change_for_input_value
+from schemadiff.changes import Change, Criticality, is_safe_change_for_input_value
 
 
 class InputFieldAdded(Change):
@@ -13,9 +13,9 @@ class InputFieldAdded(Change):
 
     def __init__(self, input_object, field_name, field):
         self.criticality = (
-            ApiChange.safe()
+            Criticality.safe()
             if is_non_null_type(field.type) is False
-            else ApiChange.breaking(self.BREAKING_MSG)
+            else Criticality.breaking(self.BREAKING_MSG)
         )
 
         self.input_object = input_object
@@ -33,7 +33,7 @@ class InputFieldAdded(Change):
 
 class InputFieldRemoved(Change):
 
-    criticality = ApiChange.breaking(
+    criticality = Criticality.breaking(
         'Removing an input field will break queries that use this input field.'
     )
 
@@ -52,7 +52,7 @@ class InputFieldRemoved(Change):
 
 class InputFieldDescriptionChanged(Change):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, input, name, new_field, old_field):
         self.input = input
@@ -74,7 +74,7 @@ class InputFieldDescriptionChanged(Change):
 
 class InputFieldDefaultChanged(Change):
 
-    criticality = ApiChange.dangerous(
+    criticality = Criticality.dangerous(
         "Changing the default value for an argument may change the runtime "
         "behaviour of a field if it was never provided."
     )
@@ -100,9 +100,9 @@ class InputFieldDefaultChanged(Change):
 class InputFieldTypeChanged(Change):
     def __init__(self, input, name, new_field, old_field):
         self.criticality = (
-            ApiChange.safe()
+            Criticality.safe()
             if is_safe_change_for_input_value(old_field.type, new_field.type)
-            else ApiChange.breaking(
+            else Criticality.breaking(
                 "Changing the type of an input field can break existing queries that use this field"
             )
         )

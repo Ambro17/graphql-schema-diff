@@ -1,9 +1,9 @@
-from schemadiff.changes import Change, ApiChange
+from schemadiff.changes import Change, Criticality
 
 
 def test_safe_change():
     class NonBreakingChange(Change):
-        criticality = ApiChange.safe('this is a safe change')
+        criticality = Criticality.safe('this is a safe change')
 
         def message(self):
             return 'test message'
@@ -20,7 +20,7 @@ def test_safe_change():
 
 def test_breaking_change():
     class BreakingChange(Change):
-        criticality = ApiChange.breaking('this is breaking')
+        criticality = Criticality.breaking('this is breaking')
 
         def message(self):
             return 'test message'
@@ -37,7 +37,7 @@ def test_breaking_change():
 
 def test_dangerous_change():
     class DangerousChange(Change):
-        criticality = ApiChange.dangerous('this is dangerous')
+        criticality = Criticality.dangerous('this is dangerous')
 
         def message(self):
             return 'test message'
@@ -50,3 +50,40 @@ def test_dangerous_change():
     assert c.dangerous is True
     assert c.safe is False
     assert c.criticality.reason == 'this is dangerous'
+
+
+def test_change_str_method_shows_change_message():
+    class Testchange(Change):
+        criticality = Criticality.safe('this is a safe change')
+
+        @property
+        def message(self):
+            return 'test message'
+
+        def path(self):
+            return 'Query.path'
+
+    change = Testchange()
+    assert str(change) == 'test message'
+
+
+def test_change_repr_simulates_class_instantiation():
+    class Testchange(Change):
+        criticality = Criticality.safe('this is a safe change')
+
+        @property
+        def message(self):
+            return 'test message'
+
+        @property
+        def path(self):
+            return 'Query.path'
+
+    change = Testchange()
+    print(repr(change))
+    assert repr(change) == (
+        "Change("
+        "criticality=Criticality(level=CriticalityLevel.NonBreaking, reason=this is a safe change), "
+        "message='test message', "
+        "path='Query.path')"
+    )

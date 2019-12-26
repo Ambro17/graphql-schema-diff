@@ -1,6 +1,6 @@
 from graphql import build_schema as schema
 
-from schemadiff.changes import ApiChange
+from schemadiff.changes import Criticality
 from schemadiff.diff.schema import Schema
 
 
@@ -27,7 +27,7 @@ def test_enum_value_removed():
     change = diff[0]
     assert change.message == "Enum value `B` was removed from `Letters` enum"
     assert change.path == 'Letters'
-    assert change.criticality == ApiChange.breaking(
+    assert change.criticality == Criticality.breaking(
         'Removing an enum value will break existing queries that use this enum value'
     )
 
@@ -63,7 +63,7 @@ def test_enums_added():
     for change in diff:
         assert change.message in expected_diff
         assert change.path in expected_paths
-        assert change.criticality == ApiChange.dangerous(
+        assert change.criticality == Criticality.dangerous(
             "Adding an enum value may break existing clients that "
             "were not programming defensively against an added case when querying an enum."
         )
@@ -92,7 +92,7 @@ def test_deprecated_enum_value():
     assert len(diff) == 1
     assert diff[0].message == "Enum value `B` was deprecated with reason `Changed the alphabet`"
     assert diff[0].path == 'Letters.B'
-    assert diff[0].criticality == ApiChange.safe(
+    assert diff[0].criticality == Criticality.safe(
         "A deprecated field can still be used by clients and will give them time to adapt their queries"
     )
 
@@ -122,7 +122,7 @@ def test_deprecated_reason_changed():
         "Deprecation reason for enum value `B` changed from `a reason` to `a new reason`"
     )
     assert diff[0].path == 'Letters.B'
-    assert diff[0].criticality == ApiChange.safe(
+    assert diff[0].criticality == Criticality.safe(
         "A deprecated field can still be used by clients and will give them time to adapt their queries"
     )
 
@@ -151,7 +151,7 @@ def test_description_added():
         "Description for enum value `A` set to `My new description`"
     )
     assert diff[0].path == 'Letters.A'
-    assert diff[0].criticality == ApiChange.safe()
+    assert diff[0].criticality == Criticality.safe()
 
 
 def test_description_changed():
@@ -179,4 +179,4 @@ def test_description_changed():
         "Description for enum value `A` changed from `My description` to `My new description`"
     )
     assert diff[0].path == 'Letters.A'
-    assert diff[0].criticality == ApiChange.safe()
+    assert diff[0].criticality == Criticality.safe()

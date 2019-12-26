@@ -1,11 +1,11 @@
 from graphql import is_non_null_type
 
-from schemadiff.changes import Change, ApiChange, is_safe_type_change
+from schemadiff.changes import Change, Criticality, is_safe_type_change
 
 
 class FieldDescriptionChanged(Change):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, new_type, name, old_field, new_field):
         self.type = new_type
@@ -27,7 +27,7 @@ class FieldDescriptionChanged(Change):
 
 class FieldDeprecationReasonChanged(Change):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, type, name, old_field, new_field):
         self.type = type
@@ -50,9 +50,9 @@ class FieldDeprecationReasonChanged(Change):
 class FieldTypeChanged(Change):
 
     def __init__(self, type, field_name, old_field, new_field):
-        self.criticality = ApiChange.safe()\
+        self.criticality = Criticality.safe()\
                            if is_safe_type_change(old_field.type, new_field.type)\
-                           else ApiChange.breaking('Changing a field type will break queries that assume its type')
+                           else Criticality.breaking('Changing a field type will break queries that assume its type')
         self.type = type
         self.field_name = field_name
         self.old_field = old_field
@@ -72,9 +72,9 @@ class FieldTypeChanged(Change):
 
 class FieldArgumentAdded(Change):
     def __init__(self, parent, field_name, argument_name, arg_type):
-        self.criticality = ApiChange.safe('Adding an optional argument is a safe change')\
+        self.criticality = Criticality.safe('Adding an optional argument is a safe change')\
                            if not is_non_null_type(arg_type.type)\
-                           else ApiChange.breaking("Adding a required argument to an existing field is a breaking "
+                           else Criticality.breaking("Adding a required argument to an existing field is a breaking "
                                                    "change because it will break existing uses of this field")
         self.parent = parent
         self.field_name = field_name
@@ -95,7 +95,7 @@ class FieldArgumentAdded(Change):
 
 class FieldArgumentRemoved(Change):
 
-    criticality = ApiChange.breaking(
+    criticality = Criticality.breaking(
         "Removing a field argument will break queries that use this argument"
     )
 

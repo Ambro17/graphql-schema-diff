@@ -1,9 +1,9 @@
-from schemadiff.changes import Change, ApiChange
+from schemadiff.changes import Change, Criticality
 
 
 class EnumValueAdded(Change):
     def __init__(self, enum, value):
-        self.criticality = ApiChange.dangerous(
+        self.criticality = Criticality.dangerous(
             "Adding an enum value may break existing clients that were not "
             "programming defensively against an added case when querying an enum."
         )
@@ -21,7 +21,7 @@ class EnumValueAdded(Change):
 
 class EnumValueRemoved(Change):
     def __init__(self, enum, value):
-        self.criticality = ApiChange.breaking(
+        self.criticality = Criticality.breaking(
             "Removing an enum value will break existing queries that use this enum value"
         )
         self.enum = enum
@@ -38,7 +38,7 @@ class EnumValueRemoved(Change):
 
 class EnumValueDescriptionChanged(Change):
 
-    criticality = ApiChange.safe()
+    criticality = Criticality.safe()
 
     def __init__(self, enum, name, old_value, new_value):
         self.enum = enum
@@ -64,7 +64,7 @@ class EnumValueDescriptionChanged(Change):
 
 class EnumValueDeprecationReasonChanged(Change):
 
-    criticality = ApiChange.safe(
+    criticality = Criticality.safe(
         "A deprecated field can still be used by clients and will give them time to adapt their queries"
     )
 
