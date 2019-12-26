@@ -1,2 +1,2 @@
 graphql-core>=3a
-attrs
+attrs==19.3.0
