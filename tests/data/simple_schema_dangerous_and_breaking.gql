@@ -1,0 +1,12 @@
+schema {
+    query: Query
+}
+
+type Query {
+    b: Field
+    c: Int
+}
+
+type Field {
+    calculus(x: Int=1): Int!
+}
