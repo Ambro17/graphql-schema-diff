@@ -3,7 +3,7 @@ Compare GraphQL Schemas
 
 ## Installation
 ```bash
-$ pip install graphql-schema-diff
+$ python3 -m pip install graphql-schema-diff
 ```
 
 ## Usage
