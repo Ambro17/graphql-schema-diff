@@ -54,8 +54,8 @@ class InputFieldDescriptionChanged(Change):
 
     criticality = Criticality.safe()
 
-    def __init__(self, input, name, new_field, old_field):
-        self.input = input
+    def __init__(self, input_, name, new_field, old_field):
+        self.input_ = input_
         self.name = name
         self.new_field = new_field
         self.old_field = old_field
@@ -63,13 +63,13 @@ class InputFieldDescriptionChanged(Change):
     @property
     def message(self):
         return (
-            f"Description for Input field `{self.input.name}.{self.name}` "
+            f"Description for Input field `{self.input_.name}.{self.name}` "
             f"changed from `{self.old_field.description}` to `{self.new_field.description}`"
         )
 
     @property
     def path(self):
-        return f"{self.input.name}.{self.name}"
+        return f"{self.input_.name}.{self.name}"
 
 
 class InputFieldDefaultChanged(Change):
@@ -79,8 +79,8 @@ class InputFieldDefaultChanged(Change):
         "behaviour of a field if it was never provided."
     )
 
-    def __init__(self, input, name, new_field, old_field):
-        self.input = input
+    def __init__(self, input_, name, new_field, old_field):
+        self.input_ = input_
         self.name = name
         self.new_field = new_field
         self.old_field = old_field
@@ -88,17 +88,17 @@ class InputFieldDefaultChanged(Change):
     @property
     def message(self):
         return (
-            f"Default value for input field `{self.input.name}.{self.name}` "
+            f"Default value for input field `{self.input_.name}.{self.name}` "
             f"changed from `{self.old_field.default_value!r}` to `{self.new_field.default_value!r}`"
         )
 
     @property
     def path(self):
-        return f"{self.input.name}.{self.name}"
+        return f"{self.input_.name}.{self.name}"
 
 
 class InputFieldTypeChanged(Change):
-    def __init__(self, input, name, new_field, old_field):
+    def __init__(self, input_, name, new_field, old_field):
         self.criticality = (
             Criticality.safe()
             if is_safe_change_for_input_value(old_field.type, new_field.type)
@@ -106,7 +106,7 @@ class InputFieldTypeChanged(Change):
                 "Changing the type of an input field can break existing queries that use this field"
             )
         )
-        self.input = input
+        self.input_ = input_
         self.name = name
         self.new_field = new_field
         self.old_field = old_field
@@ -114,10 +114,10 @@ class InputFieldTypeChanged(Change):
     @property
     def message(self):
         return (
-            f"`{self.input.name}.{self.name}` type changed from "
+            f"`{self.input_.name}.{self.name}` type changed from "
             f"`{self.old_field.type}` to `{self.new_field.type}`"
         )
 
     @property
     def path(self):
-        return f"{self.input.name}.{self.name}"
+        return f"{self.input_.name}.{self.name}"

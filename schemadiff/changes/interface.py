@@ -71,17 +71,17 @@ class NewInterfaceImplemented(Change):
         "that were not programming defensively against a new possible type."
     )
 
-    def __init__(self, interface, type):
+    def __init__(self, interface, type_):
         self.interface = interface
-        self.type = type
+        self.type_ = type_
 
     @property
     def message(self):
-        return f"`{self.type.name}` implements new interface `{self.interface.name}`"
+        return f"`{self.type_.name}` implements new interface `{self.interface.name}`"
 
     @property
     def path(self):
-        return f"{self.type}"
+        return f"{self.type_}"
 
 
 class DroppedInterfaceImplementation(Change):
@@ -91,17 +91,17 @@ class DroppedInterfaceImplementation(Change):
         "that use this in a fragment spread."
     )
 
-    def __init__(self, interface, type):
+    def __init__(self, interface, type_):
         self.interface = interface
-        self.type = type
+        self.type_ = type_
 
     @property
     def message(self):
-        return f"`{self.type.name}` no longer implements interface `{self.interface.name}`"
+        return f"`{self.type_.name}` no longer implements interface `{self.interface.name}`"
 
     @property
     def path(self):
-        return f"{self.type}"
+        return f"{self.type_}"
 
 
 class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
