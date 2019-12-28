@@ -37,10 +37,10 @@ def test_load_from_string():
 
 def test_load_invalid_schema():
     with pytest.raises(TypeError, match="Unknown type 'InvalidType'"):
-        schema = GraphQLSchema.from_file(TESTS_DATA / 'invalid_schema.gql')
+        GraphQLSchema.from_file(TESTS_DATA / 'invalid_schema.gql')
 
 
 @pytest.mark.parametrize("schema", ["", "{}", "\n{}\n", "[]"])
 def test_load_empty_schema(schema):
     with pytest.raises(GraphQLSyntaxError):
-        schema = GraphQLSchema.from_sdl(schema)
+        GraphQLSchema.from_sdl(schema)

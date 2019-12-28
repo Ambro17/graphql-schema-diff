@@ -52,7 +52,7 @@ type Query {
 ```
 ### CLI
 Inside your virtualenv you can invoke the entrypoint to see its usage options
-```
+```bash
 $ schemadiff -h
 Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-t] [-s]
 
@@ -77,7 +77,7 @@ optional arguments:
 `$ schemadiff -o tests/data/simple_schema.gql --new-schema tests/data/new_schema.gql --strict`
 
 #### Sample output
-```
+```bash
 ✅ Field `c` was added to object type `Query`
 ❌ Field `a` was removed from object type `Query`
 🚸 Default value for argument `x` on field `Field.calculus` changed from `0` to `1`

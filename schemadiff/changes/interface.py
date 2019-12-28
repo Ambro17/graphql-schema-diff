@@ -4,7 +4,7 @@ from schemadiff.changes import Change, Criticality
 class InterfaceFieldAdded(Change):
 
     criticality = Criticality.dangerous(
-        "Adding an interface to an object type may break existing clients " 
+        "Adding an interface to an object type may break existing clients "
         "that were not programming defensively against a new possible type."
     )
 
