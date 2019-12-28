@@ -2,6 +2,7 @@
 Compare GraphQL Schemas
 
 ## Installation
+The lib requires python3.6 or greater to work. In order to install it run
 ```bash
 $ python3 -m pip install graphql-schema-diff
 ```
@@ -75,6 +76,15 @@ optional arguments:
 ❌ Field `a` was removed from object type `Query`
 🚸 Default value for argument `x` on field `Field.calculus` changed from `0` to `1`
 ```
+
+>If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
+>```
+>$ sudo apt install fonts-noto-color-emoji
+>$ fc-cache -f -v
+>```
+>That should install noto emoji fonts and refresh the font cache so you can see the proper emojis 😎
+
+
 ## Credits
 Implementation was heavily inspired by Marc Giroux [ruby version](https://github.com/xuorig/graphql-schema_comparator) 
 and Kamil Kisiela [js implementation](https://github.com/kamilkisiela/graphql-inspector).
