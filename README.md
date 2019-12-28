@@ -1,4 +1,6 @@
-![Logo](https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/integrations/images/logo.png "Logo")
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/integrations/images/logo.svg?sanitize=true" title="Logo">
+</p>
 
 [![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=integrations)](https://travis-ci.com/Ambro17/graphql-schema-diff)
 [![codecov](https://codecov.io/gh/Ambro17/graphql-schema-diff/branch/integrations/graph/badge.svg)](https://codecov.io/gh/Ambro17/graphql-schema-diff)
