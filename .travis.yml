@@ -7,3 +7,5 @@ install:
   - pip install -r requirements_dev.txt
 script:
   - make test-coverage
+after_success:
+  - codecov
