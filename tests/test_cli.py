@@ -1,6 +1,9 @@
+import sys
+from unittest.mock import patch
+
 import pytest
 
-from schemadiff.__main__ import main, parse_args
+from schemadiff.__main__ import main, parse_args, cli
 
 
 def test_no_diff(capsys):
@@ -124,3 +127,16 @@ def test_tolerant_mode_doesnt_allow_breaking_changes(capsys):
 
     exit_code = main(default_args)
     assert exit_code == 0
+
+
+def test_cli_function(capsys):
+    SCHEMA_FILE = 'tests/data/simple_schema.gql'
+    command_args = [
+        'schemadiff',
+        '-o', SCHEMA_FILE,
+        '-n', SCHEMA_FILE,
+    ]
+    with patch.object(sys, 'argv', command_args):
+        exit_code = cli()
+        assert exit_code == 0
+        assert capsys.readouterr().out == '🎉 Both schemas are equal!\n'
