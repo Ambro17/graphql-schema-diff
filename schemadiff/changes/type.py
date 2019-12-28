@@ -8,16 +8,16 @@ class RemovedType(Change):
         "It is preferred to deprecate and remove all references to this type first."
     )
 
-    def __init__(self, type):
-        self.type = type
+    def __init__(self, type_):
+        self.type_ = type_
 
     @property
     def message(self):
-        return f"Type `{self.type.name}` was removed"
+        return f"Type `{self.type_.name}` was removed"
 
     @property
     def path(self):
-        return f'{self.type.name}'
+        return f'{self.type_.name}'
 
 
 class AddedType(Change):
