@@ -1,5 +1,11 @@
 # schemadiff
-Compare GraphQL Schemas
+`graphql-schema-diff` is a lib that shows you the difference between two GraphQL Schemas.
+It takes two GraphQL schemas from a string or a file and gives you a list of changes between versions.
+This might be useful for
+* Detecting breaking changes before they reach the api clients
+* Integrating into CI pipelines to control your api evolution
+* Document your api changes and submit them for approval along with your pull requests.
+
 
 ## Installation
 The lib requires python3.6 or greater to work. In order to install it run
@@ -83,7 +89,6 @@ optional arguments:
 >$ fc-cache -f -v
 >```
 >That should install noto emoji fonts and refresh the font cache so you can see the proper emojis 😎
-
 
 ## Credits
 Implementation was heavily inspired by Marc Giroux [ruby version](https://github.com/xuorig/graphql-schema_comparator) 
