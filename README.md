@@ -4,6 +4,7 @@
 
 [![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=integrations)](https://travis-ci.com/Ambro17/graphql-schema-diff)
 [![codecov](https://codecov.io/gh/Ambro17/graphql-schema-diff/branch/integrations/graph/badge.svg)](https://codecov.io/gh/Ambro17/graphql-schema-diff)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4e998e6c1f71468a93d0a34a41b554bb)](https://www.codacy.com/manual/Ambro17/graphql-schema-diff?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ambro17/graphql-schema-diff&amp;utm_campaign=Badge_Grade)
 # schemadiff
 `graphql-schema-diff` is a lib that shows you the difference between two GraphQL Schemas.
 It takes two GraphQL schemas from a string or a file and gives you a list of changes between versions.
