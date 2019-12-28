@@ -29,8 +29,8 @@ class FieldDeprecationReasonChanged(Change):
 
     criticality = Criticality.safe()
 
-    def __init__(self, type, name, old_field, new_field):
-        self.type = type
+    def __init__(self, type_, name, old_field, new_field):
+        self.type_ = type_
         self.field_name = name
         self.old_field = old_field
         self.new_field = new_field
@@ -38,22 +38,22 @@ class FieldDeprecationReasonChanged(Change):
     @property
     def message(self):
         return (
-            f"Deprecation reason on field `{self.type}.{self.field_name}` changed "
+            f"Deprecation reason on field `{self.type_}.{self.field_name}` changed "
             f"from `{self.old_field.deprecation_reason}` to `{self.new_field.deprecation_reason}`"
         )
 
     @property
     def path(self):
-        return f"{self.type}.{self.field_name}"
+        return f"{self.type_}.{self.field_name}"
 
 
 class FieldTypeChanged(Change):
 
-    def __init__(self, type, field_name, old_field, new_field):
+    def __init__(self, type_, field_name, old_field, new_field):
         self.criticality = Criticality.safe()\
                            if is_safe_type_change(old_field.type, new_field.type)\
                            else Criticality.breaking('Changing a field type will break queries that assume its type')
-        self.type = type
+        self.type_ = type_
         self.field_name = field_name
         self.old_field = old_field
         self.new_field = new_field
@@ -61,13 +61,13 @@ class FieldTypeChanged(Change):
     @property
     def message(self):
         return (
-            f"`{self.type}.{self.field_name}` type changed "
+            f"`{self.type_}.{self.field_name}` type changed "
             f"from `{self.old_field.type}` to `{self.new_field.type}`"
         )
 
     @property
     def path(self):
-        return f"{self.type}.{self.field_name}"
+        return f"{self.type_}.{self.field_name}"
 
 
 class FieldArgumentAdded(Change):

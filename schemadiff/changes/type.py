@@ -65,15 +65,15 @@ class TypeKindChanged(Change):
         "would break queries that define a selection set for this type."
     )
 
-    def __init__(self, type, old_kind, new_kind):
-        self.type = type
+    def __init__(self, type_, old_kind, new_kind):
+        self.type_ = type_
         self.old_kind = old_kind
         self.new_kind = new_kind
 
     @property
     def message(self):
-        return f"`{self.type}` kind changed from `{self.old_kind.value.upper()}` to `{self.new_kind.value.upper()}`"
+        return f"`{self.type_}` kind changed from `{self.old_kind.value.upper()}` to `{self.new_kind.value.upper()}`"
 
     @property
     def path(self):
-        return f"{self.type}"
+        return f"{self.type_}"
