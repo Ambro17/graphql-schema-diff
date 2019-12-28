@@ -1,3 +1,5 @@
+![Logo](https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/integrations/images/logo.png "Logo")
+
 [![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=integrations)](https://travis-ci.com/Ambro17/graphql-schema-diff)
 # schemadiff
 `graphql-schema-diff` is a lib that shows you the difference between two GraphQL Schemas.
