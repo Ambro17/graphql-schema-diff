@@ -6,6 +6,9 @@ test:
 	pytest
 
 test-coverage:
+	pytest --cov $(WORK_DIR)
+
+test-coverage-html:
 	pytest --cov $(WORK_DIR) --cov-report html
 
 flake8:
