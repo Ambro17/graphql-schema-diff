@@ -40,8 +40,8 @@ def test_schema_default_mode(capsys):
     assert exit_code == 0
 
     stdout = capsys.readouterr()
-    assert "✅ Field `c` was added to object type `Query`" in stdout.out
-    assert "🚸 Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
+    assert "✔️ Field `c` was added to object type `Query`" in stdout.out
+    assert "⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
 
 
 def test_schema_strict_mode(capsys):
@@ -57,8 +57,8 @@ def test_schema_strict_mode(capsys):
     assert exit_code == 1
 
     stdout = capsys.readouterr()
-    assert "✅ Field `c` was added to object type `Query`" in stdout.out
-    assert "🚸 Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
+    assert "✔️ Field `c` was added to object type `Query`" in stdout.out
+    assert "⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
 
 
 def test_schema_tolerant_mode(capsys):
@@ -74,8 +74,8 @@ def test_schema_tolerant_mode(capsys):
     assert exit_code == 0
 
     stdout = capsys.readouterr()
-    assert "✅ Field `c` was added to object type `Query`" in stdout.out
-    assert "🚸 Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
+    assert "✔️ Field `c` was added to object type `Query`" in stdout.out
+    assert "⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
     assert len(stdout.out.split('\n')) == 3
 
 

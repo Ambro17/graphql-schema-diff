@@ -84,9 +84,9 @@ optional arguments:
 
 #### Sample output
 ```bash
-✅ Field `c` was added to object type `Query`
+✔️ Field `c` was added to object type `Query`
 ❌ Field `a` was removed from object type `Query`
-🚸 Default value for argument `x` on field `Field.calculus` changed from `0` to `1`
+⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `1`
 ```
 
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run

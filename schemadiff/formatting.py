@@ -1,3 +1,4 @@
+import os
 from schemadiff import Change
 from schemadiff.changes import CriticalityLevel
 
@@ -12,9 +13,9 @@ def format_diff(changes: [Change]) -> str:
 
 def format_change_by_criticality(change: Change) -> str:
     icon_by_criticality = {
-        CriticalityLevel.Breaking: '❌',
-        CriticalityLevel.Dangerous: '🚸',
-        CriticalityLevel.NonBreaking: '✅',
+        CriticalityLevel.Breaking: os.getenv('SD_BREAKING_CHANGE_ICON', '❌'),
+        CriticalityLevel.Dangerous: os.getenv('SD_DANGEROUS_CHANGE_ICON', '⚠️'),
+        CriticalityLevel.NonBreaking: os.getenv('SD_SAFE_CHANGE_ICON', '✔️'),
     }
     icon = icon_by_criticality[change.criticality.level]
     return f"{icon} {change.message}"
