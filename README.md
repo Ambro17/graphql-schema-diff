@@ -2,12 +2,15 @@
   <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/integrations/images/logo.svg?sanitize=true" title="Logo">
 </p>
 
-[![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=integrations)](https://travis-ci.com/Ambro17/graphql-schema-diff)
-[![codecov](https://codecov.io/gh/Ambro17/graphql-schema-diff/branch/integrations/graph/badge.svg)](https://codecov.io/gh/Ambro17/graphql-schema-diff)
+[![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=master)](https://travis-ci.com/Ambro17/graphql-schema-diff)
+[![codecov](https://codecov.io/gh/Ambro17/graphql-schema-diff/branch/master/graph/badge.svg)](https://codecov.io/gh/Ambro17/graphql-schema-diff)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4e998e6c1f71468a93d0a34a41b554bb)](https://www.codacy.com/manual/Ambro17/graphql-schema-diff?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ambro17/graphql-schema-diff&amp;utm_campaign=Badge_Grade)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![Python 3.6+](https://img.shields.io/badge/Python-3.6+-orange.svg)](https://www.python.org/downloads/release/python-360/)
+
 # schemadiff
-`graphql-schema-diff` is a lib that shows you the difference between two GraphQL Schemas.
-It takes two GraphQL schemas from a string or a file and gives you a list of changes between versions.
+`schemadiff` is a lib that shows you the difference between two GraphQL Schemas.
+It takes two schemas from a string or a file and gives you a list of changes between both versions.
 This might be useful for
 *  Detecting breaking changes before they reach the api clients
 *  Integrating into CI pipelines to control your api evolution
