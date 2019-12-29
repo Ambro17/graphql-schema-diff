@@ -1,9 +1,8 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/integrations/images/logo.svg?sanitize=true" title="Logo">
 </p>
-
-[![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=integrations)](https://travis-ci.com/Ambro17/graphql-schema-diff)
-[![codecov](https://codecov.io/gh/Ambro17/graphql-schema-diff/branch/integrations/graph/badge.svg)](https://codecov.io/gh/Ambro17/graphql-schema-diff)
+[![Build Status](https://travis-ci.com/Ambro17/graphql-schema-diff.svg?branch=master)](https://travis-ci.com/Ambro17/graphql-schema-diff)
+[![codecov](https://codecov.io/gh/Ambro17/graphql-schema-diff/branch/master/graph/badge.svg)](https://codecov.io/gh/Ambro17/graphql-schema-diff)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/4e998e6c1f71468a93d0a34a41b554bb)](https://www.codacy.com/manual/Ambro17/graphql-schema-diff?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Ambro17/graphql-schema-diff&amp;utm_campaign=Badge_Grade)
 # schemadiff
 `schemadiff` is a lib that shows you the difference between two GraphQL Schemas.
