@@ -1,6 +1,6 @@
 import os
-from schemadiff import Change
-from schemadiff.changes import CriticalityLevel
+
+from schemadiff.changes import CriticalityLevel, Change
 
 
 def format_diff(changes: [Change]) -> str:
