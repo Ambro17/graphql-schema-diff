@@ -17,7 +17,9 @@
 </p>
 
 ## Example 4
-`font:`
-
-## Example 4
+`font: Original usage.svg`
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/animations/images/usage.svg?sanitize=true" title="Usage">
+</p>
+## Example 5
 `font:`
