@@ -11,7 +11,10 @@
 </p>
 
 ## Example 3
-`font:`
+`'Noto Mono', 'Noto Color Emoji', 'Apple Color Emoji', 'Android Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', monospace;`
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/animations/images/last101.svg?sanitize=true" title="Usage">
+</p>
 
 ## Example 4
 `font:`
