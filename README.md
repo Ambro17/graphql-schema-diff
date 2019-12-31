@@ -18,6 +18,9 @@
         <img alt="Python 3.6+" src="https://img.shields.io/badge/Python-3.6+-orange.svg">
     </a>
 </p>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/master/images/usage.svg?sanitize=true" title="Usage">
+</p>
 
 # schemadiff
 `schemadiff` is a lib that shows you the difference between two GraphQL Schemas.
@@ -35,6 +38,7 @@ $ python3 -m pip install graphql-schema-diff
 
 ## Usage
 You can use this package as a lib or as a cli. You can choose what better suits your needs
+
 ### Lib
 ```python
 >>> from schemadiff import diff, diff_from_file, format_diff
@@ -96,23 +100,21 @@ optional arguments:
 
 `$ schemadiff -o tests/data/simple_schema.gql --new-schema tests/data/new_schema.gql --strict`
 
-#### Sample output
-```bash
-✔️ Field `c` was added to object type `Query`
-❌ Field `a` was removed from object type `Query`
-⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `1`
-```
-
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
 >```bash
 >$ sudo apt install fonts-noto-color-emoji
+>$ vim ~/.config/fontconfig/fonts.conf # and paste https://gist.github.com/Ambro17/80bce76d07a6eb74323db2ca9b887263
 >$ fc-cache -f -v
 >```
->That should install noto emoji fonts and refresh the font cache so you can see the proper emojis 😎
+>That should install noto emoji fonts and set is as the fallback font to render emojis 😎
 
 ## Credits
 Implementation was heavily inspired by Marc Giroux [ruby version](https://github.com/xuorig/graphql-schema_comparator) 
 and Kamil Kisiela [js implementation](https://github.com/kamilkisiela/graphql-inspector).
+
+Logo arrows were adapted from the work of [Paul Verhulst @ The Noun Project](https://thenounproject.com/paulverhulst/)
+
+Terminal gif was recorded with the awesome tool [termtosvg](https://github.com/nbedos/termtosvg)
 
 ## Contributions
 Bug reports, Feature requests or pull request are welcome!
