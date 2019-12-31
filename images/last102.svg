@@ -224,7 +224,7 @@
             }
             #screen {
                 /* Render emojis! */
-                font-family: 'Noto Mono', 'Noto Color Emoji', 'Apple Color Emoji', 'Android Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', monospace;
+                font-family: 'Noto Mono', 'Noto Color Emoji', monospace;
             }
         </style>
     </defs>

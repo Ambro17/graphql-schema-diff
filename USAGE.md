@@ -11,7 +11,7 @@
 </p>
 
 ## Example 3
-`'Noto Mono', 'Noto Color Emoji', 'Apple Color Emoji', 'Android Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', monospace;`
+`'Noto Mono', 'Noto Mono', 'Noto Color Emoji', monospace;`
 <p align="center">
   <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/animations/images/last101.svg?sanitize=true" title="Usage">
 </p>
