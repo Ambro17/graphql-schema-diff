@@ -224,7 +224,7 @@
             }
             #screen {
                 /* Render emojis! */
-                font-family: 'Noto Mono', 'Noto Color Emoji';
+                font-family: 'Noto Mono', 'Noto Color Emoji', monospace;
             }
         </style>
     </defs>
