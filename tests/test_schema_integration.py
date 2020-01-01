@@ -2,6 +2,7 @@ from pathlib import Path
 
 from schemadiff.graphql_schema import GraphQLSchema
 from schemadiff.diff.schema import Schema
+from schemadiff.formatting import print_diff
 
 TESTS_DATA = Path(__file__).parent / 'data'
 
@@ -59,3 +60,16 @@ def test_compare_from_schema_string_sdl():
     messages = [change.message for change in diff]
     for message in messages:
         assert message in expected_changes
+
+
+def test_print_diff_shows_difference(capsys):
+    old_schema = GraphQLSchema.from_file(TESTS_DATA / 'simple_schema.gql')
+    new_schema = GraphQLSchema.from_file(TESTS_DATA / 'simple_schema_breaking_changes.gql')
+
+    diff = Schema(old_schema, new_schema).diff()
+    assert len(diff) == 1
+    ret = print_diff(diff)
+    assert ret is None
+    assert capsys.readouterr().out == (
+        '❌ Field `a` was removed from object type `Query`\n'
+    )
