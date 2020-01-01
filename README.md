@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/integrations/images/logo.svg?sanitize=true" title="Logo">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/master/images/logo.svg?sanitize=true" title="Logo">
 </p>
 <p align="center">
     <a href="https://travis-ci.com/Ambro17/graphql-schema-diff">
