@@ -19,7 +19,7 @@
     </a>
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/master/images/usage.svg?sanitize=true" title="Usage">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/animations/images/usage.gif" title="Usage">
 </p>
 
 # schemadiff
@@ -41,7 +41,7 @@ You can use this package as a lib or as a cli. You can choose what better suits 
 
 ### Lib
 ```python
->>> from schemadiff import diff, diff_from_file, format_diff
+>>> from schemadiff import diff, diff_from_file, print_diff
 >>> old_schema = """
 schema {
     query: Query
@@ -63,7 +63,7 @@ type Query {
 }
 """
 >>> changes = diff(old_schema, new_schema)
->>> print(format_diff(changes))                   # Pretty print difference
+>>> print_diff(changes)                   # Pretty print difference
 >>> any(change.breaking or change.dangerous for change in changes)    # Check if there was any breaking or dangerous change
 
 # You can also compare from schema files
@@ -72,7 +72,7 @@ type Query {
 >>> with open('new_schema.gql', 'w') as f:
 ...     f.write(new_schema)
 >>> changes = diff_from_file('old_schema.gql', 'new_schema.gql')
->>> print(format_diff(changes))
+>>> print_diff(changes)
 ```
 ### CLI
 Inside your virtualenv you can invoke the entrypoint to see its usage options
