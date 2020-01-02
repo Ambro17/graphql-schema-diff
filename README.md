@@ -15,7 +15,7 @@
         <img alt="License: GPL v3" src="https://img.shields.io/badge/License-GPLv3-blue.svg">
     </a>
     <a href="https://www.python.org/downloads/release/python-360/">
-        <img alt="Python 3.6+" src="https://img.shields.io/badge/Python-3.6+-orange.svg">
+        <img alt="Python 3.6+" src="https://img.shields.io/badge/Python-3.6+-blue.svg">
     </a>
 </p>
 <p align="center">
