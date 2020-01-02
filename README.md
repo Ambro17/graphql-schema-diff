@@ -114,7 +114,5 @@ and Kamil Kisiela [js implementation](https://github.com/kamilkisiela/graphql-in
 
 Logo arrows were adapted from the work of [Paul Verhulst @ The Noun Project](https://thenounproject.com/paulverhulst/)
 
-Terminal gif was recorded with the awesome tool [termtosvg](https://github.com/nbedos/termtosvg)
-
 ## Contributions
 Bug reports, Feature requests or pull request are welcome!
