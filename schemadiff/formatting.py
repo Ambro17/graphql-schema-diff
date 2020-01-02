@@ -19,3 +19,7 @@ def format_change_by_criticality(change: Change) -> str:
     }
     icon = icon_by_criticality[change.criticality.level]
     return f"{icon} {change.message}"
+
+
+def print_diff(changes: [Change]) -> None:
+    print(format_diff(changes))
