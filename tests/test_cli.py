@@ -1,5 +1,6 @@
 import json
 import sys
+from operator import itemgetter
 from unittest.mock import patch
 
 import pytest
@@ -58,17 +59,18 @@ def test_schema_default_mode_json_output(capsys):
 
     stdout = capsys.readouterr().out
     result = json.loads(stdout)
-    assert result == {
-        '1e3b776bda2dd8b11804e7341bb8b2d1': {
+    assert sorted(result, key=itemgetter('path')) == sorted([
+        {
             'criticality': {
                 'level': 'NON_BREAKING',
                 'reason': "This change won't break any preexisting query"
             },
             'is_safe_change': True,
             'message': 'Field `c` was added to object type `Query`',
-            'path': 'Query.c'
+            'path': 'Query.c',
+            'checksum': '1e3b776bda2dd8b11804e7341bb8b2d1',
         },
-        'a43d73d21c69cbd72334c06904439f50': {
+        {
             'criticality': {
                 'level': 'DANGEROUS',
                 'reason': 'Changing the default value for an argument '
@@ -76,9 +78,10 @@ def test_schema_default_mode_json_output(capsys):
             },
             'is_safe_change': False,
             'message': 'Default value for argument `x` on field `Field.calculus` changed from `0` to `100`',
-            'path': 'Field.calculus'
+            'path': 'Field.calculus',
+            'checksum': 'a43d73d21c69cbd72334c06904439f50',
         }
-    }
+    ], key=itemgetter('path'))
 
 
 def test_schema_strict_mode(capsys):

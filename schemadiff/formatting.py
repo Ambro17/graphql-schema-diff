@@ -39,14 +39,8 @@ def changes_to_dict(changes: [Change]) -> [dict]:
 
 
 def json_dump_changes(changes: [Change]) -> str:
-    changes_ = changes_to_dict(changes)
-    return json.dumps(
-        {
-            _change_key(change['message']): change
-            for change in changes_
-        }
-    )
+    return json.dumps(changes_to_dict(changes))
 
 
-def print_json(changes) -> None:
+def print_json(changes: [Change]) -> None:
     print(json_dump_changes(changes))
