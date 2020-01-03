@@ -1,3 +1,4 @@
+import json
 from abc import abstractmethod, ABC
 from enum import Enum
 
@@ -112,3 +113,17 @@ class Change(ABC):
 
     def __str__(self):
         return self.message
+
+    def to_dict(self):
+        return {
+            'message': self.message,
+            'path': self.path,
+            'is_safe_change': self.safe,
+            'criticality': {
+                'level': self.criticality.level.value,
+                'reason': self.criticality.reason
+            }
+        }
+
+    def to_json(self):
+        return json.dumps(self.to_dict())

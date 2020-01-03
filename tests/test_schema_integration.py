@@ -60,16 +60,3 @@ def test_compare_from_schema_string_sdl():
     messages = [change.message for change in diff]
     for message in messages:
         assert message in expected_changes
-
-
-def test_print_diff_shows_difference(capsys):
-    old_schema = GraphQLSchema.from_file(TESTS_DATA / 'simple_schema.gql')
-    new_schema = GraphQLSchema.from_file(TESTS_DATA / 'simple_schema_breaking_changes.gql')
-
-    diff = Schema(old_schema, new_schema).diff()
-    assert len(diff) == 1
-    ret = print_diff(diff)
-    assert ret is None
-    assert capsys.readouterr().out == (
-        '❌ Field `a` was removed from object type `Query`\n'
-    )

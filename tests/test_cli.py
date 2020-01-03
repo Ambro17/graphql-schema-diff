@@ -1,3 +1,4 @@
+import json
 import sys
 from unittest.mock import patch
 
@@ -42,6 +43,42 @@ def test_schema_default_mode(capsys):
     stdout = capsys.readouterr()
     assert "✔️ Field `c` was added to object type `Query`" in stdout.out
     assert "⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
+
+
+def test_schema_default_mode_json_output(capsys):
+    SCHEMA_FILE = 'tests/data/simple_schema.gql'
+    ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_dangerous_changes.gql'
+    args = parse_args([
+        '--old-schema', SCHEMA_FILE,
+        '--new-schema', ANOTHER_SCHEMA_FILE,
+        '--as-json'
+    ])
+    exit_code = main(args)
+    assert exit_code == 0
+
+    stdout = capsys.readouterr().out
+    result = json.loads(stdout)
+    assert result == {
+        '1e3b776bda2dd8b11804e7341bb8b2d1': {
+            'criticality': {
+                'level': 'NON_BREAKING',
+                'reason': "This change won't break any preexisting query"
+            },
+            'is_safe_change': True,
+            'message': 'Field `c` was added to object type `Query`',
+            'path': 'Query.c'
+        },
+        'a43d73d21c69cbd72334c06904439f50': {
+            'criticality': {
+                'level': 'DANGEROUS',
+                'reason': 'Changing the default value for an argument '
+                          'may change the runtime behaviour of a field if it was never provided.'
+            },
+            'is_safe_change': False,
+            'message': 'Default value for argument `x` on field `Field.calculus` changed from `0` to `100`',
+            'path': 'Field.calculus'
+        }
+    }
 
 
 def test_schema_strict_mode(capsys):
