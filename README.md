@@ -102,14 +102,14 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql`
 # Pass a evaluation flag (mixing long arg name and short arg name)
 schemadiff --old-schema tests/data/simple_schema.gql -n tests/data/new_schema.gql --strict`
 
-# Pretty print output as json with details of each change
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json | python -m json.tool
+# Print output as json with details of each change
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json
 
 # Save output to a json file
 schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json > changes.json
 
-# Compare schemasa ignoring allowed changes
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allowlist.json | python -m json.tool
+# Compare schemas ignoring allowed changes
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allowlist.json
 ```
 
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
