@@ -78,7 +78,7 @@ type Query {
 Inside your virtualenv you can invoke the entrypoint to see its usage options
 ```bash
 $ schemadiff -h
-Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-t] [-s]
+Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-a ALLOW_LIST] [-t] [-s]
 
 Schema comparator
 
@@ -89,6 +89,8 @@ optional arguments:
   -n NEW_SCHEMA, --new-schema NEW_SCHEMA
                         Path to new graphql schema file
   -j, --as-json         Output a detailed summary of changes in json format
+  -a ALLOW_LIST, --allow-list ALLOW_LIST
+                        Path to the allowed list of changes
   -t, --tolerant        Tolerant mode. Error out only if there's a breaking
                         change but allow dangerous changes
   -s, --strict          Strict mode. Error out on dangerous and breaking
