@@ -1,3 +1,4 @@
+import json
 import os
 
 from schemadiff.changes import CriticalityLevel, Change
@@ -23,3 +24,18 @@ def format_change_by_criticality(change: Change) -> str:
 
 def print_diff(changes: [Change]) -> None:
     print(format_diff(changes))
+
+
+def changes_to_dict(changes: [Change]) -> [dict]:
+    return [
+        change.to_dict()
+        for change in changes
+    ]
+
+
+def json_dump_changes(changes: [Change]) -> str:
+    return json.dumps(changes_to_dict(changes), indent=4)
+
+
+def print_json(changes: [Change]) -> None:
+    print(json_dump_changes(changes))

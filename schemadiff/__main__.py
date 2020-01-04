@@ -1,9 +1,10 @@
 import sys
 import argparse
 
+from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
 from schemadiff.graphql_schema import GraphQLSchema
-from schemadiff.formatting import format_diff
+from schemadiff.formatting import print_diff, print_json
 
 
 def cli():
@@ -23,12 +24,20 @@ def parse_args(arguments):
                         type=argparse.FileType('r', encoding='UTF-8'),
                         help='Path to new graphql schema file',
                         required=True)
+    parser.add_argument('-j', '--as-json',
+                        action='store_true',
+                        help='Output a detailed summary of changes in json format',
+                        required=False)
+    parser.add_argument('-a', '--allow-list',
+                        type=argparse.FileType('r', encoding='UTF-8'),
+                        help='Path to the allowed list of changes')
     parser.add_argument('-t', '--tolerant',
                         action='store_true',
                         help="Tolerant mode. Error out only if there's a breaking change but allow dangerous changes")
     parser.add_argument('-s', '--strict',
                         action='store_true',
                         help="Strict mode. Error out on dangerous and breaking changes.")
+
     return parser.parse_args(arguments)
 
 
@@ -40,7 +49,15 @@ def main(args) -> int:
     args.new_schema.close()
 
     diff = Schema(old_schema, new_schema).diff()
-    print(format_diff(diff))
+    if args.allow_list:
+        allow_list = args.allow_list.read()
+        args.allow_list.close()
+        allowed_changes = read_allowed_changes(allow_list)
+        diff = [change for change in diff if change.checksum() not in allowed_changes]
+    if args.as_json:
+        print_json(diff)
+    else:
+        print_diff(diff)
 
     return exit_code(diff, args.strict, args.tolerant)
 

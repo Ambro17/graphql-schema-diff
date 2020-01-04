@@ -78,7 +78,7 @@ type Query {
 Inside your virtualenv you can invoke the entrypoint to see its usage options
 ```bash
 $ schemadiff -h
-Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-t] [-s]
+Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-t] [-s]
 
 Schema comparator
 
@@ -88,17 +88,29 @@ optional arguments:
                         Path to old graphql schema file
   -n NEW_SCHEMA, --new-schema NEW_SCHEMA
                         Path to new graphql schema file
+  -j, --as-json         Output a detailed summary of changes in json format
   -t, --tolerant        Tolerant mode. Error out only if there's a breaking
                         change but allow dangerous changes
   -s, --strict          Strict mode. Error out on dangerous and breaking
                         changes.
 ```
 #### Examples
-`$ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql`
+```bash
+# Compare schemas and output diff to stdout
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql`
 
-`$ schemadiff --old-schema tests/data/simple_schema.gql -n tests/data/new_schema.gql --tolerant`
+# Pass a evaluation flag (mixing long arg name and short arg name)
+schemadiff --old-schema tests/data/simple_schema.gql -n tests/data/new_schema.gql --strict`
 
-`$ schemadiff -o tests/data/simple_schema.gql --new-schema tests/data/new_schema.gql --strict`
+# Print output as json with details of each change
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json
+
+# Save output to a json file
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json > changes.json
+
+# Compare schemas ignoring allowed changes
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allowlist.json
+```
 
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
 >```bash
