@@ -36,7 +36,7 @@ def read_allowed_changes(file_content):
     if not isinstance(allowlist, dict):
         raise InvalidAllowlist("Allowlist must be a mapping.")
 
-    CHECKSUM_REGEX = re.compile(r'[a-fA-F0-9]{38}')
+    CHECKSUM_REGEX = re.compile(r'[a-fA-F0-9]{32}')
     if any(not CHECKSUM_REGEX.match(checksum) for checksum in allowlist.keys()):
         raise InvalidAllowlist("All keys must be a valid md5 checksum")
 
