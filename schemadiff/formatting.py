@@ -1,4 +1,3 @@
-import hashlib
 import json
 import os
 
@@ -27,10 +26,6 @@ def print_diff(changes: [Change]) -> None:
     print(format_diff(changes))
 
 
-def _change_key(message):
-    return hashlib.md5(message.encode('utf-8')).hexdigest()
-
-
 def changes_to_dict(changes: [Change]) -> [dict]:
     return [
         change.to_dict()
@@ -39,7 +34,7 @@ def changes_to_dict(changes: [Change]) -> [dict]:
 
 
 def json_dump_changes(changes: [Change]) -> str:
-    return json.dumps(changes_to_dict(changes))
+    return json.dumps(changes_to_dict(changes), indent=4)
 
 
 def print_json(changes: [Change]) -> None:

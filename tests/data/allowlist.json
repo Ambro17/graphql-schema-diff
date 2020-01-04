@@ -1,0 +1,11 @@
+{
+  "5fba3d6ffc43c6769c6959ce5cb9b1c8": {
+    "acceptance_reason": "It is correctly handled on FE already",
+    "criticality": {
+      "level": "DANGEROUS",
+      "reason": "Changing the default value for an argument may change the runtime behaviour of a field if it was never provided."
+    },
+    "message": "Default value for argument `x` on field `Field.calculus` changed from `0` to `100`",
+    "path": "Field.calculus"
+  }
+}

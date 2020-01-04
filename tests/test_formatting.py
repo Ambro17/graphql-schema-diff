@@ -1,4 +1,3 @@
-import hashlib
 import json
 
 from schemadiff.diff.schema import Schema

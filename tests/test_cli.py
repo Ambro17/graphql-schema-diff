@@ -84,6 +84,23 @@ def test_schema_default_mode_json_output(capsys):
     ], key=itemgetter('path'))
 
 
+def test_cli_with_allow_list_does_not_show_allowed_changes(capsys):
+    SCHEMA_FILE = 'tests/data/simple_schema.gql'
+    ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_breaking_changes.gql'
+    ALLOW_LIST = 'tests/data/allowlist.json'
+    args = parse_args([
+        '--old-schema', SCHEMA_FILE,
+        '--new-schema', ANOTHER_SCHEMA_FILE,
+        '-a', ALLOW_LIST
+    ])
+    exit_code = main(args)
+    assert exit_code == 0
+
+    stdout = capsys.readouterr().out
+    # The only difference between both schemas was allowed, so there are no differences.
+    assert stdout == '🎉 Both schemas are equal!\n'
+
+
 def test_schema_strict_mode(capsys):
     SCHEMA_FILE = 'tests/data/simple_schema.gql'
     ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_dangerous_changes.gql'
