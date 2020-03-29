@@ -1,6 +1,7 @@
 backlog
 .idea/
 .pytest_cache/
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
