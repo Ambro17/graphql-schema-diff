@@ -157,3 +157,106 @@ def test_named_typed_changed_type():
         'turning an object type to a scalar type would break queries '
         'that define a selection set for this type.'
     )
+
+
+def test_schema_query_root_changed():
+    old_schema = schema("""
+    schema {
+        query: Query
+    }
+
+    type Query {
+        field: String!
+    }
+    """)
+    new_schema = schema("""
+    schema {
+        query: ChangedQuery
+    }
+
+    type ChangedQuery {
+        field: String!
+    }
+    """)
+    diff = Schema(old_schema, new_schema).diff()
+    print(diff)
+    assert diff and len(diff) == 3
+    assert {x.message for x in diff} == {
+        'Type `ChangedQuery` was added',
+        'Type `Query` was removed',
+        'Schema query root has changed from `Query` to `ChangedQuery`'
+    }
+
+
+def test_schema_mutation_root_changed():
+    old_schema = schema("""
+    schema {
+        query: Query
+    }
+
+    type Query {
+        field: String!
+    }
+    """)
+    new_schema = schema("""
+    schema {
+        query: Query
+        mutation: Mutation
+    }
+
+    type Query {
+        field: String!
+    }
+
+    type Mutation {
+        my_mutation: Int
+    }
+    """)
+    diff = Schema(old_schema, new_schema).diff()
+    print(diff)
+    assert diff and len(diff) == 2
+    assert {x.message for x in diff} == {
+        'Type `Mutation` was added',
+        'Schema mutation root has changed from `None` to `Mutation`'
+    }
+
+def test_schema_suscription_root_changed():
+    old_schema = schema("""
+    schema {
+        query: Query
+        subscription: Subscription
+    }
+
+    type Query {
+        field: String!
+    }
+
+    type Subscription {
+        a: Int
+    }
+    """)
+    new_schema = schema("""
+    schema {
+        query: Query
+        subscription: ChangedSubscription
+    }
+
+    type Query {
+        field: String!
+    }
+
+    type ChangedSubscription {
+        a: Int
+    }
+
+    type Subscription {
+        a: Int
+    }
+    """)
+    diff = Schema(old_schema, new_schema).diff()
+    print(diff)
+    assert diff and len(diff) == 2
+    assert {x.message for x in diff} == {
+        'Type `ChangedSubscription` was added',
+        'Schema subscription root has changed from `Subscription` to `ChangedSubscription`'
+    }

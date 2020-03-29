@@ -10,6 +10,11 @@ from graphql import (
 from graphql.type.introspection import TypeFieldResolvers
 
 from schemadiff.changes.directive import RemovedDirective, AddedDirective
+from schemadiff.changes.schema import (
+    SchemaQueryTypeChanged,
+    SchemaMutationTypeChanged,
+    SchemaSubscriptionTypeChanged,
+)
 from schemadiff.changes.type import (
     AddedType,
     RemovedType,
@@ -43,16 +48,30 @@ class Schema:
 
     def diff(self):
         changes = []
+        changes += self.type_changes()
+        changes += self.directive_changes()
+        changes += self.schema_changes()
+        return changes
 
-        # Removed and added types
+    def schema_changes(self):
+        changes = []
+        old, new = self.old_schema, self.new_schema
+        if str(old.query_type) != str(new.query_type):
+            changes.append(SchemaQueryTypeChanged(str(old.query_type), str(new.query_type)))
+        if str(old.mutation_type) != str(new.mutation_type):
+            changes.append(SchemaMutationTypeChanged(str(old.mutation_type), str(new.mutation_type)))
+        if str(old.subscription_type) != str(new.subscription_type):
+            changes.append(SchemaSubscriptionTypeChanged(str(old.subscription_type), str(new.subscription_type)))
+
+        return changes
+
+
+    def type_changes(self):
+        changes = []
         changes += self.removed_types()
         changes += self.added_types()
-
-        # Type changes for common types
         changes += self.common_type_changes()
-
-        # Directive changes
-        changes += self.directive_changes()
+        return changes
 
         return changes
 
