@@ -1,6 +1,7 @@
 from schemadiff.changes import Change, Criticality
 
-class SchemaChange:
+
+class SchemaChange(Change):
     criticality: Criticality.breaking('Changing a root type is a breaking change')
 
     def __init__(self, old_type, new_type):
