@@ -42,6 +42,7 @@ You can use this package as a lib or as a cli. You can choose what better suits 
 ### Lib
 ```python
 from schemadiff import diff, diff_from_file, print_diff
+
 old_schema = """
 schema {
     query: Query
@@ -52,6 +53,7 @@ type Query {
     sum(start: Float=0): Int
 }
 """
+
 new_schema = """
 schema {
     query: Query
@@ -62,6 +64,7 @@ type Query {
     sum(start: Float=1): Int
 }
 """
+
 changes = diff(old_schema, new_schema)
 print_diff(changes)                   # Pretty print difference
 any(change.breaking or change.dangerous for change in changes)    # Check if there was any breaking or dangerous change
@@ -69,8 +72,10 @@ any(change.breaking or change.dangerous for change in changes)    # Check if the
 # You can also compare from schema files
 with open('old_schema.gql', 'w') as f:
     f.write(old_schema)
+
 with open('new_schema.gql', 'w') as f:
     f.write(new_schema)
+
 changes = diff_from_file('old_schema.gql', 'new_schema.gql')
 print_diff(changes)
 ```
