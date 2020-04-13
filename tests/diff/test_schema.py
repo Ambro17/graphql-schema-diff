@@ -56,11 +56,11 @@ def test_schema_removed_type():
     type Query {
         field: String!
     }
-    
+
     type ToBeRemovedType {
         added: Int
     }
-    
+
     """)
     new_schema = schema("""
     schema {
@@ -190,6 +190,7 @@ def test_schema_mutation_root_changed():
         'Type `Mutation` was added',
         'Schema mutation root has changed from `None` to `Mutation`'
     }
+
 
 def test_schema_suscription_root_changed():
     old_schema = schema("""
