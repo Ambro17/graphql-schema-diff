@@ -19,7 +19,7 @@
     </a>
 </p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/animations/images/usage.gif" title="Usage">
+  <img src="https://raw.githubusercontent.com/Ambro17/graphql-schema-diff/master/images/usage.gif" title="Usage">
 </p>
 
 # schemadiff
