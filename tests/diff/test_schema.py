@@ -56,11 +56,11 @@ def test_schema_removed_type():
     type Query {
         field: String!
     }
-    
+
     type ToBeRemovedType {
         added: Int
     }
-    
+
     """)
     new_schema = schema("""
     schema {
@@ -106,35 +106,6 @@ def test_schema_query_fields_type_has_changes():
     assert diff[0].criticality == Criticality.breaking(
         'Changing a field type will break queries that assume its type'
     )
-
-
-def test_schema_query_root_changed():
-    old_schema = schema('''
-    schema {
-        query: Query
-    }
-
-    type Query {
-        field: String!
-    }
-    ''')
-    new_schema = schema('''
-    schema {
-        query: NotTheSameQuery
-    }
-
-    type NotTheSameQuery {
-        field: String!
-    }
-    ''')
-    diff = Schema(old_schema, new_schema).diff()
-    assert diff and len(diff) == 2
-    expected_changes = {
-        "Type `Query` was removed",
-        "Type `NotTheSameQuery` was added"
-    }
-    for change in diff:
-        assert change.message in expected_changes
 
 
 def test_named_typed_changed_type():
@@ -219,6 +190,7 @@ def test_schema_mutation_root_changed():
         'Type `Mutation` was added',
         'Schema mutation root has changed from `None` to `Mutation`'
     }
+
 
 def test_schema_suscription_root_changed():
     old_schema = schema("""
