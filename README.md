@@ -37,9 +37,9 @@ $ python3 -m pip install graphql-schema-diff
 ```
 
 ## Usage
-You can use this package as a lib or as a cli. You can choose what better suits your needs
+You can use this package as a lib or as a CLI. You can choose what better suits your needs
 
-### Lib
+### As a Lib
 ```python
 from schemadiff import diff, diff_from_file, print_diff
 
@@ -127,6 +127,9 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allow
 >```
 >That should install noto emoji fonts and set is as the fallback font to render emojis 😎
 
+### API Reference
+You can also read the [API Reference](https://ambro17.github.io/graphql-schema-diff/) if you want to get a better understanding of the inner workings of the lib
+
 ## Credits
 Implementation was heavily inspired by Marc Giroux [ruby version](https://github.com/xuorig/graphql-schema_comparator) 
 and Kamil Kisiela [js implementation](https://github.com/kamilkisiela/graphql-inspector).
@@ -134,4 +137,4 @@ and Kamil Kisiela [js implementation](https://github.com/kamilkisiela/graphql-in
 Logo arrows were adapted from the work of [Paul Verhulst @ The Noun Project](https://thenounproject.com/paulverhulst/)
 
 ## Contributions
-Bug reports, Feature requests or pull request are welcome!
+Bug reports, Feature requests or pull request are always welcome!
