@@ -31,8 +31,8 @@ def diff_from_file(schema_file: str, other_schema_file: str):
 
 
 __all__ = [
-    diff,
-    diff_from_file,
-    format_diff,
-    print_diff,
+    'diff',
+    'diff_from_file',
+    'format_diff',
+    'print_diff',
 ]
