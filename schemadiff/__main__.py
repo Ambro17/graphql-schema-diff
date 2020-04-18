@@ -3,7 +3,7 @@ import argparse
 
 from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
-from schemadiff.graphql_schema import Schema
+from schemadiff.schema_loader import Schema
 from schemadiff.formatting import print_diff, print_json
 
 

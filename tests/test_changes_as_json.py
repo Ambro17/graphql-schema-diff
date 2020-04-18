@@ -4,7 +4,7 @@ from operator import itemgetter
 from schemadiff.changes import Criticality, Change
 from schemadiff.diff.schema import Schema
 from schemadiff.formatting import json_dump_changes, changes_to_dict
-from schemadiff.graphql_schema import Schema
+from schemadiff.schema_loader import Schema
 from tests.test_schema_loading import TESTS_DATA
 
 

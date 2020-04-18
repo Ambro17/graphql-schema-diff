@@ -4,7 +4,7 @@ import pytest
 from graphql import is_schema, GraphQLSyntaxError
 
 from schemadiff import diff, diff_from_file
-from schemadiff.graphql_schema import Schema
+from schemadiff.schema_loader import Schema
 
 TESTS_DATA = Path(__file__).parent / 'data'
 

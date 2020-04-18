@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from schemadiff.graphql_schema import Schema
+from schemadiff.schema_loader import Schema
 from schemadiff.diff.schema import Schema
 
 TESTS_DATA = Path(__file__).parent / 'data'
