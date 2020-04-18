@@ -104,10 +104,10 @@ optional arguments:
 #### Examples
 ```bash
 # Compare schemas and output diff to stdout
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql`
+schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql
 
 # Pass a evaluation flag (mixing long arg name and short arg name)
-schemadiff --old-schema tests/data/simple_schema.gql -n tests/data/new_schema.gql --strict`
+schemadiff --old-schema tests/data/simple_schema.gql -n tests/data/new_schema.gql --strict
 
 # Print output as json with details of each change
 schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json
