@@ -3,7 +3,7 @@ import argparse
 
 from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
-from schemadiff.graphql_schema import GraphQLSchema
+from schemadiff.graphql_schema import Schema
 from schemadiff.formatting import print_diff, print_json
 
 
@@ -43,8 +43,8 @@ def parse_args(arguments):
 
 def main(args) -> int:
     # Load schemas from file path args
-    old_schema = GraphQLSchema.from_sdl(args.old_schema.read())
-    new_schema = GraphQLSchema.from_sdl(args.new_schema.read())
+    old_schema = Schema.from_sdl(args.old_schema.read())
+    new_schema = Schema.from_sdl(args.new_schema.read())
     args.old_schema.close()
     args.new_schema.close()
 

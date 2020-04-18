@@ -4,13 +4,13 @@ import pytest
 from graphql import is_schema, GraphQLSyntaxError
 
 from schemadiff import diff, diff_from_file
-from schemadiff.graphql_schema import GraphQLSchema
+from schemadiff.graphql_schema import Schema
 
 TESTS_DATA = Path(__file__).parent / 'data'
 
 
 def test_load_from_file():
-    schema = GraphQLSchema.from_file(TESTS_DATA / 'simple_schema.gql')
+    schema = Schema.from_file(TESTS_DATA / 'simple_schema.gql')
     assert is_schema(schema)
     assert len(schema.query_type.fields) == 2
 
@@ -31,7 +31,7 @@ def test_load_from_string():
         d: Float
     }
     """
-    schema = GraphQLSchema.from_sdl(schema_string)
+    schema = Schema.from_sdl(schema_string)
     assert is_schema(schema)
     assert len(schema.query_type.fields) == 2
 
@@ -51,7 +51,7 @@ def test_diff_from_str():
 
 
 def test_diff_from_schema():
-    schema_object = GraphQLSchema.from_sdl("""
+    schema_object = Schema.from_sdl("""
     schema {
         query: Query
     }
@@ -73,10 +73,10 @@ def test_diff_from_file():
 
 def test_load_invalid_schema():
     with pytest.raises(TypeError, match="Unknown type 'InvalidType'"):
-        GraphQLSchema.from_file(TESTS_DATA / 'invalid_schema.gql')
+        Schema.from_file(TESTS_DATA / 'invalid_schema.gql')
 
 
 @pytest.mark.parametrize("schema", ["", "{}", "\n{}\n", "[]"])
 def test_load_empty_schema(schema):
     with pytest.raises(GraphQLSyntaxError):
-        GraphQLSchema.from_sdl(schema)
+        Schema.from_sdl(schema)
