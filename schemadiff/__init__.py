@@ -5,7 +5,7 @@ from graphql import GraphQLSchema as GQLSchema, is_schema
 from schemadiff.changes import Change
 from schemadiff.diff.schema import Schema
 from schemadiff.graphql_schema import GraphQLSchema
-from schemadiff.formatting import print_diff
+from schemadiff.formatting import print_diff, format_diff
 
 
 def diff(schema_a: Union[str, GQLSchema], schema_b: Union[str, GQLSchema]) -> [Change]:
@@ -34,4 +34,5 @@ __all__ = [
     'diff',
     'diff_from_file',
     'print_diff',
+    'format_diff'
 ]
