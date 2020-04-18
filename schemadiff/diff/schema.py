@@ -73,8 +73,6 @@ class Schema:
         changes += self.common_type_changes()
         return changes
 
-        return changes
-
     def removed_types(self):
         return [
             RemovedType(self.old_types[field_name])
