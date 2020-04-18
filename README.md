@@ -127,7 +127,7 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allow
 >```
 >That should install noto emoji fonts and set is as the fallback font to render emojis 😎
 
-### API Reference
+## API Reference
 You can also read the [API Reference](https://ambro17.github.io/graphql-schema-diff/) if you want to get a better understanding of the inner workings of the lib
 
 ## Credits
