@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>schemadiff.changes.directive API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>schemadiff.changes.directive</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from graphql import is_non_null_type
+
+from schemadiff.changes import Change, Criticality, is_safe_change_for_input_value
+
+
+class DirectiveChange(Change):
+
+    @property
+    def path(self):
+        return f&#34;{self.directive}&#34;
+
+
+class AddedDirective(DirectiveChange):
+
+    criticality = Criticality.safe()
+
+    def __init__(self, directive, directive_locations):
+        self.directive = directive
+        self.directive_locations = directive_locations
+
+    @property
+    def message(self):
+        locations = &#39; | &#39;.join(loc.name for loc in self.directive_locations)
+        return f&#34;Directive `{self.directive}` was added to use on `{locations}`&#34;
+
+
+class RemovedDirective(DirectiveChange):
+
+    criticality = Criticality.breaking(&#34;Removing a directive may break clients that depend on them.&#34;)
+
+    def __init__(self, directive):
+        self.directive = directive
+
+    @property
+    def message(self):
+        return f&#34;Directive `{self.directive}` was removed&#34;
+
+
+class DirectiveDescriptionChanged(DirectiveChange):
+    criticality = Criticality.safe()
+
+    def __init__(self, old, new):
+        self.old = old
+        self.new = new
+
+    @property
+    def message(self):
+        return (
+            f&#34;Description for directive `{self.new!s}` &#34;
+            f&#34;changed from `{self.old.description}` to `{self.new.description}`&#34;
+        )
+
+    @property
+    def path(self):
+        return f&#34;{self.new}&#34;
+
+
+class DirectiveLocationsChanged(DirectiveChange):
+    def __init__(self, directive, old_locations, new_locations):
+        self.directive = directive
+        self.old_locations = old_locations
+        self.new_locations = new_locations
+        self.criticality = (
+            Criticality.safe() if self._only_additions() else Criticality.breaking(
+                &#34;Removing a directive location will break any instance of its usage. &#34;
+                &#34;Be sure no one uses it before removing it&#34;
+            )
+        )
+
+    def _only_additions(self):
+        new_location_names = {l.name for l in self.new_locations}
+        return all(l.name in new_location_names for l in self.old_locations)
+
+    @property
+    def message(self):
+        return (
+            f&#34;Directive locations of `{self.directive!s}` changed &#34;
+            f&#34;from `{&#39; | &#39;.join(l.name for l in self.old_locations)}` &#34;
+            f&#34;to `{&#39; | &#39;.join(l.name for l in self.new_locations)}`&#34;
+        )
+
+
+class DirectiveArgumentAdded(DirectiveChange):
+    def __init__(self, directive, arg_name, arg_type):
+        self.criticality = Criticality.safe() if not is_non_null_type(arg_type.type) else Criticality.breaking(
+            &#34;Adding a non nullable directive argument will break existing usages of the directive&#34;
+        )
+        self.directive = directive
+        self.arg_name = arg_name
+        self.arg_type = arg_type
+
+    @property
+    def message(self):
+        return f&#34;Added argument `{self.arg_name}: {self.arg_type.type}` to `{self.directive!s}` directive&#34;
+
+
+class DirectiveArgumentRemoved(DirectiveChange):
+
+    criticality = Criticality.breaking(&#34;Removing a directive argument will break existing usages of the argument&#34;)
+
+    def __init__(self, directive, arg_name, arg_type):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.arg_type = arg_type
+
+    @property
+    def message(self):
+        return f&#34;Removed argument `{self.arg_name}: {self.arg_type.type}` from `{self.directive!s}` directive&#34;
+
+
+class DirectiveArgumentTypeChanged(DirectiveChange):
+    def __init__(self, directive, arg_name, old_type, new_type):
+        self.criticality = (
+            Criticality.breaking(&#34;Changing the argument type is a breaking change&#34;)
+            if not is_safe_change_for_input_value(old_type, new_type)
+            else Criticality.safe(&#34;Changing an input field from non-null to null is considered non-breaking&#34;)
+        )
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_type = old_type
+        self.new_type = new_type
+
+    @property
+    def message(self):
+        return (
+            f&#34;Type for argument `{self.arg_name}` on `{self.directive!s}` directive changed &#34;
+            f&#34;from `{self.old_type}` to `{self.new_type}`&#34;
+        )
+
+
+class DirectiveArgumentDefaultChanged(DirectiveChange):
+    def __init__(self, directive, arg_name, old_default, new_default):
+        self.criticality = Criticality.dangerous(
+            &#34;Changing the default value for an argument may change the runtime &#34;
+            &#34;behaviour of a field if it was never provided.&#34;
+          )
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_default = old_default
+        self.new_default = new_default
+
+    @property
+    def message(self):
+        return (
+            f&#34;Default value for argument `{self.arg_name}` on `{self.directive!s}` directive changed &#34;
+            f&#34;from `{self.old_default!r}` to `{self.new_default!r}`&#34;
+        )
+
+
+class DirectiveArgumentDescriptionChanged(DirectiveChange):
+    criticality = Criticality.safe()
+
+    def __init__(self, directive, arg_name, old_desc, new_desc):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_desc = old_desc
+        self.new_desc = new_desc
+
+    @property
+    def message(self):
+        return (
+            f&#34;Description for argument `{self.arg_name}` on `{self.directive!s}` directive changed &#34;
+            f&#34;from `{self.old_desc}` to `{self.new_desc}`&#34;
+        )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="schemadiff.changes.directive.AddedDirective"><code class="flex name class">
+<span>class <span class="ident">AddedDirective</span></span>
+<span>(</span><span>directive, directive_locations)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AddedDirective(DirectiveChange):
+
+    criticality = Criticality.safe()
+
+    def __init__(self, directive, directive_locations):
+        self.directive = directive
+        self.directive_locations = directive_locations
+
+    @property
+    def message(self):
+        locations = &#39; | &#39;.join(loc.name for loc in self.directive_locations)
+        return f&#34;Directive `{self.directive}` was added to use on `{locations}`&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.changes.directive.AddedDirective.criticality"><code class="name">var <span class="ident">criticality</span> : <a title="schemadiff.changes.Criticality" href="index.html#schemadiff.changes.Criticality">Criticality</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveArgumentAdded"><code class="flex name class">
+<span>class <span class="ident">DirectiveArgumentAdded</span></span>
+<span>(</span><span>directive, arg_name, arg_type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveArgumentAdded(DirectiveChange):
+    def __init__(self, directive, arg_name, arg_type):
+        self.criticality = Criticality.safe() if not is_non_null_type(arg_type.type) else Criticality.breaking(
+            &#34;Adding a non nullable directive argument will break existing usages of the directive&#34;
+        )
+        self.directive = directive
+        self.arg_name = arg_name
+        self.arg_type = arg_type
+
+    @property
+    def message(self):
+        return f&#34;Added argument `{self.arg_name}: {self.arg_type.type}` to `{self.directive!s}` directive&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveArgumentDefaultChanged"><code class="flex name class">
+<span>class <span class="ident">DirectiveArgumentDefaultChanged</span></span>
+<span>(</span><span>directive, arg_name, old_default, new_default)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveArgumentDefaultChanged(DirectiveChange):
+    def __init__(self, directive, arg_name, old_default, new_default):
+        self.criticality = Criticality.dangerous(
+            &#34;Changing the default value for an argument may change the runtime &#34;
+            &#34;behaviour of a field if it was never provided.&#34;
+          )
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_default = old_default
+        self.new_default = new_default
+
+    @property
+    def message(self):
+        return (
+            f&#34;Default value for argument `{self.arg_name}` on `{self.directive!s}` directive changed &#34;
+            f&#34;from `{self.old_default!r}` to `{self.new_default!r}`&#34;
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveArgumentDescriptionChanged"><code class="flex name class">
+<span>class <span class="ident">DirectiveArgumentDescriptionChanged</span></span>
+<span>(</span><span>directive, arg_name, old_desc, new_desc)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveArgumentDescriptionChanged(DirectiveChange):
+    criticality = Criticality.safe()
+
+    def __init__(self, directive, arg_name, old_desc, new_desc):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_desc = old_desc
+        self.new_desc = new_desc
+
+    @property
+    def message(self):
+        return (
+            f&#34;Description for argument `{self.arg_name}` on `{self.directive!s}` directive changed &#34;
+            f&#34;from `{self.old_desc}` to `{self.new_desc}`&#34;
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.changes.directive.DirectiveArgumentDescriptionChanged.criticality"><code class="name">var <span class="ident">criticality</span> : <a title="schemadiff.changes.Criticality" href="index.html#schemadiff.changes.Criticality">Criticality</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveArgumentRemoved"><code class="flex name class">
+<span>class <span class="ident">DirectiveArgumentRemoved</span></span>
+<span>(</span><span>directive, arg_name, arg_type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveArgumentRemoved(DirectiveChange):
+
+    criticality = Criticality.breaking(&#34;Removing a directive argument will break existing usages of the argument&#34;)
+
+    def __init__(self, directive, arg_name, arg_type):
+        self.directive = directive
+        self.arg_name = arg_name
+        self.arg_type = arg_type
+
+    @property
+    def message(self):
+        return f&#34;Removed argument `{self.arg_name}: {self.arg_type.type}` from `{self.directive!s}` directive&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.changes.directive.DirectiveArgumentRemoved.criticality"><code class="name">var <span class="ident">criticality</span> : <a title="schemadiff.changes.Criticality" href="index.html#schemadiff.changes.Criticality">Criticality</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveArgumentTypeChanged"><code class="flex name class">
+<span>class <span class="ident">DirectiveArgumentTypeChanged</span></span>
+<span>(</span><span>directive, arg_name, old_type, new_type)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveArgumentTypeChanged(DirectiveChange):
+    def __init__(self, directive, arg_name, old_type, new_type):
+        self.criticality = (
+            Criticality.breaking(&#34;Changing the argument type is a breaking change&#34;)
+            if not is_safe_change_for_input_value(old_type, new_type)
+            else Criticality.safe(&#34;Changing an input field from non-null to null is considered non-breaking&#34;)
+        )
+        self.directive = directive
+        self.arg_name = arg_name
+        self.old_type = old_type
+        self.new_type = new_type
+
+    @property
+    def message(self):
+        return (
+            f&#34;Type for argument `{self.arg_name}` on `{self.directive!s}` directive changed &#34;
+            f&#34;from `{self.old_type}` to `{self.new_type}`&#34;
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveChange"><code class="flex name class">
+<span>class <span class="ident">DirectiveChange</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveChange(Change):
+
+    @property
+    def path(self):
+        return f&#34;{self.directive}&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.AddedDirective" href="#schemadiff.changes.directive.AddedDirective">AddedDirective</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveArgumentAdded" href="#schemadiff.changes.directive.DirectiveArgumentAdded">DirectiveArgumentAdded</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveArgumentDefaultChanged" href="#schemadiff.changes.directive.DirectiveArgumentDefaultChanged">DirectiveArgumentDefaultChanged</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveArgumentDescriptionChanged" href="#schemadiff.changes.directive.DirectiveArgumentDescriptionChanged">DirectiveArgumentDescriptionChanged</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveArgumentRemoved" href="#schemadiff.changes.directive.DirectiveArgumentRemoved">DirectiveArgumentRemoved</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveArgumentTypeChanged" href="#schemadiff.changes.directive.DirectiveArgumentTypeChanged">DirectiveArgumentTypeChanged</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveDescriptionChanged" href="#schemadiff.changes.directive.DirectiveDescriptionChanged">DirectiveDescriptionChanged</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveLocationsChanged" href="#schemadiff.changes.directive.DirectiveLocationsChanged">DirectiveLocationsChanged</a></li>
+<li><a title="schemadiff.changes.directive.RemovedDirective" href="#schemadiff.changes.directive.RemovedDirective">RemovedDirective</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.Change.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.Change.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.Change.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.Change.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.Change.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.Change.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.Change.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.Change.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveDescriptionChanged"><code class="flex name class">
+<span>class <span class="ident">DirectiveDescriptionChanged</span></span>
+<span>(</span><span>old, new)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveDescriptionChanged(DirectiveChange):
+    criticality = Criticality.safe()
+
+    def __init__(self, old, new):
+        self.old = old
+        self.new = new
+
+    @property
+    def message(self):
+        return (
+            f&#34;Description for directive `{self.new!s}` &#34;
+            f&#34;changed from `{self.old.description}` to `{self.new.description}`&#34;
+        )
+
+    @property
+    def path(self):
+        return f&#34;{self.new}&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.changes.directive.DirectiveDescriptionChanged.criticality"><code class="name">var <span class="ident">criticality</span> : <a title="schemadiff.changes.Criticality" href="index.html#schemadiff.changes.Criticality">Criticality</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.DirectiveLocationsChanged"><code class="flex name class">
+<span>class <span class="ident">DirectiveLocationsChanged</span></span>
+<span>(</span><span>directive, old_locations, new_locations)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DirectiveLocationsChanged(DirectiveChange):
+    def __init__(self, directive, old_locations, new_locations):
+        self.directive = directive
+        self.old_locations = old_locations
+        self.new_locations = new_locations
+        self.criticality = (
+            Criticality.safe() if self._only_additions() else Criticality.breaking(
+                &#34;Removing a directive location will break any instance of its usage. &#34;
+                &#34;Be sure no one uses it before removing it&#34;
+            )
+        )
+
+    def _only_additions(self):
+        new_location_names = {l.name for l in self.new_locations}
+        return all(l.name in new_location_names for l in self.old_locations)
+
+    @property
+    def message(self):
+        return (
+            f&#34;Directive locations of `{self.directive!s}` changed &#34;
+            f&#34;from `{&#39; | &#39;.join(l.name for l in self.old_locations)}` &#34;
+            f&#34;to `{&#39; | &#39;.join(l.name for l in self.new_locations)}`&#34;
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="schemadiff.changes.directive.RemovedDirective"><code class="flex name class">
+<span>class <span class="ident">RemovedDirective</span></span>
+<span>(</span><span>directive)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RemovedDirective(DirectiveChange):
+
+    criticality = Criticality.breaking(&#34;Removing a directive may break clients that depend on them.&#34;)
+
+    def __init__(self, directive):
+        self.directive = directive
+
+    @property
+    def message(self):
+        return f&#34;Directive `{self.directive}` was removed&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.Change" href="index.html#schemadiff.changes.Change">Change</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.changes.directive.RemovedDirective.criticality"><code class="name">var <span class="ident">criticality</span> : <a title="schemadiff.changes.Criticality" href="index.html#schemadiff.changes.Criticality">Criticality</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></b></code>:
+<ul class="hlist">
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.breaking" href="index.html#schemadiff.changes.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.checksum" href="index.html#schemadiff.changes.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.dangerous" href="index.html#schemadiff.changes.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.message" href="index.html#schemadiff.changes.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.path" href="index.html#schemadiff.changes.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.safe" href="index.html#schemadiff.changes.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_dict" href="index.html#schemadiff.changes.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.changes.directive.DirectiveChange.to_json" href="index.html#schemadiff.changes.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="schemadiff.changes" href="index.html">schemadiff.changes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="schemadiff.changes.directive.AddedDirective" href="#schemadiff.changes.directive.AddedDirective">AddedDirective</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.changes.directive.AddedDirective.criticality" href="#schemadiff.changes.directive.AddedDirective.criticality">criticality</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveArgumentAdded" href="#schemadiff.changes.directive.DirectiveArgumentAdded">DirectiveArgumentAdded</a></code></h4>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveArgumentDefaultChanged" href="#schemadiff.changes.directive.DirectiveArgumentDefaultChanged">DirectiveArgumentDefaultChanged</a></code></h4>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveArgumentDescriptionChanged" href="#schemadiff.changes.directive.DirectiveArgumentDescriptionChanged">DirectiveArgumentDescriptionChanged</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.changes.directive.DirectiveArgumentDescriptionChanged.criticality" href="#schemadiff.changes.directive.DirectiveArgumentDescriptionChanged.criticality">criticality</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveArgumentRemoved" href="#schemadiff.changes.directive.DirectiveArgumentRemoved">DirectiveArgumentRemoved</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.changes.directive.DirectiveArgumentRemoved.criticality" href="#schemadiff.changes.directive.DirectiveArgumentRemoved.criticality">criticality</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveArgumentTypeChanged" href="#schemadiff.changes.directive.DirectiveArgumentTypeChanged">DirectiveArgumentTypeChanged</a></code></h4>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveChange" href="#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></code></h4>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveDescriptionChanged" href="#schemadiff.changes.directive.DirectiveDescriptionChanged">DirectiveDescriptionChanged</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.changes.directive.DirectiveDescriptionChanged.criticality" href="#schemadiff.changes.directive.DirectiveDescriptionChanged.criticality">criticality</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.DirectiveLocationsChanged" href="#schemadiff.changes.directive.DirectiveLocationsChanged">DirectiveLocationsChanged</a></code></h4>
+</li>
+<li>
+<h4><code><a title="schemadiff.changes.directive.RemovedDirective" href="#schemadiff.changes.directive.RemovedDirective">RemovedDirective</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.changes.directive.RemovedDirective.criticality" href="#schemadiff.changes.directive.RemovedDirective.criticality">criticality</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
