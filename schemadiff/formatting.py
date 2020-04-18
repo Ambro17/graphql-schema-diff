@@ -1,10 +1,12 @@
 import json
 import os
+from typing import List
 
 from schemadiff.changes import CriticalityLevel, Change
 
 
-def format_diff(changes: [Change]) -> str:
+def format_diff(changes: List[Change]) -> str:
+    """Format a list of changes into a printable string"""
     changes = '\n'.join(
         format_change_by_criticality(change)
         for change in changes
@@ -22,20 +24,21 @@ def format_change_by_criticality(change: Change) -> str:
     return f"{icon} {change.message}"
 
 
-def print_diff(changes: [Change]) -> None:
+def print_diff(changes: List[Change]) -> None:
+    """Pretty print a list of changes"""
     print(format_diff(changes))
 
 
-def changes_to_dict(changes: [Change]) -> [dict]:
+def changes_to_dict(changes: List[Change]) -> List[dict]:
     return [
         change.to_dict()
         for change in changes
     ]
 
 
-def json_dump_changes(changes: [Change]) -> str:
+def json_dump_changes(changes: List[Change]) -> str:
     return json.dumps(changes_to_dict(changes), indent=4)
 
 
-def print_json(changes: [Change]) -> None:
+def print_json(changes: List[Change]) -> None:
     print(json_dump_changes(changes))

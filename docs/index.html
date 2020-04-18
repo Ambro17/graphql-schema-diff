@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>schemadiff API documentation</title>
+<meta name="description" content="" />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Package <code>schemadiff</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from typing import Union, List
+
+from graphql import GraphQLSchema as GQLSchema, is_schema
+
+from schemadiff.changes import Change
+from schemadiff.diff.schema import Schema
+from schemadiff.schema_loader import Schema
+from schemadiff.formatting import print_diff, format_diff
+
+
+SDL = str  # Alias for string describing schema through schema definition language
+
+
+def diff(old_schema: Union[SDL, GQLSchema], new_schema: Union[SDL, GQLSchema]) -&gt; List[Change]:
+    &#34;&#34;&#34;Compare two graphql schemas highlighting dangerous and breaking changes.
+
+    Returns:
+        changes (List[Change]): List of differences between both schemas with details about each change
+    &#34;&#34;&#34;
+    first = Schema.from_sdl(old_schema) if not is_schema(old_schema) else old_schema
+    second = Schema.from_sdl(new_schema) if not is_schema(new_schema) else new_schema
+    return Schema(first, second).diff()
+
+
+def diff_from_file(schema_file: str, other_schema_file: str):
+    &#34;&#34;&#34;Compare two graphql schema files highlighting dangerous and breaking changes.
+
+    Returns:
+        changes (List[Change]): List of differences between both schemas with details about each change
+    &#34;&#34;&#34;
+    first = Schema.from_file(schema_file)
+    second = Schema.from_file(other_schema_file)
+    return Schema(first, second).diff()
+
+
+__all__ = [
+    &#39;diff&#39;,
+    &#39;diff_from_file&#39;,
+    &#39;format_diff&#39;,
+    &#39;print_diff&#39;,
+    &#39;format_diff&#39;,
+    &#39;Change&#39;,
+]</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="schemadiff.allow_list" href="allow_list.html">schemadiff.allow_list</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="schemadiff.changes" href="changes/index.html">schemadiff.changes</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="schemadiff.formatting" href="formatting.html">schemadiff.formatting</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="schemadiff.schema_loader" href="schema_loader.html">schemadiff.schema_loader</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="schemadiff.diff"><code class="name flex">
+<span>def <span class="ident">diff</span></span>(<span>old_schema: Union[str, graphql.type.schema.GraphQLSchema], new_schema: Union[str, graphql.type.schema.GraphQLSchema]) -> List[<a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compare two graphql schemas highlighting dangerous and breaking changes.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>changes (List[Change]): List</code> of <code>differences between both schemas with details about each change</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def diff(old_schema: Union[SDL, GQLSchema], new_schema: Union[SDL, GQLSchema]) -&gt; List[Change]:
+    &#34;&#34;&#34;Compare two graphql schemas highlighting dangerous and breaking changes.
+
+    Returns:
+        changes (List[Change]): List of differences between both schemas with details about each change
+    &#34;&#34;&#34;
+    first = Schema.from_sdl(old_schema) if not is_schema(old_schema) else old_schema
+    second = Schema.from_sdl(new_schema) if not is_schema(new_schema) else new_schema
+    return Schema(first, second).diff()</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.diff_from_file"><code class="name flex">
+<span>def <span class="ident">diff_from_file</span></span>(<span>schema_file: str, other_schema_file: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Compare two graphql schema files highlighting dangerous and breaking changes.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>changes (List[Change]): List</code> of <code>differences between both schemas with details about each change</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def diff_from_file(schema_file: str, other_schema_file: str):
+    &#34;&#34;&#34;Compare two graphql schema files highlighting dangerous and breaking changes.
+
+    Returns:
+        changes (List[Change]): List of differences between both schemas with details about each change
+    &#34;&#34;&#34;
+    first = Schema.from_file(schema_file)
+    second = Schema.from_file(other_schema_file)
+    return Schema(first, second).diff()</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.format_diff"><code class="name flex">
+<span>def <span class="ident">format_diff</span></span>(<span>changes: List[<a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a>]) -> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Format a list of changes into a printable string</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_diff(changes: List[Change]) -&gt; str:
+    &#34;&#34;&#34;Format a list of changes into a printable string&#34;&#34;&#34;
+    changes = &#39;\n&#39;.join(
+        format_change_by_criticality(change)
+        for change in changes
+    )
+    return changes or &#39;🎉 Both schemas are equal!&#39;</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.print_diff"><code class="name flex">
+<span>def <span class="ident">print_diff</span></span>(<span>changes: List[<a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a>]) -> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Pretty print a list of changes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_diff(changes: List[Change]) -&gt; None:
+    &#34;&#34;&#34;Pretty print a list of changes&#34;&#34;&#34;
+    print(format_diff(changes))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="schemadiff.Change"><code class="flex name class">
+<span>class <span class="ident">Change</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Common interface of all schema changes</p>
+<p>This class offers the common operations and properties of all
+schema changes. You may use it as a type hint to get better
+suggestions in your editor of choice.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Change(ABC):
+    &#34;&#34;&#34;Common interface of all schema changes
+    
+    This class offers the common operations and properties of all
+    schema changes. You may use it as a type hint to get better
+    suggestions in your editor of choice.
+    &#34;&#34;&#34;
+
+    criticality: Criticality = None
+
+    @property
+    def breaking(self) -&gt; bool:
+        &#34;&#34;&#34;Is this change a breaking change?&#34;&#34;&#34;
+        return self.criticality.level == CriticalityLevel.Breaking
+
+    @property
+    def dangerous(self) -&gt; bool:
+        &#34;&#34;&#34;Is this a change which might break some naive api clients?&#34;&#34;&#34;
+        return self.criticality.level == CriticalityLevel.Dangerous
+
+    @property
+    def safe(self) -&gt; bool:
+        &#34;&#34;&#34;Is this change safe for all clients?&#34;&#34;&#34;
+        return self.criticality.level == CriticalityLevel.NonBreaking
+
+    @property
+    @abstractmethod
+    def message(self) -&gt; str:
+        &#34;&#34;&#34;Formatted change message&#34;&#34;&#34;
+
+    @property
+    @abstractmethod
+    def path(self) -&gt; str:
+        &#34;&#34;&#34;Path to the affected schema member&#34;&#34;&#34;
+
+    def __repr__(self) -&gt; str:
+        return f&#34;Change(criticality={self.criticality!r}, message={self.message!r}, path={self.path!r})&#34;
+
+    def __str__(self) -&gt; str:
+        return self.message
+
+    def to_dict(self) -&gt; dict:
+        &#34;&#34;&#34;Get detailed representation of a change&#34;&#34;&#34;
+        return {
+            &#39;message&#39;: self.message,
+            &#39;path&#39;: self.path,
+            &#39;is_safe_change&#39;: self.safe,
+            &#39;criticality&#39;: {
+                &#39;level&#39;: self.criticality.level.value,
+                &#39;reason&#39;: self.criticality.reason
+            },
+            &#39;checksum&#39;: self.checksum(),
+        }
+
+    def to_json(self) -&gt; str:
+        &#34;&#34;&#34;Get detailed representation of a change as a json string&#34;&#34;&#34;
+        return json.dumps(self.to_dict())
+
+    def checksum(self) -&gt; str:
+        &#34;&#34;&#34;Get and identifier of a change. Used for allowlisting changes&#34;&#34;&#34;
+        return hashlib.md5(self.message.encode(&#39;utf-8&#39;)).hexdigest()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="schemadiff.changes.argument.FieldAbstractArgumentChange" href="changes/argument.html#schemadiff.changes.argument.FieldAbstractArgumentChange">FieldAbstractArgumentChange</a></li>
+<li><a title="schemadiff.changes.directive.DirectiveChange" href="changes/directive.html#schemadiff.changes.directive.DirectiveChange">DirectiveChange</a></li>
+<li><a title="schemadiff.changes.enum.EnumValueAdded" href="changes/enum.html#schemadiff.changes.enum.EnumValueAdded">EnumValueAdded</a></li>
+<li><a title="schemadiff.changes.enum.EnumValueDeprecationReasonChanged" href="changes/enum.html#schemadiff.changes.enum.EnumValueDeprecationReasonChanged">EnumValueDeprecationReasonChanged</a></li>
+<li><a title="schemadiff.changes.enum.EnumValueDescriptionChanged" href="changes/enum.html#schemadiff.changes.enum.EnumValueDescriptionChanged">EnumValueDescriptionChanged</a></li>
+<li><a title="schemadiff.changes.enum.EnumValueRemoved" href="changes/enum.html#schemadiff.changes.enum.EnumValueRemoved">EnumValueRemoved</a></li>
+<li><a title="schemadiff.changes.field.FieldArgumentAdded" href="changes/field.html#schemadiff.changes.field.FieldArgumentAdded">FieldArgumentAdded</a></li>
+<li><a title="schemadiff.changes.field.FieldArgumentRemoved" href="changes/field.html#schemadiff.changes.field.FieldArgumentRemoved">FieldArgumentRemoved</a></li>
+<li><a title="schemadiff.changes.field.FieldDeprecationReasonChanged" href="changes/field.html#schemadiff.changes.field.FieldDeprecationReasonChanged">FieldDeprecationReasonChanged</a></li>
+<li><a title="schemadiff.changes.field.FieldDescriptionChanged" href="changes/field.html#schemadiff.changes.field.FieldDescriptionChanged">FieldDescriptionChanged</a></li>
+<li><a title="schemadiff.changes.field.FieldTypeChanged" href="changes/field.html#schemadiff.changes.field.FieldTypeChanged">FieldTypeChanged</a></li>
+<li><a title="schemadiff.changes.input.InputFieldAdded" href="changes/input.html#schemadiff.changes.input.InputFieldAdded">InputFieldAdded</a></li>
+<li><a title="schemadiff.changes.input.InputFieldDefaultChanged" href="changes/input.html#schemadiff.changes.input.InputFieldDefaultChanged">InputFieldDefaultChanged</a></li>
+<li><a title="schemadiff.changes.input.InputFieldDescriptionChanged" href="changes/input.html#schemadiff.changes.input.InputFieldDescriptionChanged">InputFieldDescriptionChanged</a></li>
+<li><a title="schemadiff.changes.input.InputFieldRemoved" href="changes/input.html#schemadiff.changes.input.InputFieldRemoved">InputFieldRemoved</a></li>
+<li><a title="schemadiff.changes.input.InputFieldTypeChanged" href="changes/input.html#schemadiff.changes.input.InputFieldTypeChanged">InputFieldTypeChanged</a></li>
+<li><a title="schemadiff.changes.interface.AbstractInterfanceChange" href="changes/interface.html#schemadiff.changes.interface.AbstractInterfanceChange">AbstractInterfanceChange</a></li>
+<li><a title="schemadiff.changes.interface.DroppedInterfaceImplementation" href="changes/interface.html#schemadiff.changes.interface.DroppedInterfaceImplementation">DroppedInterfaceImplementation</a></li>
+<li><a title="schemadiff.changes.interface.InterfaceFieldAdded" href="changes/interface.html#schemadiff.changes.interface.InterfaceFieldAdded">InterfaceFieldAdded</a></li>
+<li><a title="schemadiff.changes.interface.InterfaceFieldRemoved" href="changes/interface.html#schemadiff.changes.interface.InterfaceFieldRemoved">InterfaceFieldRemoved</a></li>
+<li><a title="schemadiff.changes.interface.NewInterfaceImplemented" href="changes/interface.html#schemadiff.changes.interface.NewInterfaceImplemented">NewInterfaceImplemented</a></li>
+<li><a title="schemadiff.changes.object.ObjectTypeFieldAdded" href="changes/object.html#schemadiff.changes.object.ObjectTypeFieldAdded">ObjectTypeFieldAdded</a></li>
+<li><a title="schemadiff.changes.object.ObjectTypeFieldRemoved" href="changes/object.html#schemadiff.changes.object.ObjectTypeFieldRemoved">ObjectTypeFieldRemoved</a></li>
+<li><a title="schemadiff.changes.schema.SchemaChange" href="changes/schema.html#schemadiff.changes.schema.SchemaChange">SchemaChange</a></li>
+<li><a title="schemadiff.changes.type.AddedType" href="changes/type.html#schemadiff.changes.type.AddedType">AddedType</a></li>
+<li><a title="schemadiff.changes.type.RemovedType" href="changes/type.html#schemadiff.changes.type.RemovedType">RemovedType</a></li>
+<li><a title="schemadiff.changes.type.TypeDescriptionChanged" href="changes/type.html#schemadiff.changes.type.TypeDescriptionChanged">TypeDescriptionChanged</a></li>
+<li><a title="schemadiff.changes.type.TypeKindChanged" href="changes/type.html#schemadiff.changes.type.TypeKindChanged">TypeKindChanged</a></li>
+<li><a title="schemadiff.changes.union.UnionMemberAdded" href="changes/union.html#schemadiff.changes.union.UnionMemberAdded">UnionMemberAdded</a></li>
+<li><a title="schemadiff.changes.union.UnionMemberRemoved" href="changes/union.html#schemadiff.changes.union.UnionMemberRemoved">UnionMemberRemoved</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.Change.criticality"><code class="name">var <span class="ident">criticality</span> : <a title="schemadiff.changes.Criticality" href="changes/index.html#schemadiff.changes.Criticality">Criticality</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="schemadiff.Change.breaking"><code class="name">var <span class="ident">breaking</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Is this change a breaking change?</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def breaking(self) -&gt; bool:
+    &#34;&#34;&#34;Is this change a breaking change?&#34;&#34;&#34;
+    return self.criticality.level == CriticalityLevel.Breaking</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.Change.dangerous"><code class="name">var <span class="ident">dangerous</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Is this a change which might break some naive api clients?</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def dangerous(self) -&gt; bool:
+    &#34;&#34;&#34;Is this a change which might break some naive api clients?&#34;&#34;&#34;
+    return self.criticality.level == CriticalityLevel.Dangerous</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.Change.message"><code class="name">var <span class="ident">message</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Formatted change message</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def message(self) -&gt; str:
+    &#34;&#34;&#34;Formatted change message&#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.Change.path"><code class="name">var <span class="ident">path</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Path to the affected schema member</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def path(self) -&gt; str:
+    &#34;&#34;&#34;Path to the affected schema member&#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.Change.safe"><code class="name">var <span class="ident">safe</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Is this change safe for all clients?</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def safe(self) -&gt; bool:
+    &#34;&#34;&#34;Is this change safe for all clients?&#34;&#34;&#34;
+    return self.criticality.level == CriticalityLevel.NonBreaking</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="schemadiff.Change.checksum"><code class="name flex">
+<span>def <span class="ident">checksum</span></span>(<span>self) -> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get and identifier of a change. Used for allowlisting changes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def checksum(self) -&gt; str:
+    &#34;&#34;&#34;Get and identifier of a change. Used for allowlisting changes&#34;&#34;&#34;
+    return hashlib.md5(self.message.encode(&#39;utf-8&#39;)).hexdigest()</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.Change.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self) -> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get detailed representation of a change</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self) -&gt; dict:
+    &#34;&#34;&#34;Get detailed representation of a change&#34;&#34;&#34;
+    return {
+        &#39;message&#39;: self.message,
+        &#39;path&#39;: self.path,
+        &#39;is_safe_change&#39;: self.safe,
+        &#39;criticality&#39;: {
+            &#39;level&#39;: self.criticality.level.value,
+            &#39;reason&#39;: self.criticality.reason
+        },
+        &#39;checksum&#39;: self.checksum(),
+    }</code></pre>
+</details>
+</dd>
+<dt id="schemadiff.Change.to_json"><code class="name flex">
+<span>def <span class="ident">to_json</span></span>(<span>self) -> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get detailed representation of a change as a json string</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_json(self) -&gt; str:
+    &#34;&#34;&#34;Get detailed representation of a change as a json string&#34;&#34;&#34;
+    return json.dumps(self.to_dict())</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="schemadiff.allow_list" href="allow_list.html">schemadiff.allow_list</a></code></li>
+<li><code><a title="schemadiff.changes" href="changes/index.html">schemadiff.changes</a></code></li>
+<li><code><a title="schemadiff.formatting" href="formatting.html">schemadiff.formatting</a></code></li>
+<li><code><a title="schemadiff.schema_loader" href="schema_loader.html">schemadiff.schema_loader</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="schemadiff.diff" href="#schemadiff.diff">diff</a></code></li>
+<li><code><a title="schemadiff.diff_from_file" href="#schemadiff.diff_from_file">diff_from_file</a></code></li>
+<li><code><a title="schemadiff.format_diff" href="#schemadiff.format_diff">format_diff</a></code></li>
+<li><code><a title="schemadiff.print_diff" href="#schemadiff.print_diff">print_diff</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="schemadiff.Change" href="#schemadiff.Change">Change</a></code></h4>
+<ul class="two-column">
+<li><code><a title="schemadiff.Change.breaking" href="#schemadiff.Change.breaking">breaking</a></code></li>
+<li><code><a title="schemadiff.Change.checksum" href="#schemadiff.Change.checksum">checksum</a></code></li>
+<li><code><a title="schemadiff.Change.criticality" href="#schemadiff.Change.criticality">criticality</a></code></li>
+<li><code><a title="schemadiff.Change.dangerous" href="#schemadiff.Change.dangerous">dangerous</a></code></li>
+<li><code><a title="schemadiff.Change.message" href="#schemadiff.Change.message">message</a></code></li>
+<li><code><a title="schemadiff.Change.path" href="#schemadiff.Change.path">path</a></code></li>
+<li><code><a title="schemadiff.Change.safe" href="#schemadiff.Change.safe">safe</a></code></li>
+<li><code><a title="schemadiff.Change.to_dict" href="#schemadiff.Change.to_dict">to_dict</a></code></li>
+<li><code><a title="schemadiff.Change.to_json" href="#schemadiff.Change.to_json">to_json</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>
