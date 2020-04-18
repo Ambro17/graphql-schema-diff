@@ -18,18 +18,19 @@ class Criticality:
     level: CriticalityLevel
     reason: str
 
-    SAFE_CHANGE = "This change won't break any preexisting query"
-
     @classmethod
     def breaking(cls, reason):
+        """Helper constructor of a breaking change"""
         return cls(level=CriticalityLevel.Breaking, reason=reason)
 
     @classmethod
     def dangerous(cls, reason):
+        """Helper constructor of a dangerous change"""
         return cls(level=CriticalityLevel.Dangerous, reason=reason)
 
     @classmethod
-    def safe(cls, reason=SAFE_CHANGE):
+    def safe(cls, reason="This change won't break any preexisting query"):
+        """Helper constructor of a safe change"""
         return cls(level=CriticalityLevel.NonBreaking, reason=reason)
 
     def __repr__(self):
@@ -84,38 +85,48 @@ def is_safe_change_for_input_value(old_type, new_type):
 
 
 class Change(ABC):
+    """Common interface of all schema changes
+    
+    This class offers the common operations and properties of all
+    schema changes. You may use it as a type hint to get better
+    suggestions in your editor of choice.
+    """
 
-    criticality: Criticality
+    criticality: Criticality = None
 
     @property
-    def breaking(self):
+    def breaking(self) -> bool:
+        """Is this change a breaking change?"""
         return self.criticality.level == CriticalityLevel.Breaking
 
     @property
-    def dangerous(self):
+    def dangerous(self) -> bool:
+        """Is this a change which might break some naive api clients?"""
         return self.criticality.level == CriticalityLevel.Dangerous
 
     @property
-    def safe(self):
+    def safe(self) -> bool:
+        """Is this change safe for all clients?"""
         return self.criticality.level == CriticalityLevel.NonBreaking
 
     @property
     @abstractmethod
-    def message(self):
+    def message(self) -> str:
         """Formatted change message"""
 
     @property
     @abstractmethod
-    def path(self):
+    def path(self) -> str:
         """Path to the affected schema member"""
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Change(criticality={self.criticality!r}, message={self.message!r}, path={self.path!r})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.message
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
+        """Get detailed representation of a change"""
         return {
             'message': self.message,
             'path': self.path,
@@ -127,8 +138,11 @@ class Change(ABC):
             'checksum': self.checksum(),
         }
 
-    def to_json(self):
+    def to_json(self) -> str:
+        """Get detailed representation of a change as a json string"""
         return json.dumps(self.to_dict())
 
-    def checksum(self):
+    def checksum(self) -> str:
+        """Get and identifier of a change. Used for allowlisting changes"""
         return hashlib.md5(self.message.encode('utf-8')).hexdigest()
+ 
