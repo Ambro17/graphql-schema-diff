@@ -35,6 +35,10 @@ The lib requires python3.6 or greater to work. In order to install it run
 ```bash
 $ python3 -m pip install graphql-schema-diff
 ```
+If you don't have python installed you can still use it via its docker image.
+```bash
+docker run -it --rm -v $PWD:/app ambro17/schemadiff -h
+```
 
 ## Usage
 You can use this package as a lib or as a cli. You can choose what better suits your needs
@@ -66,8 +70,8 @@ type Query {
 """
 
 changes = diff(old_schema, new_schema)
-print_diff(changes)                   # Pretty print difference
-any(change.breaking or change.dangerous for change in changes)    # Check if there was any breaking or dangerous change
+print_diff(changes)
+assert any(change.breaking or change.dangerous for change in changes)
 
 # You can also compare from schema files
 with open('old_schema.gql', 'w') as f:
@@ -79,6 +83,7 @@ with open('new_schema.gql', 'w') as f:
 changes = diff_from_file('old_schema.gql', 'new_schema.gql')
 print_diff(changes)
 ```
+
 ### CLI
 Inside your virtualenv you can invoke the entrypoint to see its usage options
 ```bash
@@ -103,21 +108,21 @@ optional arguments:
 ```
 #### Examples
 ```bash
+# Move to tests folder where schemas live
+cd tests/data
+
 # Compare schemas and output diff to stdout
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql`
+schemadiff -o old_schema.gql -n new_schema.gql
 
-# Pass a evaluation flag (mixing long arg name and short arg name)
-schemadiff --old-schema tests/data/simple_schema.gql -n tests/data/new_schema.gql --strict`
-
-# Print output as json with details of each change
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json
+# Strict evaluation (error on breaking and dangerous changes)
+schemadiff -o old_schema.gql -n new_schema.gql --strict
 
 # Save output to a json file
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-json > changes.json
+schemadiff -o old_schema.gql -n new_schema.gql --as-json > changes.json
 
 # Compare schemas ignoring allowed changes
-schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allowlist.json
-```
+schemadiff -o old_schema.gql -n new_schema.gql -a allowlist.json
+``` 
 
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
 >```bash
@@ -126,6 +131,7 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allow
 >$ fc-cache -f -v
 >```
 >That should install noto emoji fonts and set is as the fallback font to render emojis 😎
+>If it still doesn't work, change your terminal font to Noto Mono for Powerline.
 
 ## Credits
 Implementation was heavily inspired by Marc Giroux [ruby version](https://github.com/xuorig/graphql-schema_comparator) 
