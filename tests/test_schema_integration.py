@@ -1,14 +1,14 @@
 from pathlib import Path
 
-from schemadiff.schema_loader import Schema
+from schemadiff.schema_loader import SchemaLoader
 from schemadiff.diff.schema import Schema
 
 TESTS_DATA = Path(__file__).parent / 'data'
 
 
 def test_compare_from_schema_string_sdl():
-    old_schema = Schema.from_file(TESTS_DATA / 'old_schema.gql')
-    new_schema = Schema.from_file(TESTS_DATA / 'new_schema.gql')
+    old_schema = SchemaLoader.from_file(TESTS_DATA / 'old_schema.gql')
+    new_schema = SchemaLoader.from_file(TESTS_DATA / 'new_schema.gql')
 
     diff = Schema(old_schema, new_schema).diff()
     assert len(diff) == 38

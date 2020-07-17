@@ -1,7 +1,7 @@
 from graphql import build_schema, GraphQLSchema
 
 
-class Schema:
+class SchemaLoader:
     """Represents a GraphQL Schema loaded from a string or file."""
 
     @classmethod

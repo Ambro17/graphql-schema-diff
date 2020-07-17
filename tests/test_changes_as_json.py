@@ -4,7 +4,7 @@ from operator import itemgetter
 from schemadiff.changes import Criticality, Change
 from schemadiff.diff.schema import Schema
 from schemadiff.formatting import json_dump_changes, changes_to_dict
-from schemadiff.schema_loader import Schema
+from schemadiff.schema_loader import SchemaLoader as SchemaLoad
 from tests.test_schema_loading import TESTS_DATA
 
 
@@ -88,8 +88,8 @@ def test_safe_change():
 
 
 def test_json_dump_changes():
-    old = Schema.from_file(TESTS_DATA / 'simple_schema.gql')
-    new = Schema.from_file(TESTS_DATA / 'simple_schema_dangerous_and_breaking.gql')
+    old = SchemaLoad.from_file(TESTS_DATA / 'simple_schema.gql')
+    new = SchemaLoad.from_file(TESTS_DATA / 'simple_schema_dangerous_and_breaking.gql')
 
     changes = Schema(old, new).diff()
     expected_changes = [

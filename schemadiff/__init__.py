@@ -4,7 +4,7 @@ from graphql import GraphQLSchema as GQLSchema, is_schema
 
 from schemadiff.changes import Change
 from schemadiff.diff.schema import Schema
-from schemadiff.schema_loader import Schema
+from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, format_diff
 
 
@@ -17,8 +17,8 @@ def diff(old_schema: Union[SDL, GQLSchema], new_schema: Union[SDL, GQLSchema]) -
     Returns:
         changes (List[Change]): List of differences between both schemas with details about each change
     """
-    first = Schema.from_sdl(old_schema) if not is_schema(old_schema) else old_schema
-    second = Schema.from_sdl(new_schema) if not is_schema(new_schema) else new_schema
+    first = SchemaLoader.from_sdl(old_schema) if not is_schema(old_schema) else old_schema
+    second = SchemaLoader.from_sdl(new_schema) if not is_schema(new_schema) else new_schema
     return Schema(first, second).diff()
 
 
@@ -28,8 +28,8 @@ def diff_from_file(schema_file: str, other_schema_file: str):
     Returns:
         changes (List[Change]): List of differences between both schemas with details about each change
     """
-    first = Schema.from_file(schema_file)
-    second = Schema.from_file(other_schema_file)
+    first = SchemaLoader.from_file(schema_file)
+    second = SchemaLoader.from_file(other_schema_file)
     return Schema(first, second).diff()
 
 

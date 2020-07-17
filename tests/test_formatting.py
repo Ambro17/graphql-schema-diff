@@ -1,14 +1,14 @@
 import json
 
 from schemadiff.diff.schema import Schema
-from schemadiff.schema_loader import Schema
+from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, print_json
 from tests.test_schema_loading import TESTS_DATA
 
 
 def test_print_diff_shows_difference(capsys):
-    old_schema = Schema.from_file(TESTS_DATA / 'simple_schema.gql')
-    new_schema = Schema.from_file(TESTS_DATA / 'simple_schema_breaking_changes.gql')
+    old_schema = SchemaLoader.from_file(TESTS_DATA / 'simple_schema.gql')
+    new_schema = SchemaLoader.from_file(TESTS_DATA / 'simple_schema_breaking_changes.gql')
 
     diff = Schema(old_schema, new_schema).diff()
     assert len(diff) == 1
@@ -20,8 +20,8 @@ def test_print_diff_shows_difference(capsys):
 
 
 def test_print_json_shows_difference(capsys):
-    old_schema = Schema.from_file(TESTS_DATA / 'simple_schema.gql')
-    new_schema = Schema.from_file(TESTS_DATA / 'simple_schema_breaking_changes.gql')
+    old_schema = SchemaLoader.from_file(TESTS_DATA / 'simple_schema.gql')
+    new_schema = SchemaLoader.from_file(TESTS_DATA / 'simple_schema_breaking_changes.gql')
 
     diff = Schema(old_schema, new_schema).diff()
     assert len(diff) == 1
