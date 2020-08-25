@@ -1,4 +1,5 @@
 from schemadiff.changes import Change, Criticality
+from schemadiff.restricted_changes import evaluate_if_restricted_change
 
 
 class RemovedType(Change):
@@ -26,6 +27,8 @@ class AddedType(Change):
 
     def __init__(self, added_type):
         self.type = added_type
+        if evaluate_if_restricted_change(self, added_type):
+            self.criticality = Criticality.restricted()
 
     @property
     def message(self):
@@ -44,6 +47,8 @@ class TypeDescriptionChanged(Change):
         self.type = type_name
         self.old_desc = old_desc
         self.new_desc = new_desc
+        if evaluate_if_restricted_change(self, new_desc):
+            self.criticality = Criticality.restricted()
 
     @property
     def message(self):

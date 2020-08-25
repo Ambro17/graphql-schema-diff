@@ -17,7 +17,7 @@ def test_schema_no_diff():
     assert diff == []
 
 
-def test_schema_added_type():
+def test_schema_added_type_without_desc():
     old_schema = schema("""
     schema {
         query: Query
@@ -36,7 +36,9 @@ def test_schema_added_type():
         field: String!
     }
 
+    \"\"\"This has desc, shouldn't break\"\"\"
     type AddedType {
+        \"\"\"This has desc, shouldn't break\"\"\"
         added: Int
     }
     """)

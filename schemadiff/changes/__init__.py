@@ -11,6 +11,7 @@ class CriticalityLevel(Enum):
     NonBreaking = 'NON_BREAKING'
     Dangerous = 'DANGEROUS'
     Breaking = 'BREAKING'
+    Restricted = 'RESTRICTED'
 
 
 @dataclass(repr=False)
@@ -32,6 +33,11 @@ class Criticality:
     def safe(cls, reason="This change won't break any preexisting query"):
         """Helper constructor of a safe change"""
         return cls(level=CriticalityLevel.NonBreaking, reason=reason)
+
+    @classmethod
+    def restricted(cls, reason="This change is restricted"):
+        """Helper constructor of a restricted change"""
+        return cls(level=CriticalityLevel.Restricted, reason=reason)
 
     def __repr__(self):
         # Replace repr because of attrs bug https://github.com/python-attrs/attrs/issues/95
@@ -108,6 +114,11 @@ class Change(ABC):
     def safe(self) -> bool:
         """Is this change safe for all clients?"""
         return self.criticality.level == CriticalityLevel.NonBreaking
+
+    @property
+    def restricted(self) -> bool:
+        """Is this change restricted for all clients?"""
+        return self.criticality.level == CriticalityLevel.Restricted
 
     @property
     @abstractmethod

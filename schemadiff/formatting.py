@@ -19,6 +19,7 @@ def format_change_by_criticality(change: Change) -> str:
         CriticalityLevel.Breaking: os.getenv('SD_BREAKING_CHANGE_ICON', '❌'),
         CriticalityLevel.Dangerous: os.getenv('SD_DANGEROUS_CHANGE_ICON', '⚠️'),
         CriticalityLevel.NonBreaking: os.getenv('SD_SAFE_CHANGE_ICON', '✔️'),
+        CriticalityLevel.Restricted: os.getenv('SD_BREAKING_CHANGE_ICON', '❌'),  # ToDo: Fix the icon
     }
     icon = icon_by_criticality[change.criticality.level]
     return f"{icon} {change.message}"

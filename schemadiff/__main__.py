@@ -37,6 +37,8 @@ def parse_args(arguments):
     parser.add_argument('-s', '--strict',
                         action='store_true',
                         help="Strict mode. Error out on dangerous and breaking changes.")
+    parser.add_argument('-r', '--restricted', type=str, choices=["without_description"],
+                        help="Restricted mode. Error out on restricted changes.")
 
     return parser.parse_args(arguments)
 
@@ -59,12 +61,14 @@ def main(args) -> int:
     else:
         print_diff(diff)
 
-    return exit_code(diff, args.strict, args.tolerant)
+    return exit_code(diff, args.strict, args.restricted, args.tolerant)
 
 
-def exit_code(changes, strict, tolerant) -> int:
+def exit_code(changes, strict, restricted, tolerant) -> int:
     exit_code = 0
     if strict and any(change.breaking or change.dangerous for change in changes):
+        exit_code = 1
+    if restricted and any(change.restricted for change in changes):
         exit_code = 1
     elif tolerant and any(change.breaking for change in changes):
         exit_code = 1
