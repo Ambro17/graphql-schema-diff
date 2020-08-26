@@ -118,13 +118,13 @@ def test_schema_strict_mode(capsys):
     assert "⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
 
 
-def test_schema_restricted_mode(capsys):
+def test_schema_restricted_mode_fail(capsys):
     SCHEMA_FILE = 'tests/data/simple_schema.gql'
     ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_restricted_changes.gql'
     args = parse_args([
         '-o', SCHEMA_FILE,
         '--new-schema', ANOTHER_SCHEMA_FILE,
-        '--restricted=without_description'
+        '--restrictions=RESTRICT_ADDING_WITHOUT_DESC'
     ])
     exit_code = main(args)
     #  As we run the comparison in strict mode and there is a dangerous change, the exit code is 1
@@ -132,7 +132,7 @@ def test_schema_restricted_mode(capsys):
 
     stdout = capsys.readouterr()
 
-    assert "❌ Type `NewTypeWithoutDesc` was added" in stdout.out
+    assert "✔️ Type `NewTypeWithoutDesc` was added" in stdout.out
     assert "✔️ Field `c` was added to object type `Query`" in stdout.out
 
 

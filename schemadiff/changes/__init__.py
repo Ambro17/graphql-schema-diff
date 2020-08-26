@@ -99,6 +99,7 @@ class Change(ABC):
     """
 
     criticality: Criticality = None
+    restricted: bool = False
 
     @property
     def breaking(self) -> bool:
@@ -114,11 +115,6 @@ class Change(ABC):
     def safe(self) -> bool:
         """Is this change safe for all clients?"""
         return self.criticality.level == CriticalityLevel.NonBreaking
-
-    @property
-    def restricted(self) -> bool:
-        """Is this change restricted for all clients?"""
-        return self.criticality.level == CriticalityLevel.Restricted
 
     @property
     @abstractmethod
