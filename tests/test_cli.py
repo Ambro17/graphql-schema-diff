@@ -124,7 +124,7 @@ def test_schema_restricted_mode_fail(capsys):
     args = parse_args([
         '-o', SCHEMA_FILE,
         '--new-schema', ANOTHER_SCHEMA_FILE,
-        '--restrictions=RESTRICT_ADDING_WITHOUT_DESC'
+        '--restrictions', 'RestrictAddingWithoutDescription', 'RestrictRemovingDescription'
     ])
     exit_code = main(args)
     #  As we run the comparison in strict mode and there is a dangerous change, the exit code is 1

@@ -5,7 +5,8 @@ from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
 from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, print_json
-from schemadiff.restricted_changes import RESTRICTIONS, is_restricted
+from schemadiff.restricted_changes import load_restrictions, is_restricted
+
 
 def cli():
     args = parse_args(sys.argv[1:])
@@ -37,7 +38,7 @@ def parse_args(arguments):
     parser.add_argument('-s', '--strict',
                         action='store_true',
                         help="Strict mode. Error out on dangerous and breaking changes.")
-    parser.add_argument('-r', '--restrictions', type=str, choices=RESTRICTIONS,
+    parser.add_argument('-r', '--restrictions', choices=load_restrictions(), nargs='*',
                         help="Restricted mode. Error out on restricted changes.")
 
     return parser.parse_args(arguments)
