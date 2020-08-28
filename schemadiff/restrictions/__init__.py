@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List, Set
 
 from schemadiff.changes.type import TypeDescriptionChanged, AddedType
@@ -9,6 +9,7 @@ class Restriction(ABC):
     name: str = ""
 
     @classmethod
+    @abstractmethod
     def is_restricted(cls, change) -> bool:
         """Evaluate the change regarding the restriction
         class defined.
