@@ -25,10 +25,11 @@
 # schemadiff
 `schemadiff` is a lib that shows you the difference between two GraphQL Schemas.
 It takes two schemas from a string or a file and gives you a list of changes between both versions.
-This might be useful for
+This might be useful for:
 *  Detecting breaking changes before they reach the api clients
 *  Integrating into CI pipelines to control your api evolution
-*  Document your api changes and submit them for approval along with your pull requests.
+*  Document your api changes and submit them for an approval along with your pull requests.
+*  Restricting unwanted changes
 
 ## Installation
 The lib requires python3.6 or greater to work. In order to install it run
@@ -83,7 +84,7 @@ print_diff(changes)
 Inside your virtualenv you can invoke the entrypoint to see its usage options
 ```bash
 $ schemadiff -h
-Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-a ALLOW_LIST] [-t] [-s]
+Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-a ALLOW_LIST] [-t] [-r] [-s]
 
 Schema comparator
 
@@ -98,6 +99,7 @@ optional arguments:
                         Path to the allowed list of changes
   -t, --tolerant        Tolerant mode. Error out only if there's a breaking
                         change but allow dangerous changes
+  -r, --restrictions    Restricted mode. Error out on restricted changes.
   -s, --strict          Strict mode. Error out on dangerous and breaking
                         changes.
 ```
@@ -117,6 +119,9 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-jso
 
 # Compare schemas ignoring allowed changes
 schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allowlist.json
+
+# Compare schemas restricting adding new types without description
+schemadiff -o tests/data/simple_schema.gql -n simple_schema_new_type_without_description.gql -r add-type-without-description
 ```
 
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
