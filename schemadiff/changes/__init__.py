@@ -93,6 +93,7 @@ class Change(ABC):
     """
 
     criticality: Criticality = None
+    protected: bool = False
 
     @property
     def breaking(self) -> bool:

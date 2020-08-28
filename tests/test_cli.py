@@ -118,7 +118,7 @@ def test_schema_strict_mode(capsys):
     assert "⚠️ Default value for argument `x` on field `Field.calculus` changed from `0` to `100`" in stdout.out
 
 
-def test_schema_restricted_mode_fail(capsys):
+def test_schema_restricted_mode(capsys):
     SCHEMA_FILE = 'tests/data/simple_schema.gql'
     ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_restricted_changes.gql'
     args = parse_args([
@@ -132,7 +132,7 @@ def test_schema_restricted_mode_fail(capsys):
 
     stdout = capsys.readouterr()
 
-    assert "✔️ Type `NewTypeWithoutDesc` was added" in stdout.out
+    assert "✔️ Type `NewTypeWithoutDesc` was added <- Restricted" in stdout.out
     assert "✔️ Field `c` was added to object type `Query`" in stdout.out
 
 

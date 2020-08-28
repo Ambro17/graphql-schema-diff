@@ -1,37 +1,27 @@
-from schemadiff.changes.type import TypeDescriptionChanged, AddedType
 from typing import List
-from abc import ABC
+
+from schemadiff.restrictions import Restriction
 
 
-RESTRICT_ADDING_WITHOUT_DESC = 'RESTRICT_ADDING_WITHOUT_DESC'
-RESTRICTIONS = [RESTRICT_ADDING_WITHOUT_DESC]
+def evaluate_restrictions(diff, restrictions: List[str]) -> bool:
+    """Given a diff between schemas and a list of restriction
+    names, it looks up for all restrictions matching the list
+    and evaluates the changes against that list.
+
+    Returns:
+        bool: True if there is at least one restricted change,
+            False otherwise.
+    """
+    is_restricted = False
+    restrictions = Restriction.get_subclasses_by_names(restrictions)
+    for change in diff:
+        if any(restriction.is_restricted(change) for restriction in restrictions):
+            change.protected = True
+            is_restricted = True
+
+    return is_restricted
 
 
-class Restriction(ABC):
-    @classmethod
-    def evaluate(cls, change):
-        pass
+def restrictions_list():
+    return Restriction.get_restrictions_list()
 
-
-class RestrictAddingWithoutDescription(Restriction):
-    @classmethod
-    def evaluate(cls, change):
-        if isinstance(change, AddedType):
-            return not change.type.description
-
-
-class RestrictRemovingDescription(Restriction):
-    @classmethod
-    def evaluate(cls, change):
-        if isinstance(change, TypeDescriptionChanged):
-            return not change
-
-
-def is_restricted(change, restrictions: List[str]):
-    """True if the change is restricted, False otherwise"""
-    restrictions_cls = [r for r in Restriction.__subclasses__() if r.__name__ in restrictions]
-    return any(restriction.evaluate(change) for restriction in restrictions_cls)
-
-
-def load_restrictions():
-    return [cls.__name__ for cls in Restriction.__subclasses__()]
