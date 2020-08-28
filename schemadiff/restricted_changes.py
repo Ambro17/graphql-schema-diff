@@ -16,7 +16,7 @@ def evaluate_restrictions(diff, restrictions: List[str]) -> bool:
     restrictions = Restriction.get_subclasses_by_names(restrictions)
     for change in diff:
         if any(restriction.is_restricted(change) for restriction in restrictions):
-            change.protected = True
+            change.restricted = True
             is_restricted = True
 
     return is_restricted
