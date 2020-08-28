@@ -38,6 +38,7 @@ class RestrictAddingWithoutDescription(Restriction):
     def is_restricted(cls, change) -> bool:
         if isinstance(change, AddedType):
             return change.type.description in (None, "")
+        return False
 
 
 class RestrictRemovingDescription(Restriction):
@@ -49,3 +50,4 @@ class RestrictRemovingDescription(Restriction):
     def is_restricted(cls, change) -> bool:
         if isinstance(change, TypeDescriptionChanged):
             return change.new_desc in (None, "")
+        return False
