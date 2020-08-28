@@ -21,7 +21,7 @@ def format_change_by_criticality(change: Change) -> str:
         CriticalityLevel.NonBreaking: os.getenv('SD_SAFE_CHANGE_ICON', '✔️'),
     }
     icon = icon_by_criticality[change.criticality.level]
-    return f"{icon} {change.message}{' <- Restricted' if change.protected else ''}"
+    return f"{icon} {change.message}{' ⬅️ ⛔ Restricted' if change.protected else ''}"
 
 
 def print_diff(changes: List[Change]) -> None:

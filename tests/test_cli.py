@@ -132,7 +132,7 @@ def test_schema_restricted_mode(capsys):
 
     stdout = capsys.readouterr()
 
-    assert "✔️ Type `NewTypeWithoutDesc` was added <- Restricted" in stdout.out
+    assert "✔️ Type `NewTypeWithoutDesc` was added ⬅️ ⛔ Restricted" in stdout.out
     assert "✔️ Field `c` was added to object type `Query`" in stdout.out
 
 
