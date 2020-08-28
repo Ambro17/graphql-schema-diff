@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List, Set
 
 from schemadiff.changes.type import TypeDescriptionChanged, AddedType
@@ -9,6 +9,7 @@ class Restriction(ABC):
     name: str = ""
 
     @classmethod
+    @abstractmethod
     def is_restricted(cls, change) -> bool:
         """Evaluate the change regarding the restriction
         class defined.
@@ -16,7 +17,6 @@ class Restriction(ABC):
         Returns:
             bool: True if restricted, False otherwise
         """
-        raise NotImplemented(f"Restriction {cls.__name__!r} should implement the `is_restricted` method")
 
     @classmethod
     def get_subclasses_by_names(cls, names: List[str]) -> Set:
