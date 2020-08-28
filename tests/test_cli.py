@@ -120,7 +120,7 @@ def test_schema_strict_mode(capsys):
 
 def test_schema_restricted_mode(capsys):
     SCHEMA_FILE = 'tests/data/simple_schema.gql'
-    ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_restricted_changes.gql'
+    ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_new_type_without_description.gql'
     args = parse_args([
         '-o', SCHEMA_FILE,
         '--new-schema', ANOTHER_SCHEMA_FILE,
