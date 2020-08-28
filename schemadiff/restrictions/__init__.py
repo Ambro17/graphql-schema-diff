@@ -1,12 +1,12 @@
 from abc import ABC
-from typing import List
+from typing import List, Set
 
 from schemadiff.changes.type import TypeDescriptionChanged, AddedType
 
 
 class Restriction(ABC):
     """Metaclass for creating schema restrictions."""
-    reason: str = ""
+    name: str = ""
 
     @classmethod
     def is_restricted(cls, change) -> bool:
@@ -19,19 +19,20 @@ class Restriction(ABC):
         raise NotImplemented(f"Restriction {cls.__name__!r} should implement the `is_restricted` method")
 
     @classmethod
-    def get_subclasses_by_names(cls, names: List[str]) -> List:
+    def get_subclasses_by_names(cls, names: List[str]) -> Set:
         if not names:
-            return []
-        return [subclass for subclass in cls.__subclasses__() if subclass.__name__ in names]
+            return set()
+        return {subclass for subclass in cls.__subclasses__() if subclass.name in names}
 
     @classmethod
-    def get_restrictions_list(cls) -> List[str]:
-        return [subclass.__name__ for subclass in cls.__subclasses__()]
+    def get_restrictions_list(cls) -> Set[str]:
+        return {subclass.name for subclass in cls.__subclasses__()}
 
 
 class RestrictAddingWithoutDescription(Restriction):
     """Restrict adding new GraphQL types without entering
     a non-empty description."""
+    name = "add-type-without-description"
 
     @classmethod
     def is_restricted(cls, change) -> bool:
@@ -42,6 +43,8 @@ class RestrictAddingWithoutDescription(Restriction):
 class RestrictRemovingDescription(Restriction):
     """Restrict removing the description from an existing
     GraphQL type."""
+    name = "remove-type-description"
+
     @classmethod
     def is_restricted(cls, change) -> bool:
         if isinstance(change, TypeDescriptionChanged):
