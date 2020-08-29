@@ -1,6 +1,12 @@
 from graphql import build_schema as schema
 
-from schemadiff.restrictions import RestrictAddingWithoutDescription, RestrictRemovingDescription
+from schemadiff.restrictions import (
+    RestrictAddingFieldsWithoutDescription,
+    RestrictAddingTypeWithoutDescription,
+    RestrictAddingEnumWithoutDescription,
+    RestrictRemovingEnumValueDescription,
+    RestrictRemovingTypeDescription,
+)
 from schemadiff.diff.schema import Schema
 
 
@@ -20,7 +26,7 @@ def test_type_added_with_desc():
     }
     """)
     diff = Schema(a, b).diff()
-    assert RestrictAddingWithoutDescription.is_restricted(diff[0]) is False
+    assert RestrictAddingTypeWithoutDescription.is_restricted(diff[0]) is False
 
 
 def test_type_added_without_desc():
@@ -38,7 +44,7 @@ def test_type_added_without_desc():
     }
     """)
     diff = Schema(a, b).diff()
-    assert RestrictAddingWithoutDescription.is_restricted(diff[0]) is True
+    assert RestrictAddingTypeWithoutDescription.is_restricted(diff[0]) is True
 
 
 def test_type_changed_desc_removed():
@@ -60,7 +66,75 @@ def test_type_changed_desc_removed():
     }
     """)
     diff = Schema(a, b).diff()
-    assert RestrictRemovingDescription.is_restricted(diff[0]) is True
+    assert RestrictRemovingTypeDescription.is_restricted(diff[0]) is True
 
     diff = Schema(a, c).diff()
-    assert RestrictRemovingDescription.is_restricted(diff[0]) is True
+    assert RestrictRemovingTypeDescription.is_restricted(diff[0]) is True
+
+
+def test_field_added_without_desc():
+    a = schema("""
+    type MyType{
+        a: Int
+    }
+    """)
+    b = schema("""
+    type MyType{
+        a: Int
+        b: String!
+    }
+    """)
+    c = schema("""
+    type MyType{
+        a: Int
+        \"\"\"WithDesc\"\"\"
+        b: String!
+    }
+    """)
+    diff = Schema(a, b).diff()
+    assert RestrictAddingFieldsWithoutDescription.is_restricted(diff[0]) is True
+
+    diff = Schema(a, c).diff()
+    assert RestrictAddingFieldsWithoutDescription.is_restricted(diff[0]) is False
+
+
+def test_enum_added_without_desc():
+    a = schema("""
+    enum Letters {
+        A
+    }
+    """)
+    b = schema("""
+    enum Letters {
+        A
+        B
+    }
+    """)
+    c = schema("""
+    enum Letters {
+        A
+        \"\"\"WithDesc\"\"\"
+        B
+    }
+    """)
+    diff = Schema(a, b).diff()
+    assert RestrictAddingEnumWithoutDescription.is_restricted(diff[0]) is True
+
+    diff = Schema(a, c).diff()
+    assert RestrictAddingEnumWithoutDescription.is_restricted(diff[0]) is False
+
+
+def test_enum_value_removing_desc():
+    a = schema("""
+    enum Letters {
+        \"\"\"WithDesc\"\"\"
+        A
+    }
+    """)
+    b = schema("""
+    enum Letters {
+        A
+    }
+    """)
+    diff = Schema(a, b).diff()
+    assert RestrictRemovingEnumValueDescription.is_restricted(diff[0]) is True

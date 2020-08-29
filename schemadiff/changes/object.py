@@ -8,6 +8,7 @@ class ObjectTypeFieldAdded(Change):
     def __init__(self, parent, field_name):
         self.parent = parent
         self.field_name = field_name
+        self.description = parent.fields[field_name].description
 
     @property
     def message(self):

@@ -9,6 +9,7 @@ class EnumValueAdded(Change):
         )
         self.enum = enum
         self.value = value
+        self.description = enum.values[value].description
 
     @property
     def message(self):

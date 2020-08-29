@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import List, Set
 
-from schemadiff.changes.type import TypeDescriptionChanged, AddedType
-
+from schemadiff.changes.enum import EnumValueAdded, EnumValueDescriptionChanged
+from schemadiff.changes.object import ObjectTypeFieldAdded
+from schemadiff.changes.type import AddedType, TypeDescriptionChanged
 
 class Restriction(ABC):
     """Metaclass for creating schema restrictions."""
@@ -29,7 +30,7 @@ class Restriction(ABC):
         return {subclass.name for subclass in cls.__subclasses__()}
 
 
-class RestrictAddingWithoutDescription(Restriction):
+class RestrictAddingTypeWithoutDescription(Restriction):
     """Restrict adding new GraphQL types without entering
     a non-empty description."""
     name = "add-type-without-description"
@@ -41,7 +42,7 @@ class RestrictAddingWithoutDescription(Restriction):
         return False
 
 
-class RestrictRemovingDescription(Restriction):
+class RestrictRemovingTypeDescription(Restriction):
     """Restrict removing the description from an existing
     GraphQL type."""
     name = "remove-type-description"
@@ -50,4 +51,37 @@ class RestrictRemovingDescription(Restriction):
     def is_restricted(cls, change) -> bool:
         if isinstance(change, TypeDescriptionChanged):
             return change.new_desc in (None, "")
+        return False
+
+
+class RestrictAddingFieldsWithoutDescription(Restriction):
+    """Restrict adding fields without description."""
+    name = "add-field-without-description"
+
+    @classmethod
+    def is_restricted(cls, change) -> bool:
+        if isinstance(change, ObjectTypeFieldAdded):
+            return change.description in (None, "")
+        return False
+
+
+class RestrictAddingEnumWithoutDescription(Restriction):
+    """Restrict adding enum value without description."""
+    name = "add-enum-value-without-description"
+
+    @classmethod
+    def is_restricted(cls, change) -> bool:
+        if isinstance(change, EnumValueAdded):
+            return change.description in (None, "")
+        return False
+
+
+class RestrictRemovingEnumValueDescription(Restriction):
+    """Restrict adding enum value without description."""
+    name = "remove-enum-value-description"
+
+    @classmethod
+    def is_restricted(cls, change) -> bool:
+        if isinstance(change, EnumValueDescriptionChanged):
+            return change.new_value.description in (None, "")
         return False
