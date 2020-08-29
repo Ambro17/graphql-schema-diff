@@ -132,6 +132,35 @@ schemadiff -o tests/data/simple_schema.gql -n simple_schema_new_type_without_des
 >```
 >That should install noto emoji fonts and set is as the fallback font to render emojis 😎
 
+## Restricting changes
+You can use this library to validate whether your schema matches a set of rules.
+
+### Built-in restrictions
+The library has its own built-in restrictions ready-to-use. Just append them to the `-r` command in `CLI`. You can
+add as many as you want.
+
+- `add-type-without-description`
+Restrict adding new GraphQL types without entering a non-empty description.
+
+- `remove-type-description`
+Restrict removing the description from an existing GraphQL type.
+    
+- `add-field-without-description`
+Restrict adding fields without description.
+
+- `add-enum-value-without-description`
+Restrict adding enum value without description.
+
+- `remove-enum-value-description`
+Restrict adding enum value without description.
+
+Running the following command, you could restrict type additions without entering a nice description.
+```
+# Compare schemas restricting adding new types without description
+schemadiff -o tests/data/simple_schema.gql -n simple_schema_new_type_without_description.gql -r add-type-without-description
+```
+
+
 ## API Reference
 You can also read the [API Reference](https://ambro17.github.io/graphql-schema-diff/) if you want to get a better understanding of the inner workings of the lib
 
