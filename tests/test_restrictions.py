@@ -1,6 +1,9 @@
+import pytest
 from graphql import build_schema as schema
 
+from schemadiff.changes import Change, Criticality
 from schemadiff.restrictions import (
+    Restriction,
     RestrictAddingFieldsWithoutDescription,
     RestrictAddingTypeWithoutDescription,
     RestrictAddingEnumWithoutDescription,
@@ -8,6 +11,22 @@ from schemadiff.restrictions import (
     RestrictRemovingTypeDescription,
 )
 from schemadiff.diff.schema import Schema
+
+
+@pytest.mark.parametrize('restriction', Restriction.__subclasses__())
+def test_is_restricted_defaults_to_false_for_any_other_change(restriction):
+    class UnexpectedChange(Change):
+        criticality = Criticality.safe()
+
+        @property
+        def message(self):
+            return ""
+
+        @property
+        def path(self):
+            return ""
+
+    assert restriction.is_restricted(UnexpectedChange()) is False
 
 
 def test_type_added_with_desc():
