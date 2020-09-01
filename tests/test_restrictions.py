@@ -39,7 +39,7 @@ def test_type_added_with_desc():
     type MyType{
         a: Int
     }
-    \"\"\"This has desc\"\"\"
+    '''This has desc'''
     type NewType{
         b: String!
     }
@@ -68,7 +68,7 @@ def test_type_added_without_desc():
 
 def test_type_changed_desc_removed():
     a = schema("""
-    \"\"\"This has desc\"\"\"
+    '''This has desc'''
     type MyType{
         a: Int
     }
@@ -79,7 +79,7 @@ def test_type_changed_desc_removed():
     }
     """)
     c = schema("""
-    \"\"\"\"\"\"
+    ''''''
     type MyType{
         a: Int
     }
@@ -106,7 +106,7 @@ def test_field_added_without_desc():
     c = schema("""
     type MyType{
         a: Int
-        \"\"\"WithDesc\"\"\"
+        '''WithDesc'''
         b: String!
     }
     """)
@@ -132,7 +132,7 @@ def test_enum_added_without_desc():
     c = schema("""
     enum Letters {
         A
-        \"\"\"WithDesc\"\"\"
+        '''WithDesc'''
         B
     }
     """)
@@ -146,7 +146,7 @@ def test_enum_added_without_desc():
 def test_enum_value_removing_desc():
     a = schema("""
     enum Letters {
-        \"\"\"WithDesc\"\"\"
+        '''WithDesc'''
         A
     }
     """)
