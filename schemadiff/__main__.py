@@ -39,7 +39,7 @@ def parse_args(arguments):
                         action='store_true',
                         help="Strict mode. Error out on dangerous and breaking changes.")
     parser.add_argument('-r', '--validation-rules', choices=rules_list(), nargs='*',
-                        help="Evaluate rules mode. Error out on changes that match listed rules.")
+                        help="Evaluate rules mode. Error out on changes that fail some validation rule.")
 
     return parser.parse_args(arguments)
 

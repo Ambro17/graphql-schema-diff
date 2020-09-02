@@ -8,7 +8,7 @@ from schemadiff.changes.type import AddedType, TypeDescriptionChanged
 
 
 class ValidationRule(ABC):
-    """Metaclass for creating schema ValidationRules."""
+    """Abstract class for creating schema Validation Rules."""
     name: str = ""
 
     def __init__(self, change):

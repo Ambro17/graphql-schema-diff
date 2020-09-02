@@ -155,6 +155,7 @@ def test_schema_rules_mode(capsys):
     assert "⛔ Description for enum value `VALUE_2` was removed " \
            "(rule: `remove-enum-value-description`)" in stdout.out
 
+
 def test_schema_tolerant_mode(capsys):
     SCHEMA_FILE = 'tests/data/simple_schema.gql'
     ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_dangerous_changes.gql'
