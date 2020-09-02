@@ -11,7 +11,7 @@ package_name = "graphql-schema-diff"
 
 setup(
     name=package_name,
-    version="1.0.3",
+    version="1.0.4",
     author="Nahuel Ambrosini",
     author_email="ambro17.1@gmail.com",
     description="Compare GraphQL Schemas",
