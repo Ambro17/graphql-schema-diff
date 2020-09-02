@@ -148,6 +148,9 @@ Restrict removing the description from an existing GraphQL type.
 - `add-field-without-description`
 Restrict adding fields without description.
 
+- `remove-field-description`
+Restrict removing the description from an existing GraphQL field.
+
 - `add-enum-value-without-description`
 Restrict adding enum value without description.
 
