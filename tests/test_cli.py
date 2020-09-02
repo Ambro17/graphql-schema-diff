@@ -122,8 +122,10 @@ def test_schema_rules_mode(capsys):
     SCHEMA_FILE = 'tests/data/simple_schema_rules_validation.gql'
     ANOTHER_SCHEMA_FILE = 'tests/data/simple_schema_rules_validation_new.gql'
     RULES = [
-        'remove-type-description',
         'add-type-without-description',
+        'remove-type-description',
+        'add-field-without-description',
+        'remove-field-description',
         'add-enum-value-without-description'
     ]
     args = parse_args([
@@ -141,8 +143,9 @@ def test_schema_rules_mode(capsys):
            "(rule: `add-type-without-description`)" in stdout.out
     assert "⛔ Type `NewEnumWithoutDesc` was added without a description " \
            "(rule: `add-type-without-description`)" in stdout.out
-    assert "⛔ Description for type `Field` changed from `Some desc` to `None` (rule: `remove-type-description`)"
-    assert "✔️ Field `c` was added to object type `Query`" in stdout.out
+    assert "⛔ Description for type `Field` was removed (rule: `remove-type-description`)" in stdout.out
+    assert "⛔ `Field.calculus` description was removed (rule: `remove-field-description`)" in stdout.out
+    assert "⛔ Field `c` was added to object type `Query` without a description (rule: `add-field-without-description`)" in stdout.out
 
 
 def test_schema_tolerant_mode(capsys):

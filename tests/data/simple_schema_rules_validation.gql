@@ -9,5 +9,6 @@ type Query {
 
 """Some desc"""
 type Field {
+    """Field desc"""
     calculus(x: Int=0): Int!
 }

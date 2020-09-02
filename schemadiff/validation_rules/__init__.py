@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Set
 
 from schemadiff.changes.enum import EnumValueAdded, EnumValueDescriptionChanged
+from schemadiff.changes.field import FieldDescriptionChanged
 from schemadiff.changes.object import ObjectTypeFieldAdded
 from schemadiff.changes.type import AddedType, TypeDescriptionChanged
 
@@ -64,7 +65,10 @@ class RemoveTypeDescription(ValidationRule):
     
     @property
     def message(self):
-        return f"{self.change.message} (rule: `{self.name}`)"
+        return (
+            f"Description for type `{self.change.type}` was "
+            f"removed (rule: `{self.name}`)"
+        )
 
 
 class AddFieldWithoutDescription(ValidationRule):
@@ -79,6 +83,23 @@ class AddFieldWithoutDescription(ValidationRule):
     @property
     def message(self):
         return f"{self.change.message} without a description (rule: `{self.name}`)"
+
+
+class RemoveFieldDescription(ValidationRule):
+    """Restrict removing field description."""
+    name = "remove-field-description"
+
+    def is_valid(self) -> bool:
+        if isinstance(self.change, FieldDescriptionChanged):
+            return self.change.new_field.description not in (None, "")
+        return True
+
+    @property
+    def message(self):
+        return (
+            f"`{self.change.type.name}.{self.change.field_name}` description was "
+            f"removed (rule: `{self.name}`)"
+        )
 
 
 class AddEnumValueWithoutDescription(ValidationRule):
