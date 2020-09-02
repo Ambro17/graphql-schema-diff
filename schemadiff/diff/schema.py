@@ -65,7 +65,6 @@ class Schema:
 
         return changes
 
-
     def type_changes(self):
         changes = []
         changes += self.removed_types()

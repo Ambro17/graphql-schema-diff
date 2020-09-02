@@ -1,0 +1,27 @@
+schema {
+    query: Query
+}
+
+type Query {
+    a: Int!
+    b: Field
+    c: NewTypeWithoutDesc
+}
+
+type Field {
+    calculus(x: Int=0): Int!
+}
+
+type NewTypeWithoutDesc {
+    data: Int
+}
+
+enum  NewEnumWithoutDesc {
+    VALUE
+}
+
+enum Enum {
+    VALUE_1
+    VALUE_2
+    VALUE_3
+}

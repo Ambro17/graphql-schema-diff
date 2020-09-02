@@ -93,6 +93,7 @@ class Change(ABC):
     """
 
     criticality: Criticality = None
+    restricted: str = None
 
     @property
     def breaking(self) -> bool:
@@ -145,4 +146,3 @@ class Change(ABC):
     def checksum(self) -> str:
         """Get and identifier of a change. Used for allowlisting changes"""
         return hashlib.md5(self.message.encode('utf-8')).hexdigest()
- 

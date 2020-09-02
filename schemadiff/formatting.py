@@ -21,6 +21,8 @@ def format_change_by_criticality(change: Change) -> str:
         CriticalityLevel.NonBreaking: os.getenv('SD_SAFE_CHANGE_ICON', '✔️'),
     }
     icon = icon_by_criticality[change.criticality.level]
+    if change.restricted is not None:
+        return f"⛔ {change.restricted}"
     return f"{icon} {change.message}"
 
 

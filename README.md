@@ -25,10 +25,11 @@
 # schemadiff
 `schemadiff` is a lib that shows you the difference between two GraphQL Schemas.
 It takes two schemas from a string or a file and gives you a list of changes between both versions.
-This might be useful for
+This might be useful for:
 *  Detecting breaking changes before they reach the api clients
 *  Integrating into CI pipelines to control your api evolution
-*  Document your api changes and submit them for approval along with your pull requests.
+*  Document your api changes and submit them for an approval along with your pull requests.
+*  Restricting unwanted changes
 
 ## Installation
 The lib requires python3.6 or greater to work. In order to install it run
@@ -83,7 +84,7 @@ print_diff(changes)
 Inside your virtualenv you can invoke the entrypoint to see its usage options
 ```bash
 $ schemadiff -h
-Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-a ALLOW_LIST] [-t] [-s]
+Usage: schemadiff [-h] -o OLD_SCHEMA -n NEW_SCHEMA [-j] [-a ALLOW_LIST] [-t] [-r] [-s]
 
 Schema comparator
 
@@ -98,6 +99,7 @@ optional arguments:
                         Path to the allowed list of changes
   -t, --tolerant        Tolerant mode. Error out only if there's a breaking
                         change but allow dangerous changes
+  -r, --restrictions    Restricted mode. Error out on restricted changes.
   -s, --strict          Strict mode. Error out on dangerous and breaking
                         changes.
 ```
@@ -117,6 +119,9 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql --as-jso
 
 # Compare schemas ignoring allowed changes
 schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allowlist.json
+
+# Compare schemas restricting adding new types without description
+schemadiff -o tests/data/simple_schema.gql -n simple_schema_new_type_without_description.gql -r add-type-without-description
 ```
 
 >If you run the cli and see a replacement character (�) or a square box (□) instead of the emojis run
@@ -126,6 +131,38 @@ schemadiff -o tests/data/simple_schema.gql -n tests/data/new_schema.gql -a allow
 >$ fc-cache -f -v
 >```
 >That should install noto emoji fonts and set is as the fallback font to render emojis 😎
+
+## Restricting changes
+You can use this library to validate whether your schema matches a set of rules.
+
+### Built-in restrictions
+The library has its own built-in restrictions ready-to-use. Just append them to the `-r` command in `CLI`. You can
+add as many as you want.
+
+- `add-type-without-description`
+Restrict adding new GraphQL types without entering a non-empty description.
+
+- `remove-type-description`
+Restrict removing the description from an existing GraphQL type.
+    
+- `add-field-without-description`
+Restrict adding fields without description.
+
+- `remove-field-description`
+Restrict removing the description from an existing GraphQL field.
+
+- `add-enum-value-without-description`
+Restrict adding enum value without description.
+
+- `remove-enum-value-description`
+Restrict adding enum value without description.
+
+Running the following command, you could restrict type additions without entering a nice description.
+```
+# Compare schemas restricting adding new types without description
+schemadiff -o tests/data/simple_schema.gql -n simple_schema_new_type_without_description.gql -r add-type-without-description
+```
+
 
 ## API Reference
 You can also read the [API Reference](https://ambro17.github.io/graphql-schema-diff/) if you want to get a better understanding of the inner workings of the lib

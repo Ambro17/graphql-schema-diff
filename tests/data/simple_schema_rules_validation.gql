@@ -1,0 +1,20 @@
+schema {
+    query: Query
+}
+
+type Query {
+    a: Int!
+    b: Field
+}
+
+"""Some desc"""
+type Field {
+    """Field desc"""
+    calculus(x: Int=0): Int!
+}
+
+enum Enum {
+    VALUE_1
+    """Value 2 desc"""
+    VALUE_2
+}
