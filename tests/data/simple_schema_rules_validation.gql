@@ -5,13 +5,9 @@ schema {
 type Query {
     a: Int!
     b: Field
-    c: NewTypeWithoutDesc
 }
 
+"""Some desc"""
 type Field {
     calculus(x: Int=0): Int!
-}
-
-type NewTypeWithoutDesc {
-    data: Int
 }

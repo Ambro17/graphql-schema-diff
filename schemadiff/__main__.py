@@ -5,7 +5,7 @@ from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
 from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, print_json
-from schemadiff.restricted_changes import restrictions_list, evaluate_restrictions
+from schemadiff.rules import rules_list, evaluate_rules
 
 
 def cli():
@@ -38,8 +38,8 @@ def parse_args(arguments):
     parser.add_argument('-s', '--strict',
                         action='store_true',
                         help="Strict mode. Error out on dangerous and breaking changes.")
-    parser.add_argument('-r', '--restrictions', choices=restrictions_list(), nargs='*',
-                        help="Restricted mode. Error out on restricted changes.")
+    parser.add_argument('-r', '--validation-rules', choices=rules_list(), nargs='*',
+                        help="Evaluate rules mode. Error out on changes that match listed rules.")
 
     return parser.parse_args(arguments)
 
@@ -52,7 +52,7 @@ def main(args) -> int:
     args.new_schema.close()
 
     diff = Schema(old_schema, new_schema).diff()
-    restricted = evaluate_restrictions(diff, args.restrictions)
+    restricted = evaluate_rules(diff, args.validation_rules)
     if args.allow_list:
         allow_list = args.allow_list.read()
         args.allow_list.close()
