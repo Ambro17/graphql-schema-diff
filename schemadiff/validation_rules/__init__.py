@@ -127,4 +127,4 @@ class RemoveEnumValueDescription(ValidationRule):
 
     @property
     def message(self):
-        return f"{self.change.message} (rule: `{self.name}`)"
+        return f"Description for enum value `{self.change.name}` was removed (rule: `{self.name}`)"
