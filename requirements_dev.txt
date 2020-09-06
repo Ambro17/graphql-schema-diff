@@ -4,3 +4,4 @@ pytest
 pytest-cov
 codecov
 pdoc3
+-e .  # Install schemadiff for local development
