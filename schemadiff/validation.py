@@ -3,7 +3,7 @@ from typing import List
 from schemadiff.validation_rules import ValidationRule
 
 
-def evaluate_rules(diff, rules: List[str]) -> bool:
+def validate_diff(diff, rules: List[str]) -> bool:
     """Given a diff between schemas and a list of rules
     names, it looks up for all rules matching the list
     and evaluates the changes against that list.
@@ -26,3 +26,5 @@ def evaluate_rules(diff, rules: List[str]) -> bool:
 def rules_list():
     return ValidationRule.get_rules_list()
 
+
+evaluate_rules = validate_diff  # For retro-compatibility

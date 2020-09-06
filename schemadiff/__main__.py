@@ -5,7 +5,7 @@ from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
 from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, print_json
-from schemadiff.rules import rules_list, evaluate_rules
+from schemadiff.validation import rules_list, evaluate_rules
 
 
 def cli():
