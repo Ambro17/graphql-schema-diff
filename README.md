@@ -173,5 +173,7 @@ and Kamil Kisiela [js implementation](https://github.com/kamilkisiela/graphql-in
 
 Logo arrows were adapted from the work of [Paul Verhulst @ The Noun Project](https://thenounproject.com/paulverhulst/)
 
-## Contributions
-Bug reports, Feature requests or pull request are always welcome!
+## Contributors
+- @Checho3388: Added the whole `evaluate_diff` functionality. Thank you!
+
+You can contribute reporting bugs, writing issues or pull requests for any new features!
