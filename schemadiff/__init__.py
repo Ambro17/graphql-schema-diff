@@ -6,6 +6,7 @@ from schemadiff.changes import Change
 from schemadiff.diff.schema import Schema
 from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, format_diff
+from schemadiff.validation import validate_diff
 
 
 SDL = str  # Alias for string describing schema through schema definition language
@@ -38,6 +39,6 @@ __all__ = [
     'diff_from_file',
     'format_diff',
     'print_diff',
-    'format_diff',
+    'validate_diff',
     'Change',
 ]
