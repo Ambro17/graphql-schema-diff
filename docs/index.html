@@ -245,7 +245,9 @@ suggestions in your editor of choice.</p></div>
     &#34;&#34;&#34;
 
     criticality: Criticality = None
-    restricted: str = None
+
+    restricted: Optional[str] = None
+    &#34;&#34;&#34;Descriptive message only present when a change was restricted&#34;&#34;&#34;
 
     @property
     def breaking(self) -&gt; bool:
@@ -342,9 +344,9 @@ suggestions in your editor of choice.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="schemadiff.Change.restricted"><code class="name">var <span class="ident">restricted</span> : str</code></dt>
+<dt id="schemadiff.Change.restricted"><code class="name">var <span class="ident">restricted</span> : Union[str, NoneType]</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Descriptive message only present when a change was restricted</p></div>
 </dd>
 </dl>
 <h3>Instance variables</h3>

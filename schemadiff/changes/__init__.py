@@ -2,6 +2,7 @@ import hashlib
 import json
 from abc import abstractmethod, ABC
 from enum import Enum
+from typing import Optional
 
 from attr import dataclass
 from graphql import is_wrapping_type, is_non_null_type, is_list_type
@@ -93,7 +94,9 @@ class Change(ABC):
     """
 
     criticality: Criticality = None
-    restricted: str = None
+
+    restricted: Optional[str] = None
+    """Descriptive message only present when a change was restricted"""
 
     @property
     def breaking(self) -> bool:
