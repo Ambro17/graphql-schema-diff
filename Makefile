@@ -1,4 +1,4 @@
-.PHONY: test test-coverage flake8
+.PHONY: test test-coverage test-coverage-html flake8 clean docs
 
 WORK_DIR=./schemadiff
 
@@ -16,3 +16,6 @@ flake8:
 
 clean:
 	find . -name "*.py[co]" -o -name __pycache__ -exec rm -rf {} +
+
+docs:
+	pdoc3 schemadiff/ --html -o docs --force
