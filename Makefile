@@ -18,4 +18,7 @@ clean:
 	find . -name "*.py[co]" -o -name __pycache__ -exec rm -rf {} +
 
 docs:
-	pdoc3 schemadiff/ --html -o docs --force
+	pdoc3 schemadiff/ --html -o docs --force  && \
+	# Remove nested dir as github pages expects an index.html on docs folder \
+	cp -r docs/schemadiff/* docs && rm -rf docs/schemadiff && echo "📚 Docs updated successfully ✨"
+
