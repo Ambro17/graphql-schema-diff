@@ -41,11 +41,36 @@ def test_type_added_with_desc():
     }
     """This has desc"""
     type NewType{
+        """And its field also has a desc"""
         b: String!
     }
     ''')
     diff = Schema(a, b).diff()
     assert AddTypeWithoutDescription(diff[0]).is_valid() is True
+
+
+def test_type_added_with_desc_but_missing_desc_on_its_fields():
+    a = schema('''
+    type MyType{
+        a: Int
+    }
+    ''')
+    b = schema('''
+    type MyType{
+        a: Int
+    }
+    """This has desc"""
+    type NewType{
+        """This one has desc"""
+        b: String!
+        c: Int!
+    }
+    ''')
+    diff = Schema(a, b).diff()
+    assert AddTypeWithoutDescription(diff[0]).is_valid() is False
+    assert AddTypeWithoutDescription(diff[0]).message == (
+        'Type `NewType` was added without a description for the type or one of its fields (rule: `add-type-without-description`)'
+    )
 
 
 def test_type_added_without_desc():

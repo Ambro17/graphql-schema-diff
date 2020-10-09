@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import List, Set
 
+from graphql import GraphQLObjectType
+
 from schemadiff.changes.enum import EnumValueAdded, EnumValueDescriptionChanged
 from schemadiff.changes.field import FieldDescriptionChanged
 from schemadiff.changes.object import ObjectTypeFieldAdded
@@ -44,13 +46,27 @@ class AddTypeWithoutDescription(ValidationRule):
     name = "add-type-without-description"
 
     def is_valid(self) -> bool:
-        if isinstance(self.change, AddedType):
-            return self.change.type.description not in (None, "")
+        EMPTY = (None, "")
+        if not isinstance(self.change, AddedType):
+            return True
+
+        added_type = self.change.type
+        type_has_description = added_type.description not in EMPTY
+
+        if isinstance(added_type, GraphQLObjectType):
+            all_its_fields_have_description = all(
+                field.description not in EMPTY
+                for field in added_type.fields.values()
+            )
+            return type_has_description and all_its_fields_have_description
+        else:
+            return type_has_description
+
         return True
 
     @property
     def message(self):
-        return f"{self.change.message} without a description (rule: `{self.name}`)"
+        return f"{self.change.message} without a description for the type or one of its fields (rule: `{self.name}`)"
 
 
 class RemoveTypeDescription(ValidationRule):

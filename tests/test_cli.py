@@ -140,9 +140,9 @@ def test_schema_rules_mode(capsys):
 
     stdout = capsys.readouterr()
 
-    assert "⛔ Type `NewTypeWithoutDesc` was added without a description " \
+    assert "⛔ Type `NewTypeWithoutDesc` was added without a description for the type or one of its fields " \
            "(rule: `add-type-without-description`)" in stdout.out
-    assert "⛔ Type `NewEnumWithoutDesc` was added without a description " \
+    assert "⛔ Type `NewEnumWithoutDesc` was added without a description for the type or one of its fields " \
            "(rule: `add-type-without-description`)" in stdout.out
     assert "⛔ Description for type `Field` was removed " \
            "(rule: `remove-type-description`)" in stdout.out
