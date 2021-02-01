@@ -2,6 +2,7 @@ import pytest
 from graphql import build_schema as schema
 
 from schemadiff.changes import Change, Criticality
+from schemadiff.validation import evaluate_rules
 from schemadiff.validation_rules import (
     ValidationRule,
     AddFieldWithoutDescription,
@@ -69,7 +70,8 @@ def test_type_added_with_desc_but_missing_desc_on_its_fields():
     diff = Schema(a, b).diff()
     assert AddTypeWithoutDescription(diff[0]).is_valid() is False
     assert AddTypeWithoutDescription(diff[0]).message == (
-        'Type `NewType` was added without a description for the type or one of its fields (rule: `add-type-without-description`)'
+        'Type `NewType` was added without a description for the type or one of its fields (rule: '
+        '`add-type-without-description`). Path NewType.'
     )
 
 
@@ -182,3 +184,42 @@ def test_enum_value_removing_desc():
     ''')
     diff = Schema(a, b).diff()
     assert RemoveEnumValueDescription(diff[0]).is_valid() is False
+
+
+def test_schema_added_field_no_desc():
+
+    schema_restrictions = ['add-field-without-description']
+
+    old_schema = schema("""
+    schema {
+        query: Query
+    }
+
+    type Query {
+        field: String!
+    }
+
+    type AddedType {
+        added: Int
+    }
+    """)
+    new_schema = schema("""
+    schema {
+        query: Query
+    }
+
+    type Query {
+        field: String!
+    }
+
+    type AddedType {
+        added: Int
+        other: Int
+    }
+    """)
+    diff = Schema(old_schema, new_schema).diff()
+    assert diff and len(diff) == 1
+    # Type Int was also added but its ignored because its a primitive.
+    assert evaluate_rules(diff, schema_restrictions) is True
+    assert diff[0].path == 'AddedType.other'
+
