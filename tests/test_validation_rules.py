@@ -70,8 +70,8 @@ def test_type_added_with_desc_but_missing_desc_on_its_fields():
     diff = Schema(a, b).diff()
     assert AddTypeWithoutDescription(diff[0]).is_valid() is False
     assert AddTypeWithoutDescription(diff[0]).message == (
-        'Type `NewType` was added without a description for the type or one of its fields (rule: '
-        '`add-type-without-description`). Path NewType.'
+        'Type `NewType` was added without a description for NewType (rule: '
+        '`add-type-without-description`).'
     )
 
 
