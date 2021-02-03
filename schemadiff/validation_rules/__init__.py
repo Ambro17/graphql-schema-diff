@@ -66,7 +66,7 @@ class AddTypeWithoutDescription(ValidationRule):
 
     @property
     def message(self):
-        return f"{self.change.message} without a description for the type or one of its fields (rule: `{self.name}`)"
+        return f"{self.change.message} without a description for {self.change.path} (rule: `{self.name}`)."
 
 
 class RemoveTypeDescription(ValidationRule):
@@ -78,7 +78,7 @@ class RemoveTypeDescription(ValidationRule):
         if isinstance(self.change, TypeDescriptionChanged):
             return self.change.new_desc not in (None, "")
         return True
-    
+
     @property
     def message(self):
         return (
@@ -95,10 +95,10 @@ class AddFieldWithoutDescription(ValidationRule):
         if isinstance(self.change, ObjectTypeFieldAdded):
             return self.change.description not in (None, "")
         return True
-    
+
     @property
     def message(self):
-        return f"{self.change.message} without a description (rule: `{self.name}`)"
+        return f"{self.change.message} without a description for {self.change.path} (rule: `{self.name}`)."
 
 
 class RemoveFieldDescription(ValidationRule):

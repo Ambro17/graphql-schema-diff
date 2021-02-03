@@ -140,16 +140,16 @@ def test_schema_rules_mode(capsys):
 
     stdout = capsys.readouterr()
 
-    assert "⛔ Type `NewTypeWithoutDesc` was added without a description for the type or one of its fields " \
+    assert "⛔ Type `NewTypeWithoutDesc` was added without a description for NewTypeWithoutDesc " \
            "(rule: `add-type-without-description`)" in stdout.out
-    assert "⛔ Type `NewEnumWithoutDesc` was added without a description for the type or one of its fields " \
+    assert "⛔ Type `NewEnumWithoutDesc` was added without a description for NewEnumWithoutDesc " \
            "(rule: `add-type-without-description`)" in stdout.out
     assert "⛔ Description for type `Field` was removed " \
            "(rule: `remove-type-description`)" in stdout.out
     assert "⛔ `Field.calculus` description was removed " \
            "(rule: `remove-field-description`)" in stdout.out
-    assert "⛔ Field `c` was added to object type `Query` without a description " \
-           "(rule: `add-field-without-description`)" in stdout.out
+    assert "⛔ Field `c` was added to object type `Query` without a description for " \
+           "Query.c (rule: `add-field-without-description`)" in stdout.out
     assert "⛔ Enum value `VALUE_3` was added to `Enum` enum without a description " \
            "(rule: `add-enum-value-without-description`)" in stdout.out
     assert "⛔ Description for enum value `VALUE_2` was removed " \
