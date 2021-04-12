@@ -4,14 +4,11 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as f:
     long_description = f.read()
 
-with open("requirements.txt", "r") as f:
-    requirements = f.read()
-
 package_name = "graphql-schema-diff"
 
 setup(
     name=package_name,
-    version="1.1.0",
+    version="1.1.1",
     author="Nahuel Ambrosini",
     author_email="ambro17.1@gmail.com",
     description="Compare GraphQL Schemas",
@@ -19,7 +16,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Ambro17/schemadiff",
     packages=find_packages(include=['schemadiff*'], exclude=['tests', 'tests.*']),
-    install_requires=requirements,
+    install_requires=[
+        "graphql-core>=3.0.1",
+        "attrs>=19.3.0",
+    ],
     python_requires='>=3.6',
     entry_points={
         'console_scripts': [

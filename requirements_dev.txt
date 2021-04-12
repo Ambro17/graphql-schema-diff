@@ -4,4 +4,4 @@ pytest
 pytest-cov
 codecov
 pdoc3==0.9.1
--e .  # Install schemadiff for local development
+-e .  # Install schemadiff in editable form for local development
