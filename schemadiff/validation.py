@@ -1,9 +1,23 @@
+from schemadiff import Change
 from typing import List
+
+from dataclasses import dataclass
 
 from schemadiff.validation_rules import ValidationRule
 
 
-def validate_diff(diff, rules: List[str]) -> bool:
+@dataclass
+class ValidationResult:
+    ok: bool
+    errors: List['ValidationError']
+
+
+@dataclass
+class ValidationError:
+    message: str
+
+
+def validate_diff(diff: List[Change], rules: List[str]) -> ValidationResult:
     """Given a diff between schemas and a list of rules
     names, it looks up for all rules matching the list
     and evaluates the changes against that list.
@@ -12,15 +26,17 @@ def validate_diff(diff, rules: List[str]) -> bool:
         bool: True if there is at least one restricted change,
             False otherwise.
     """
-    is_restricted = False
+    is_valid = True
+    errors = []
     rules = ValidationRule.get_subclasses_by_names(rules)
     for change in diff:
         for rule in rules:
             if not rule(change).is_valid():
                 change.restricted = rule(change).message
-                is_restricted = True
+                is_valid = False
+                errors.append(ValidationError(change.restricted))
 
-    return is_restricted
+    return ValidationResult(is_valid, errors)
 
 
 def rules_list():

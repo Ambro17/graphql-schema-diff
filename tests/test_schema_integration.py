@@ -15,8 +15,8 @@ def test_compare_from_schema_string_sdl():
 
     expected_changes = {
          'Argument `arg: Int` added to `CType.a`',
-         "Default value for argument `anotherArg` on `@yolo` directive changed from `Undefined` to `'Test'`",
-         'Default value for argument `arg` on field `CType.d` changed from `Undefined` to `10`',
+         "Default value for argument `anotherArg` on `@yolo` directive changed from `<INVALID>` to `'Test'`",
+         'Default value for argument `arg` on field `CType.d` changed from `<INVALID>` to `10`',
          'Default value for argument `arg` on field `WithArguments.b` changed from `1` to `2`',
          "Default value for input field `AInput.a` changed from `'1'` to `1`",
          'Deprecation reason for enum value `F` changed from `Old` to `New`',
