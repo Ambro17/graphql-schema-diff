@@ -1,2 +1,1 @@
-graphql-core==3.0.1
-attrs==19.3.0
+.  # Instruct setuptools to run 'python setup.py install'
