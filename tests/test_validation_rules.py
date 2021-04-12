@@ -2,7 +2,7 @@ import pytest
 from graphql import build_schema as schema
 
 from schemadiff.changes import Change, Criticality
-from schemadiff.validation import evaluate_rules
+from schemadiff.validation import evaluate_rules, ValidationResult, ValidationError
 from schemadiff.validation_rules import (
     ValidationRule,
     AddFieldWithoutDescription,
@@ -218,8 +218,15 @@ def test_schema_added_field_no_desc():
     }
     """)
     diff = Schema(old_schema, new_schema).diff()
-    assert diff and len(diff) == 1
     # Type Int was also added but its ignored because its a primitive.
-    assert evaluate_rules(diff, schema_restrictions) is True
+    assert diff and len(diff) == 1
+    error_msg = (
+        'Field `other` was added to object type `AddedType` without a description for AddedType.other '
+        '(rule: `add-field-without-description`).'
+    )
+    assert evaluate_rules(diff, schema_restrictions) == ValidationResult(
+        ok=False,
+        errors=[ValidationError(error_msg)]
+    )
     assert diff[0].path == 'AddedType.other'
 

@@ -52,7 +52,7 @@ def main(args) -> int:
     args.new_schema.close()
 
     diff = Schema(old_schema, new_schema).diff()
-    restricted = evaluate_rules(diff, args.validation_rules)
+    validation_result = evaluate_rules(diff, args.validation_rules)
     if args.allow_list:
         allow_list = args.allow_list.read()
         args.allow_list.close()
@@ -63,14 +63,14 @@ def main(args) -> int:
     else:
         print_diff(diff)
 
-    return exit_code(diff, args.strict, restricted, args.tolerant)
+    return exit_code(diff, args.strict, not validation_result.ok, args.tolerant)
 
 
-def exit_code(changes, strict, restricted, tolerant) -> int:
+def exit_code(changes, strict, some_change_is_restricted, tolerant) -> int:
     exit_code = 0
     if strict and any(change.breaking or change.dangerous for change in changes):
         exit_code = 1
-    if restricted:
+    if some_change_is_restricted:
         exit_code = 1
     elif tolerant and any(change.breaking for change in changes):
         exit_code = 1
