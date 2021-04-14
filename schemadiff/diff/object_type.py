@@ -9,8 +9,8 @@ class ObjectType:
         self.old = old
         self.new = new
 
-        self.old_fields = set(old.fields)
-        self.new_fields = set(new.fields)
+        self.old_field_names = set(old.fields)
+        self.new_field_names = set(new.fields)
 
         self.old_interfaces = set(old.interfaces)
         self.new_interfaces = set(new.interfaces)
@@ -19,9 +19,9 @@ class ObjectType:
         changes = []
 
         # Added and removed fields
-        added = self.new_fields - self.old_fields
-        removed = self.old_fields - self.new_fields
-        changes.extend(ObjectTypeFieldAdded(self.new, field_name) for field_name in added)
+        added = self.new_field_names - self.old_field_names
+        removed = self.old_field_names - self.new_field_names
+        changes.extend(ObjectTypeFieldAdded(self.new, field_name, self.new.fields[field_name]) for field_name in added)
         changes.extend(ObjectTypeFieldRemoved(self.new, field_name, self.old.fields[field_name])
                        for field_name in removed)
 
@@ -31,15 +31,15 @@ class ObjectType:
         changes.extend(NewInterfaceImplemented(interface, self.new) for interface in added)
         changes.extend(DroppedInterfaceImplementation(interface, self.new) for interface in removed)
 
-        for field in self.common_fields():
-            old_field = self.old.fields[field]
-            new_field = self.new.fields[field]
-            changes += Field(self.new, field, old_field, new_field).diff() or []
+        for field_name in self.common_fields():
+            old_field = self.old.fields[field_name]
+            new_field = self.new.fields[field_name]
+            changes += Field(self.new, field_name, old_field, new_field).diff() or []
 
         return changes
 
     def common_fields(self):
-        return self.old_fields & self.new_fields
+        return self.old_field_names & self.new_field_names
 
     def added_interfaces(self):
         """Compare interfaces equality by name. Internal diffs are solved later"""

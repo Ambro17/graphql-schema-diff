@@ -230,3 +230,89 @@ def test_schema_added_field_no_desc():
     )
     assert diff[0].path == 'AddedType.other'
 
+
+def test_cant_create_mutation_with_more_than_10_arguments():
+    schema_restrictions = ['field-has-too-many-arguments']
+
+    old_schema = schema("""
+    schema {
+        mutation: Mutation
+    }
+
+    type Mutation {
+        field: Int
+    }
+    """)
+
+    new_schema = schema("""
+    schema {
+        mutation: Mutation
+    }
+
+    type Mutation {
+        field: Int
+        mutation_with_too_many_args(
+            a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int, a10: Int, a11: Int 
+        ): Int
+    }
+    """)
+
+    diff = Schema(old_schema, new_schema).diff()
+    # Type Int was also added but its ignored because its a primitive.
+    assert diff and len(diff) == 1
+    error_msg = (
+        'Field `Mutation.mutation_with_too_many_args` has too many arguments (11>10). '
+        'Rule: field-has-too-many-arguments'
+    )
+    assert evaluate_rules(diff, schema_restrictions) == ValidationResult(
+        ok=False,
+        errors=[ValidationError(error_msg)]
+    )
+    assert diff[0].path == 'Mutation.mutation_with_too_many_args'
+
+
+def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
+    schema_restrictions = ['field-has-too-many-arguments']
+
+    old_schema = schema("""
+    schema {
+        mutation: Mutation
+    }
+
+    type Mutation {
+        field: Int
+        mutation_with_too_many_args(
+            a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int, a10: Int 
+        ): Int
+    }
+    """)
+
+    new_schema = schema("""
+    schema {
+        mutation: Mutation
+    }
+
+    type Mutation {
+        field: Int
+        mutation_with_too_many_args(
+            a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int, a10: Int, a11: Int 
+        ): Int
+    }
+    """)
+
+    diff = Schema(old_schema, new_schema).diff()
+    # Type Int was also added but its ignored because its a primitive.
+    assert diff and len(diff) == 1
+    error_msg = (
+        'Field `Mutation.mutation_with_too_many_args` has too many arguments (11>10). '
+        'Rule: field-has-too-many-arguments'
+    )
+    assert evaluate_rules(diff, schema_restrictions) == ValidationResult(
+        ok=False,
+        errors=[ValidationError(error_msg)]
+    )
+    assert diff[0].path == 'Mutation.mutation_with_too_many_args'
+
+
+def test_mutation_input_fields_cant_share_prefix():
+    pass
