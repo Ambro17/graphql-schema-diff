@@ -231,7 +231,7 @@ def test_schema_added_field_no_desc():
     assert result.errors and len(result.errors) == 1
     assert result.errors[0].reason == error_msg
     assert diff[0].path == 'AddedType.other'
-    assert result.errors[0].path == 'AddedType.other'
+    assert result.errors[0].change.path == 'AddedType.other'
 
 
 # Register the new validation rule for the following two tests
