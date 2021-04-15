@@ -1,3 +1,5 @@
+from graphql import GraphQLField, GraphQLObjectType
+
 from schemadiff.changes import Change, Criticality
 
 
@@ -5,9 +7,10 @@ class ObjectTypeFieldAdded(Change):
 
     criticality = Criticality.safe()
 
-    def __init__(self, parent, field_name):
+    def __init__(self, parent: GraphQLObjectType, field_name, field: GraphQLField):
         self.parent = parent
         self.field_name = field_name
+        self.field = field
         self.description = parent.fields[field_name].description
 
     @property

@@ -4,7 +4,7 @@ from typing import List, Set
 from graphql import GraphQLObjectType
 
 from schemadiff.changes.enum import EnumValueAdded, EnumValueDescriptionChanged
-from schemadiff.changes.field import FieldDescriptionChanged
+from schemadiff.changes.field import FieldDescriptionChanged, FieldArgumentAdded
 from schemadiff.changes.object import ObjectTypeFieldAdded
 from schemadiff.changes.type import AddedType, TypeDescriptionChanged
 
@@ -61,8 +61,6 @@ class AddTypeWithoutDescription(ValidationRule):
             return type_has_description and all_its_fields_have_description
         else:
             return type_has_description
-
-        return True
 
     @property
     def message(self):
@@ -144,3 +142,5 @@ class RemoveEnumValueDescription(ValidationRule):
     @property
     def message(self):
         return f"Description for enum value `{self.change.name}` was removed (rule: `{self.name}`)"
+
+

@@ -1,4 +1,4 @@
-from graphql import is_non_null_type
+from graphql import is_non_null_type, GraphQLField
 
 from schemadiff.changes import Change, Criticality, is_safe_type_change
 
@@ -71,13 +71,14 @@ class FieldTypeChanged(Change):
 
 
 class FieldArgumentAdded(Change):
-    def __init__(self, parent, field_name, argument_name, arg_type):
+    def __init__(self, parent, field_name: str, field: GraphQLField, argument_name, arg_type):
         self.criticality = Criticality.safe('Adding an optional argument is a safe change')\
                            if not is_non_null_type(arg_type.type)\
                            else Criticality.breaking("Adding a required argument to an existing field is a breaking "
                                                    "change because it will break existing uses of this field")
         self.parent = parent
         self.field_name = field_name
+        self.field = field
         self.argument_name = argument_name
         self.arg_type = arg_type
 
