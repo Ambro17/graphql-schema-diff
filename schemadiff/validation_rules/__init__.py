@@ -39,6 +39,13 @@ class ValidationRule(ABC):
     def get_rules_list(cls) -> Set[str]:
         return {subclass.name for subclass in cls.__subclasses__()}
 
+    def __eq__(self, other):
+        """Validation rules should have unique names. If you overlap naming, behaviour will be undefined"""
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        else:
+            return other.name == self.name
+
 
 class AddTypeWithoutDescription(ValidationRule):
     """Restrict adding new GraphQL types without entering

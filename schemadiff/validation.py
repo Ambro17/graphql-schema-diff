@@ -14,7 +14,8 @@ class ValidationResult:
 
 @dataclass
 class ValidationError:
-    message: str
+    reason: str
+    change: Change
 
 
 def validate_diff(diff: List[Change], rules: List[str]) -> ValidationResult:
@@ -34,7 +35,7 @@ def validate_diff(diff: List[Change], rules: List[str]) -> ValidationResult:
             if not rule(change).is_valid():
                 change.restricted = rule(change).message
                 is_valid = False
-                errors.append(ValidationError(change.restricted))
+                errors.append(ValidationError(change.restricted, change))
 
     return ValidationResult(is_valid, errors)
 

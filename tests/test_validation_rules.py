@@ -226,39 +226,42 @@ def test_schema_added_field_no_desc():
         'Field `other` was added to object type `AddedType` without a description for AddedType.other '
         '(rule: `add-field-without-description`).'
     )
-    assert evaluate_rules(diff, schema_restrictions) == ValidationResult(
-        ok=False,
-        errors=[ValidationError(error_msg)]
-    )
+    result =  evaluate_rules(diff, schema_restrictions)
+    assert result.ok is False
+    assert result.errors and len(result.errors) == 1
+    assert result.errors[0].reason == error_msg
     assert diff[0].path == 'AddedType.other'
+    assert result.errors[0].path == 'AddedType.other'
 
 
-def test_cant_create_mutation_with_more_than_10_arguments():
+# Register the new validation rule for the following two tests
+class FieldHasTooManyArguments(ValidationRule):
+    """Restrict adding fields with too many top level arguments"""
+
+    name = "field-has-too-many-arguments"
+    limit = 10
+
+    def is_valid(self) -> bool:
+        if not isinstance(self.change, (ObjectTypeFieldAdded, FieldArgumentAdded)):
+            return True
+
+        if len(self.args) > self.limit:
+            return False
+        else:
+            return True
+
+    @property
+    def args(self):
+        return self.change.field.args or {}
+
+    @property
+    def message(self):
+        return f"Field `{self.change.parent.name}.{self.change.field_name}` has too many arguments " \
+               f"({len(self.args)}>{self.limit}). Rule: {self.name}"
+
+
+def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
     schema_restrictions = ['field-has-too-many-arguments']
-
-    class FieldHasTooManyArguments(ValidationRule):
-        """Restrict adding fields with too many top level arguments"""
-
-        name = "field-has-too-many-arguments"
-        limit = 10
-
-        def is_valid(self) -> bool:
-            if not isinstance(self.change, (ObjectTypeFieldAdded, FieldArgumentAdded)):
-                return True
-
-            if len(self.args) > self.limit:
-                return False
-            else:
-                return True
-
-        @property
-        def args(self):
-            return self.change.field.args or {}
-
-        @property
-        def message(self):
-            return f"Field `{self.change.parent.name}.{self.change.field_name}` has too many arguments " \
-                   f"({len(self.args)}>{self.limit}). Rule: {self.name}"
 
     old_schema = schema("""
     schema {
@@ -290,39 +293,16 @@ def test_cant_create_mutation_with_more_than_10_arguments():
         'Field `Mutation.mutation_with_too_many_args` has too many arguments (11>10). '
         'Rule: field-has-too-many-arguments'
     )
-    assert evaluate_rules(diff, schema_restrictions) == ValidationResult(
-        ok=False,
-        errors=[ValidationError(error_msg)]
-    )
-    assert diff[0].path == 'Mutation.mutation_with_too_many_args'
+    result =  evaluate_rules(diff, schema_restrictions)
+    assert result.ok is False
+    assert result.errors and len(result.errors) == 1
+    assert result.errors[0].reason == error_msg
+    assert result.errors[0].change.path == 'Mutation.mutation_with_too_many_args'
 
 
-def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
+
+def test_cant_create_mutation_with_more_than_10_arguments():
     schema_restrictions = ['field-has-too-many-arguments']
-
-    class FieldHasTooManyArguments(ValidationRule):
-        """Restrict adding fields with too many top level arguments"""
-
-        name = "field-has-too-many-arguments"
-        limit = 10
-
-        def is_valid(self) -> bool:
-            if not isinstance(self.change, (ObjectTypeFieldAdded, FieldArgumentAdded)):
-                return True
-
-            if len(self.args) > self.limit:
-                return False
-            else:
-                return True
-
-        @property
-        def args(self):
-            return self.change.field.args or {}
-
-        @property
-        def message(self):
-            return f"Field `{self.change.parent.name}.{self.change.field_name}` has too many arguments " \
-                   f"({len(self.args)}>{self.limit}). Rule: {self.name}"
 
     old_schema = schema("""
     schema {
@@ -357,12 +337,10 @@ def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
         'Field `Mutation.mutation_with_too_many_args` has too many arguments (11>10). '
         'Rule: field-has-too-many-arguments'
     )
-    assert evaluate_rules(diff, schema_restrictions) == ValidationResult(
-        ok=False,
-        errors=[ValidationError(error_msg)]
-    )
+    result =  evaluate_rules(diff, schema_restrictions)
+    assert result.ok is False
+    assert result.errors and len(result.errors) == 1
+    assert result.errors[0].reason == error_msg
+    assert result.errors[0].change.message == "Argument `a11: Int` added to `Mutation.mutation_with_too_many_args`"
+    assert result.errors[0].change.checksum() == "221964c2ab5bbc6bd1ed19bcd8d69e70"
     assert diff[0].path == 'Mutation.mutation_with_too_many_args'
-
-
-def test_mutation_input_fields_cant_share_prefix():
-    pass
