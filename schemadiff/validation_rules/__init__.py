@@ -62,8 +62,6 @@ class AddTypeWithoutDescription(ValidationRule):
         else:
             return type_has_description
 
-        return True
-
     @property
     def message(self):
         return f"{self.change.message} without a description for {self.change.path} (rule: `{self.name}`)."
@@ -146,26 +144,3 @@ class RemoveEnumValueDescription(ValidationRule):
         return f"Description for enum value `{self.change.name}` was removed (rule: `{self.name}`)"
 
 
-class MutationWithTooManyArguments(ValidationRule):
-    """Restrict adding fields with too many top level arguments"""
-
-    name = "field-has-too-many-arguments"
-    limit = 10
-
-    def is_valid(self) -> bool:
-        if not isinstance(self.change, (ObjectTypeFieldAdded, FieldArgumentAdded)):
-            return True
-
-        if len(self.args) > self.limit:
-            return False
-        else:
-            return True
-
-    @property
-    def args(self):
-        return self.change.field.args or {}
-
-    @property
-    def message(self):
-        return f"Field `{self.change.parent.name}.{self.change.field_name}` has too many arguments " \
-               f"({len(self.args)}>{self.limit}). Rule: {self.name}"
