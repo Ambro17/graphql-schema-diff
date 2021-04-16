@@ -1,3 +1,4 @@
+import typing
 from abc import ABC, abstractmethod
 from typing import List, Set
 
@@ -30,7 +31,7 @@ class ValidationRule(ABC):
         """Formatted change message"""
 
     @classmethod
-    def get_subclasses_by_names(cls, names: List[str]) -> Set:
+    def get_subclasses_by_names(cls, names: List[str]) -> Set[typing.Type['ValidationRule']]:
         if not names:
             return set()
         return {subclass for subclass in cls.__subclasses__() if subclass.name in names}

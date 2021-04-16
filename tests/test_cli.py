@@ -136,7 +136,7 @@ def test_schema_rules_mode(capsys):
     ])
     exit_code = main(args)
     #  As we run the comparison in validation mode and there is a restricted change, the exit code is 1
-    assert exit_code == 1
+    assert exit_code == 3
 
     stdout = capsys.readouterr()
 
@@ -218,7 +218,7 @@ def test_tolerant_mode_doesnt_allow_breaking_changes(capsys):
         '-n', BREAKING_CHANGES_SCHEMA,
     ])
     exit_code = main(tolerant_args)
-    assert exit_code == 1
+    assert exit_code == 2
 
     exit_code = main(default_args)
     assert exit_code == 0

@@ -26,36 +26,55 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List
+<pre><code class="python">from schemadiff import Change
+from typing import List, Dict, Any
+
+from dataclasses import dataclass
 
 from schemadiff.validation_rules import ValidationRule
 
 
-def validate_diff(diff, rules: List[str]) -&gt; bool:
-    &#34;&#34;&#34;Given a diff between schemas and a list of rules
-    names, it looks up for all rules matching the list
-    and evaluates the changes against that list.
+@dataclass
+class ValidationResult:
+    ok: bool
+    errors: List[&#39;ValidationError&#39;]
+
+
+@dataclass
+class ValidationError:
+    rule: str
+    reason: str
+    change: Change
+
+
+def validate_changes(diff: List[Change], rules: List[str], allowed_changes: Dict[str, Any] = None) -&gt; ValidationResult:
+    &#34;&#34;&#34;Given a list of changes between schemas and a list of rules,
+    it runs all rules against the changes, to detect invalid changes.
+    It also admits an allowlist of accepted invalid changes to document exceptions to the rules
 
     Returns:
         bool: True if there is at least one restricted change,
             False otherwise.
     &#34;&#34;&#34;
-    is_restricted = False
+    allowed_changes = allowed_changes or {}
+    is_valid = True
+    errors = []
     rules = ValidationRule.get_subclasses_by_names(rules)
     for change in diff:
         for rule in rules:
             if not rule(change).is_valid():
-                change.restricted = rule(change).message
-                is_restricted = True
+                if change.checksum() in allowed_changes:
+                    continue
 
-    return is_restricted
+                change.restricted = rule(change).message
+                is_valid = False
+                errors.append(ValidationError(rule.name, change.restricted, change))
+
+    return ValidationResult(is_valid, errors)
 
 
 def rules_list():
-    return ValidationRule.get_rules_list()
-
-
-evaluate_rules = validate_diff  # For retro-compatibility</code></pre>
+    return ValidationRule.get_rules_list()</code></pre>
 </details>
 </section>
 <section>
@@ -65,43 +84,6 @@ evaluate_rules = validate_diff  # For retro-compatibility</code></pre>
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="schemadiff.validation.evaluate_rules"><code class="name flex">
-<span>def <span class="ident">evaluate_rules</span></span>(<span>diff, rules: List[str]) ‑> bool</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Given a diff between schemas and a list of rules
-names, it looks up for all rules matching the list
-and evaluates the changes against that list.</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>bool</code></dt>
-<dd>True if there is at least one restricted change,
-False otherwise.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def validate_diff(diff, rules: List[str]) -&gt; bool:
-    &#34;&#34;&#34;Given a diff between schemas and a list of rules
-    names, it looks up for all rules matching the list
-    and evaluates the changes against that list.
-
-    Returns:
-        bool: True if there is at least one restricted change,
-            False otherwise.
-    &#34;&#34;&#34;
-    is_restricted = False
-    rules = ValidationRule.get_subclasses_by_names(rules)
-    for change in diff:
-        for rule in rules:
-            if not rule(change).is_valid():
-                change.restricted = rule(change).message
-                is_restricted = True
-
-    return is_restricted</code></pre>
-</details>
-</dd>
 <dt id="schemadiff.validation.rules_list"><code class="name flex">
 <span>def <span class="ident">rules_list</span></span>(<span>)</span>
 </code></dt>
@@ -115,13 +97,13 @@ False otherwise.</dd>
     return ValidationRule.get_rules_list()</code></pre>
 </details>
 </dd>
-<dt id="schemadiff.validation.validate_diff"><code class="name flex">
-<span>def <span class="ident">validate_diff</span></span>(<span>diff, rules: List[str]) ‑> bool</span>
+<dt id="schemadiff.validation.validate_changes"><code class="name flex">
+<span>def <span class="ident">validate_changes</span></span>(<span>diff: List[<a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a>], rules: List[str], allowed_changes: Dict[str, Any] = None) ‑> <a title="schemadiff.validation.ValidationResult" href="#schemadiff.validation.ValidationResult">ValidationResult</a></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given a diff between schemas and a list of rules
-names, it looks up for all rules matching the list
-and evaluates the changes against that list.</p>
+<div class="desc"><p>Given a list of changes between schemas and a list of rules,
+it runs all rules against the changes, to detect invalid changes.
+It also admits an allowlist of accepted invalid changes to document exceptions to the rules</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>bool</code></dt>
@@ -132,29 +114,95 @@ False otherwise.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def validate_diff(diff, rules: List[str]) -&gt; bool:
-    &#34;&#34;&#34;Given a diff between schemas and a list of rules
-    names, it looks up for all rules matching the list
-    and evaluates the changes against that list.
+<pre><code class="python">def validate_changes(diff: List[Change], rules: List[str], allowed_changes: Dict[str, Any] = None) -&gt; ValidationResult:
+    &#34;&#34;&#34;Given a list of changes between schemas and a list of rules,
+    it runs all rules against the changes, to detect invalid changes.
+    It also admits an allowlist of accepted invalid changes to document exceptions to the rules
 
     Returns:
         bool: True if there is at least one restricted change,
             False otherwise.
     &#34;&#34;&#34;
-    is_restricted = False
+    allowed_changes = allowed_changes or {}
+    is_valid = True
+    errors = []
     rules = ValidationRule.get_subclasses_by_names(rules)
     for change in diff:
         for rule in rules:
             if not rule(change).is_valid():
-                change.restricted = rule(change).message
-                is_restricted = True
+                if change.checksum() in allowed_changes:
+                    continue
 
-    return is_restricted</code></pre>
+                change.restricted = rule(change).message
+                is_valid = False
+                errors.append(ValidationError(rule.name, change.restricted, change))
+
+    return ValidationResult(is_valid, errors)</code></pre>
 </details>
 </dd>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="schemadiff.validation.ValidationError"><code class="flex name class">
+<span>class <span class="ident">ValidationError</span></span>
+<span>(</span><span>rule: str, reason: str, change: <a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ValidationError(rule: str, reason: str, change: schemadiff.changes.Change)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationError:
+    rule: str
+    reason: str
+    change: Change</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.validation.ValidationError.change"><code class="name">var <span class="ident">change</span> : <a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="schemadiff.validation.ValidationError.reason"><code class="name">var <span class="ident">reason</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="schemadiff.validation.ValidationError.rule"><code class="name">var <span class="ident">rule</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="schemadiff.validation.ValidationResult"><code class="flex name class">
+<span>class <span class="ident">ValidationResult</span></span>
+<span>(</span><span>ok: bool, errors: List[ForwardRef('<a title="schemadiff.validation.ValidationError" href="#schemadiff.validation.ValidationError">ValidationError</a>')])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>ValidationResult(ok: bool, errors: List[ForwardRef('ValidationError')])</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ValidationResult:
+    ok: bool
+    errors: List[&#39;ValidationError&#39;]</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="schemadiff.validation.ValidationResult.errors"><code class="name">var <span class="ident">errors</span> : List[<a title="schemadiff.validation.ValidationError" href="#schemadiff.validation.ValidationError">ValidationError</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="schemadiff.validation.ValidationResult.ok"><code class="name">var <span class="ident">ok</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -170,9 +218,27 @@ False otherwise.</dd>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="schemadiff.validation.evaluate_rules" href="#schemadiff.validation.evaluate_rules">evaluate_rules</a></code></li>
 <li><code><a title="schemadiff.validation.rules_list" href="#schemadiff.validation.rules_list">rules_list</a></code></li>
-<li><code><a title="schemadiff.validation.validate_diff" href="#schemadiff.validation.validate_diff">validate_diff</a></code></li>
+<li><code><a title="schemadiff.validation.validate_changes" href="#schemadiff.validation.validate_changes">validate_changes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="schemadiff.validation.ValidationError" href="#schemadiff.validation.ValidationError">ValidationError</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.validation.ValidationError.change" href="#schemadiff.validation.ValidationError.change">change</a></code></li>
+<li><code><a title="schemadiff.validation.ValidationError.reason" href="#schemadiff.validation.ValidationError.reason">reason</a></code></li>
+<li><code><a title="schemadiff.validation.ValidationError.rule" href="#schemadiff.validation.ValidationError.rule">rule</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="schemadiff.validation.ValidationResult" href="#schemadiff.validation.ValidationResult">ValidationResult</a></code></h4>
+<ul class="">
+<li><code><a title="schemadiff.validation.ValidationResult.errors" href="#schemadiff.validation.ValidationResult.errors">errors</a></code></li>
+<li><code><a title="schemadiff.validation.ValidationResult.ok" href="#schemadiff.validation.ValidationResult.ok">ok</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

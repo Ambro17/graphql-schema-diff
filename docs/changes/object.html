@@ -26,16 +26,19 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from schemadiff.changes import Change, Criticality
+<pre><code class="python">from graphql import GraphQLField, GraphQLObjectType
+
+from schemadiff.changes import Change, Criticality
 
 
 class ObjectTypeFieldAdded(Change):
 
     criticality = Criticality.safe()
 
-    def __init__(self, parent, field_name):
+    def __init__(self, parent: GraphQLObjectType, field_name, field: GraphQLField):
         self.parent = parent
         self.field_name = field_name
+        self.field = field
         self.description = parent.fields[field_name].description
 
     @property
@@ -82,7 +85,7 @@ class ObjectTypeFieldRemoved(Change):
 <dl>
 <dt id="schemadiff.changes.object.ObjectTypeFieldAdded"><code class="flex name class">
 <span>class <span class="ident">ObjectTypeFieldAdded</span></span>
-<span>(</span><span>parent, field_name)</span>
+<span>(</span><span>parent: graphql.type.definition.GraphQLObjectType, field_name, field: graphql.type.definition.GraphQLField)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Common interface of all schema changes</p>
@@ -97,9 +100,10 @@ suggestions in your editor of choice.</p></div>
 
     criticality = Criticality.safe()
 
-    def __init__(self, parent, field_name):
+    def __init__(self, parent: GraphQLObjectType, field_name, field: GraphQLField):
         self.parent = parent
         self.field_name = field_name
+        self.field = field
         self.description = parent.fields[field_name].description
 
     @property
