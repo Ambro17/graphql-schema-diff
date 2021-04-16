@@ -50,14 +50,15 @@ def main(args) -> int:
     new_schema = SchemaLoader.from_sdl(args.new_schema.read())
     args.old_schema.close()
     args.new_schema.close()
+    if args.allow_list:
+        allowed_changes = read_allowed_changes(args.allow_list.read())
+        args.allow_list.close()
+    else:
+        allowed_changes = {}
 
     diff = Schema(old_schema, new_schema).diff()
-    validation_result = validate_changes(diff, args.validation_rules)
-    if args.allow_list:
-        allow_list = args.allow_list.read()
-        args.allow_list.close()
-        allowed_changes = read_allowed_changes(allow_list)
-        diff = [change for change in diff if change.checksum() not in allowed_changes]
+    validation_result = validate_changes(diff, args.validation_rules, allowed_changes)
+    diff = [change for change in diff if change.checksum() not in allowed_changes]
     if args.as_json:
         print_json(diff)
     else:
@@ -70,10 +71,10 @@ def exit_code(changes, strict, some_change_is_restricted, tolerant) -> int:
     exit_code = 0
     if strict and any(change.breaking or change.dangerous for change in changes):
         exit_code = 1
-    if some_change_is_restricted:
-        exit_code = 1
     elif tolerant and any(change.breaking for change in changes):
-        exit_code = 1
+        exit_code = 2
+    elif some_change_is_restricted:
+        exit_code = 3
 
     return exit_code
 
