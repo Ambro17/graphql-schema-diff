@@ -16,31 +16,6 @@ from schemadiff.validation_rules import (
 from schemadiff.diff.schema import Schema
 
 
-def test_validation_rules_with_same_name_are_considered_equal():
-    """This is to avoid duplicating restricted changes because classes
-    were defined twice with the same name in different scopes"""
-
-    class SomeRule(ValidationRule):
-        name = 'ABC'
-        def is_valid(self) -> bool: return True
-        def message(self) -> str: return ''
-
-    class OtherRuleSameName(ValidationRule):
-        name = 'ABC'
-        def is_valid(self) -> bool: return True
-        def message(self) -> str: return ''
-
-    class AnotherRule(ValidationRule):
-        name = 'WXY'
-        def is_valid(self) -> bool: return True
-        def message(self) -> str: return ''
-
-    assert SomeRule('') == SomeRule('')
-    assert SomeRule('') == OtherRuleSameName('')
-    assert SomeRule('') != AnotherRule('')
-    assert OtherRuleSameName('') != AnotherRule('')
-
-
 @pytest.mark.parametrize('rule', ValidationRule.__subclasses__())
 def test_is_valid_defaults_to_true_for_any_other_change(rule):
     class UnexpectedChange(Change):
