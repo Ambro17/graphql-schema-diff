@@ -303,7 +303,7 @@ def test_cant_create_mutation_with_more_than_10_arguments():
 
 
 def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
-    schema_restrictions = ['field-has-too-many-arguments']
+    schema_restrictions = [FieldHasTooManyArguments.name]
 
     old_schema = schema("""
     schema {
@@ -347,3 +347,42 @@ def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
     assert result.errors[0].rule == FieldHasTooManyArguments.name
 
     assert diff[0].path == 'Mutation.mutation_with_too_many_args'
+
+
+def test_can_allow_rule_infractions():
+    CHANGE_ID = '221964c2ab5bbc6bd1ed19bcd8d69e70'
+    validation_rules = [FieldHasTooManyArguments.name]
+
+    old_schema = schema("""
+    schema {
+        mutation: Mutation
+    }
+
+    type Mutation {
+        field: Int
+        mutation_with_too_many_args(
+            a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int, a10: Int 
+        ): Int
+    }
+    """)
+
+    new_schema = schema("""
+    schema {
+        mutation: Mutation
+    }
+
+    type Mutation {
+        field: Int
+        mutation_with_too_many_args(
+            a1: Int, a2: Int, a3: Int, a4: Int, a5: Int, a6: Int, a7: Int, a8: Int, a9: Int, a10: Int, a11: Int 
+        ): Int
+    }
+    """)
+
+    changes = Schema(old_schema, new_schema).diff()
+    result = validate_changes(changes, validation_rules)
+    assert result.ok is False
+    assert result.errors[0].change.checksum() == CHANGE_ID
+    result = validate_changes(changes, validation_rules, allowed_changes={CHANGE_ID})
+    assert result.ok is True
+    assert result.errors == []
