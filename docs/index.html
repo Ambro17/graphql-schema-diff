@@ -34,7 +34,7 @@ from schemadiff.changes import Change
 from schemadiff.diff.schema import Schema
 from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, format_diff
-from schemadiff.validation import validate_diff
+from schemadiff.validation import validate_changes
 
 
 SDL = str  # Alias for string describing schema through schema definition language
@@ -67,7 +67,7 @@ __all__ = [
     &#39;diff_from_file&#39;,
     &#39;format_diff&#39;,
     &#39;print_diff&#39;,
-    &#39;validate_diff&#39;,
+    &#39;validate_changes&#39;,
     &#39;Change&#39;,
 ]</code></pre>
 </details>
@@ -182,13 +182,13 @@ __all__ = [
     print(format_diff(changes))</code></pre>
 </details>
 </dd>
-<dt id="schemadiff.validate_diff"><code class="name flex">
-<span>def <span class="ident">validate_diff</span></span>(<span>diff, rules: List[str]) ‑> bool</span>
+<dt id="schemadiff.validate_changes"><code class="name flex">
+<span>def <span class="ident">validate_changes</span></span>(<span>diff: List[<a title="schemadiff.changes.Change" href="changes/index.html#schemadiff.changes.Change">Change</a>], rules: List[str], allowed_changes: Dict[str, Any] = None) ‑> <a title="schemadiff.validation.ValidationResult" href="validation.html#schemadiff.validation.ValidationResult">ValidationResult</a></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Given a diff between schemas and a list of rules
-names, it looks up for all rules matching the list
-and evaluates the changes against that list.</p>
+<div class="desc"><p>Given a list of changes between schemas and a list of rules,
+it runs all rules against the changes, to detect invalid changes.
+It also admits an allowlist of accepted invalid changes to document exceptions to the rules</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>bool</code></dt>
@@ -199,24 +199,30 @@ False otherwise.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def validate_diff(diff, rules: List[str]) -&gt; bool:
-    &#34;&#34;&#34;Given a diff between schemas and a list of rules
-    names, it looks up for all rules matching the list
-    and evaluates the changes against that list.
+<pre><code class="python">def validate_changes(diff: List[Change], rules: List[str], allowed_changes: Dict[str, Any] = None) -&gt; ValidationResult:
+    &#34;&#34;&#34;Given a list of changes between schemas and a list of rules,
+    it runs all rules against the changes, to detect invalid changes.
+    It also admits an allowlist of accepted invalid changes to document exceptions to the rules
 
     Returns:
         bool: True if there is at least one restricted change,
             False otherwise.
     &#34;&#34;&#34;
-    is_restricted = False
+    allowed_changes = allowed_changes or {}
+    is_valid = True
+    errors = []
     rules = ValidationRule.get_subclasses_by_names(rules)
     for change in diff:
         for rule in rules:
             if not rule(change).is_valid():
-                change.restricted = rule(change).message
-                is_restricted = True
+                if change.checksum() in allowed_changes:
+                    continue
 
-    return is_restricted</code></pre>
+                change.restricted = rule(change).message
+                is_valid = False
+                errors.append(ValidationError(rule.name, change.restricted, change))
+
+    return ValidationResult(is_valid, errors)</code></pre>
 </details>
 </dd>
 </dl>
@@ -497,7 +503,7 @@ def safe(self) -&gt; bool:
 <li><code><a title="schemadiff.diff_from_file" href="#schemadiff.diff_from_file">diff_from_file</a></code></li>
 <li><code><a title="schemadiff.format_diff" href="#schemadiff.format_diff">format_diff</a></code></li>
 <li><code><a title="schemadiff.print_diff" href="#schemadiff.print_diff">print_diff</a></code></li>
-<li><code><a title="schemadiff.validate_diff" href="#schemadiff.validate_diff">validate_diff</a></code></li>
+<li><code><a title="schemadiff.validate_changes" href="#schemadiff.validate_changes">validate_changes</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

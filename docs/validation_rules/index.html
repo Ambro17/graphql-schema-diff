@@ -26,11 +26,14 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from abc import ABC, abstractmethod
+<pre><code class="python">import typing
+from abc import ABC, abstractmethod
 from typing import List, Set
 
+from graphql import GraphQLObjectType
+
 from schemadiff.changes.enum import EnumValueAdded, EnumValueDescriptionChanged
-from schemadiff.changes.field import FieldDescriptionChanged
+from schemadiff.changes.field import FieldDescriptionChanged, FieldArgumentAdded
 from schemadiff.changes.object import ObjectTypeFieldAdded
 from schemadiff.changes.type import AddedType, TypeDescriptionChanged
 
@@ -56,7 +59,7 @@ class ValidationRule(ABC):
         &#34;&#34;&#34;Formatted change message&#34;&#34;&#34;
 
     @classmethod
-    def get_subclasses_by_names(cls, names: List[str]) -&gt; Set:
+    def get_subclasses_by_names(cls, names: List[str]) -&gt; Set[typing.Type[&#39;ValidationRule&#39;]]:
         if not names:
             return set()
         return {subclass for subclass in cls.__subclasses__() if subclass.name in names}
@@ -72,13 +75,25 @@ class AddTypeWithoutDescription(ValidationRule):
     name = &#34;add-type-without-description&#34;
 
     def is_valid(self) -&gt; bool:
-        if isinstance(self.change, AddedType):
-            return self.change.type.description not in (None, &#34;&#34;)
-        return True
+        EMPTY = (None, &#34;&#34;)
+        if not isinstance(self.change, AddedType):
+            return True
+
+        added_type = self.change.type
+        type_has_description = added_type.description not in EMPTY
+
+        if isinstance(added_type, GraphQLObjectType):
+            all_its_fields_have_description = all(
+                field.description not in EMPTY
+                for field in added_type.fields.values()
+            )
+            return type_has_description and all_its_fields_have_description
+        else:
+            return type_has_description
 
     @property
     def message(self):
-        return f&#34;{self.change.message} without a description (rule: `{self.name}`)&#34;
+        return f&#34;{self.change.message} without a description for {self.change.path} (rule: `{self.name}`).&#34;
 
 
 class RemoveTypeDescription(ValidationRule):
@@ -90,7 +105,7 @@ class RemoveTypeDescription(ValidationRule):
         if isinstance(self.change, TypeDescriptionChanged):
             return self.change.new_desc not in (None, &#34;&#34;)
         return True
-    
+
     @property
     def message(self):
         return (
@@ -107,10 +122,10 @@ class AddFieldWithoutDescription(ValidationRule):
         if isinstance(self.change, ObjectTypeFieldAdded):
             return self.change.description not in (None, &#34;&#34;)
         return True
-    
+
     @property
     def message(self):
-        return f&#34;{self.change.message} without a description (rule: `{self.name}`)&#34;
+        return f&#34;{self.change.message} without a description for {self.change.path} (rule: `{self.name}`).&#34;
 
 
 class RemoveFieldDescription(ValidationRule):
@@ -230,10 +245,10 @@ class RemoveEnumValueDescription(ValidationRule):
         if isinstance(self.change, ObjectTypeFieldAdded):
             return self.change.description not in (None, &#34;&#34;)
         return True
-    
+
     @property
     def message(self):
-        return f&#34;{self.change.message} without a description (rule: `{self.name}`)&#34;</code></pre>
+        return f&#34;{self.change.message} without a description for {self.change.path} (rule: `{self.name}`).&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -274,13 +289,25 @@ a non-empty description.</p></div>
     name = &#34;add-type-without-description&#34;
 
     def is_valid(self) -&gt; bool:
-        if isinstance(self.change, AddedType):
-            return self.change.type.description not in (None, &#34;&#34;)
-        return True
+        EMPTY = (None, &#34;&#34;)
+        if not isinstance(self.change, AddedType):
+            return True
+
+        added_type = self.change.type
+        type_has_description = added_type.description not in EMPTY
+
+        if isinstance(added_type, GraphQLObjectType):
+            all_its_fields_have_description = all(
+                field.description not in EMPTY
+                for field in added_type.fields.values()
+            )
+            return type_has_description and all_its_fields_have_description
+        else:
+            return type_has_description
 
     @property
     def message(self):
-        return f&#34;{self.change.message} without a description (rule: `{self.name}`)&#34;</code></pre>
+        return f&#34;{self.change.message} without a description for {self.change.path} (rule: `{self.name}`).&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -417,7 +444,7 @@ GraphQL type.</p></div>
         if isinstance(self.change, TypeDescriptionChanged):
             return self.change.new_desc not in (None, &#34;&#34;)
         return True
-    
+
     @property
     def message(self):
         return (
@@ -478,7 +505,7 @@ GraphQL type.</p></div>
         &#34;&#34;&#34;Formatted change message&#34;&#34;&#34;
 
     @classmethod
-    def get_subclasses_by_names(cls, names: List[str]) -&gt; Set:
+    def get_subclasses_by_names(cls, names: List[str]) -&gt; Set[typing.Type[&#39;ValidationRule&#39;]]:
         if not names:
             return set()
         return {subclass for subclass in cls.__subclasses__() if subclass.name in names}
@@ -524,7 +551,7 @@ def get_rules_list(cls) -&gt; Set[str]:
 </details>
 </dd>
 <dt id="schemadiff.validation_rules.ValidationRule.get_subclasses_by_names"><code class="name flex">
-<span>def <span class="ident">get_subclasses_by_names</span></span>(<span>names: List[str]) ‑> Set</span>
+<span>def <span class="ident">get_subclasses_by_names</span></span>(<span>names: List[str]) ‑> Set[Type[<a title="schemadiff.validation_rules.ValidationRule" href="#schemadiff.validation_rules.ValidationRule">ValidationRule</a>]]</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -533,7 +560,7 @@ def get_rules_list(cls) -&gt; Set[str]:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def get_subclasses_by_names(cls, names: List[str]) -&gt; Set:
+def get_subclasses_by_names(cls, names: List[str]) -&gt; Set[typing.Type[&#39;ValidationRule&#39;]]:
     if not names:
         return set()
     return {subclass for subclass in cls.__subclasses__() if subclass.name in names}</code></pre>
