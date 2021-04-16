@@ -232,6 +232,7 @@ def test_schema_added_field_no_desc():
     assert result.errors[0].reason == error_msg
     assert diff[0].path == 'AddedType.other'
     assert result.errors[0].change.path == 'AddedType.other'
+    assert result.errors[0].rule == 'add-field-without-description'
 
 
 # Register the new validation rule for the following two tests
@@ -261,7 +262,7 @@ class FieldHasTooManyArguments(ValidationRule):
 
 
 def test_cant_create_mutation_with_more_than_10_arguments():
-    schema_restrictions = ['field-has-too-many-arguments']
+    schema_restrictions = [FieldHasTooManyArguments.name]
 
     old_schema = schema("""
     schema {
@@ -298,7 +299,7 @@ def test_cant_create_mutation_with_more_than_10_arguments():
     assert result.errors and len(result.errors) == 1
     assert result.errors[0].reason == error_msg
     assert result.errors[0].change.path == 'Mutation.mutation_with_too_many_args'
-
+    assert result.errors[0].rule == FieldHasTooManyArguments.name
 
 
 def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
@@ -343,4 +344,6 @@ def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
     assert result.errors[0].reason == error_msg
     assert result.errors[0].change.message == "Argument `a11: Int` added to `Mutation.mutation_with_too_many_args`"
     assert result.errors[0].change.checksum() == "221964c2ab5bbc6bd1ed19bcd8d69e70"
+    assert result.errors[0].rule == FieldHasTooManyArguments.name
+
     assert diff[0].path == 'Mutation.mutation_with_too_many_args'
