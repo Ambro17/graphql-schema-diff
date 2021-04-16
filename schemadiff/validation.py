@@ -18,7 +18,7 @@ class ValidationError:
     change: Change
 
 
-def validate_diff(diff: List[Change], rules: List[str]) -> ValidationResult:
+def validate_changes(diff: List[Change], rules: List[str]) -> ValidationResult:
     """Given a diff between schemas and a list of rules
     names, it looks up for all rules matching the list
     and evaluates the changes against that list.
@@ -42,6 +42,3 @@ def validate_diff(diff: List[Change], rules: List[str]) -> ValidationResult:
 
 def rules_list():
     return ValidationRule.get_rules_list()
-
-
-evaluate_rules = validate_diff  # For retro-compatibility

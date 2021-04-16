@@ -41,7 +41,7 @@ class ValidationRule(ABC):
 
     def __eq__(self, other):
         """Validation rules should have unique names. If you overlap naming, behaviour will be undefined"""
-        if not isinstance(other, type(self)):
+        if not isinstance(other, ValidationRule):
             return NotImplemented
         else:
             return other.name == self.name

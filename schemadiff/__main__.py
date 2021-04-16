@@ -5,7 +5,7 @@ from schemadiff.allow_list import read_allowed_changes
 from schemadiff.diff.schema import Schema
 from schemadiff.schema_loader import SchemaLoader
 from schemadiff.formatting import print_diff, print_json
-from schemadiff.validation import rules_list, evaluate_rules
+from schemadiff.validation import rules_list, validate_changes
 
 
 def cli():
@@ -52,7 +52,7 @@ def main(args) -> int:
     args.new_schema.close()
 
     diff = Schema(old_schema, new_schema).diff()
-    validation_result = evaluate_rules(diff, args.validation_rules)
+    validation_result = validate_changes(diff, args.validation_rules)
     if args.allow_list:
         allow_list = args.allow_list.read()
         args.allow_list.close()

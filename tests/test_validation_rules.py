@@ -4,7 +4,7 @@ from graphql import build_schema as schema
 from schemadiff.changes import Change, Criticality
 from schemadiff.changes.field import FieldArgumentAdded
 from schemadiff.changes.object import ObjectTypeFieldAdded
-from schemadiff.validation import evaluate_rules, ValidationResult, ValidationError
+from schemadiff.validation import validate_changes
 from schemadiff.validation_rules import (
     ValidationRule,
     AddFieldWithoutDescription,
@@ -14,6 +14,31 @@ from schemadiff.validation_rules import (
     RemoveTypeDescription,
 )
 from schemadiff.diff.schema import Schema
+
+
+def test_validation_rules_with_same_name_are_considered_equal():
+    """This is to avoid duplicating restricted changes because classes
+    were defined twice with the same name in different scopes"""
+
+    class SomeRule(ValidationRule):
+        name = 'ABC'
+        def is_valid(self) -> bool: return True
+        def message(self) -> str: return ''
+
+    class OtherRuleSameName(ValidationRule):
+        name = 'ABC'
+        def is_valid(self) -> bool: return True
+        def message(self) -> str: return ''
+
+    class AnotherRule(ValidationRule):
+        name = 'WXY'
+        def is_valid(self) -> bool: return True
+        def message(self) -> str: return ''
+
+    assert SomeRule('') == SomeRule('')
+    assert SomeRule('') == OtherRuleSameName('')
+    assert SomeRule('') != AnotherRule('')
+    assert OtherRuleSameName('') != AnotherRule('')
 
 
 @pytest.mark.parametrize('rule', ValidationRule.__subclasses__())
@@ -226,7 +251,7 @@ def test_schema_added_field_no_desc():
         'Field `other` was added to object type `AddedType` without a description for AddedType.other '
         '(rule: `add-field-without-description`).'
     )
-    result =  evaluate_rules(diff, schema_restrictions)
+    result =  validate_changes(diff, schema_restrictions)
     assert result.ok is False
     assert result.errors and len(result.errors) == 1
     assert result.errors[0].reason == error_msg
@@ -260,7 +285,7 @@ class FieldHasTooManyArguments(ValidationRule):
                f"({len(self.args)}>{self.limit}). Rule: {self.name}"
 
 
-def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
+def test_cant_create_mutation_with_more_than_10_arguments():
     schema_restrictions = ['field-has-too-many-arguments']
 
     old_schema = schema("""
@@ -293,7 +318,7 @@ def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
         'Field `Mutation.mutation_with_too_many_args` has too many arguments (11>10). '
         'Rule: field-has-too-many-arguments'
     )
-    result =  evaluate_rules(diff, schema_restrictions)
+    result =  validate_changes(diff, schema_restrictions)
     assert result.ok is False
     assert result.errors and len(result.errors) == 1
     assert result.errors[0].reason == error_msg
@@ -301,7 +326,7 @@ def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
 
 
 
-def test_cant_create_mutation_with_more_than_10_arguments():
+def test_cant_add_arguments_to_mutation_if_exceeds_10_args():
     schema_restrictions = ['field-has-too-many-arguments']
 
     old_schema = schema("""
@@ -337,7 +362,7 @@ def test_cant_create_mutation_with_more_than_10_arguments():
         'Field `Mutation.mutation_with_too_many_args` has too many arguments (11>10). '
         'Rule: field-has-too-many-arguments'
     )
-    result =  evaluate_rules(diff, schema_restrictions)
+    result =  validate_changes(diff, schema_restrictions)
     assert result.ok is False
     assert result.errors and len(result.errors) == 1
     assert result.errors[0].reason == error_msg
