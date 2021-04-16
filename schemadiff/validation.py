@@ -1,5 +1,5 @@
 from schemadiff import Change
-from typing import List, Dict
+from typing import List, Dict, Any
 
 from dataclasses import dataclass
 
@@ -19,7 +19,7 @@ class ValidationError:
     change: Change
 
 
-def validate_changes(diff: List[Change], rules: List[str], allowed_changes: Dict[str] = None) -> ValidationResult:
+def validate_changes(diff: List[Change], rules: List[str], allowed_changes: Dict[str, Any] = None) -> ValidationResult:
     """Given a list of changes between schemas and a list of rules,
     it runs all rules against the changes, to detect invalid changes.
     It also admits an allowlist of accepted invalid changes to document exceptions to the rules
