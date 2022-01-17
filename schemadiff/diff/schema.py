@@ -7,7 +7,11 @@ from graphql import (
     is_object_type,
     is_interface_type,
 )
-from graphql.type.introspection import TypeResolvers
+
+try:
+    from graphql.type.introspection import TypeResolvers
+except:
+    from graphql.type.introspection import TypeFieldResolvers as TypeResolvers  # graphql-core < 3.2.0
 
 from schemadiff.changes.directive import RemovedDirective, AddedDirective
 from schemadiff.changes.schema import (
