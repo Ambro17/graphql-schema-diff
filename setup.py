@@ -17,7 +17,7 @@ setup(
     url="https://github.com/Ambro17/schemadiff",
     packages=find_packages(include=['schemadiff*'], exclude=['tests', 'tests.*']),
     install_requires=[
-        "graphql-core>=3.0.1",
+        "graphql-core~=3.2.0",
         "attrs>=19.3.0",
     ],
     python_requires='>=3.6',

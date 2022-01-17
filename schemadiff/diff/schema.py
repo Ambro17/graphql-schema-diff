@@ -7,7 +7,7 @@ from graphql import (
     is_object_type,
     is_interface_type,
 )
-from graphql.type.introspection import TypeFieldResolvers
+from graphql.type.introspection import TypeResolvers
 
 from schemadiff.changes.directive import RemovedDirective, AddedDirective
 from schemadiff.changes.schema import (
@@ -28,7 +28,7 @@ from schemadiff.diff.object_type import ObjectType
 from schemadiff.diff.union_type import UnionType
 from schemadiff.diff.input_object_type import InputObjectType
 
-type_kind = partial(TypeFieldResolvers.kind, _info={})
+type_kind = partial(TypeResolvers.kind, _info={})
 
 
 class Schema:
