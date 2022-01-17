@@ -10,7 +10,7 @@ from graphql import (
 
 try:
     from graphql.type.introspection import TypeResolvers
-except:
+except ImportError:
     from graphql.type.introspection import TypeFieldResolvers as TypeResolvers  # graphql-core < 3.2.0
 
 from schemadiff.changes.directive import RemovedDirective, AddedDirective
