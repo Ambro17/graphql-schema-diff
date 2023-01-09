@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "graphql-schema-diff"
+description = "Compare GraphQL Schemas"
+readme = "README.md"
+version = "1.2.2"
+authors = [
+    { name = "Nahuel Ambrosini", email = "ambro17.1@gmail.com" }
+]
+dependencies = [
+    "graphql-core>=3.0.1",
+    "attrs>=19.3.0",
+]
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-or-later"
+
+[project.scripts]
+schemadiff = "schemadiff.__main__:cli"
+
+[project.urls]
+Homepage = "https://github.com/Ambro17/graphql-schema-diff"
+Documentation = "https://ambro17.github.io/graphql-schema-diff/"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "flake8",
+    "pytest",
+    "pytest-cov",
+    "codecov",
+    "pdoc3==0.9.1",
+#    "-e ."
+]
