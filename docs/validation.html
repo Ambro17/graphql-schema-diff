@@ -155,7 +155,8 @@ False otherwise.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ValidationError:
+<pre><code class="python">@dataclass
+class ValidationError:
     rule: str
     reason: str
     change: Change</code></pre>
@@ -186,7 +187,8 @@ False otherwise.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ValidationResult:
+<pre><code class="python">@dataclass
+class ValidationResult:
     ok: bool
     errors: List[&#39;ValidationError&#39;]</code></pre>
 </details>

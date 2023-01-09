@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "graphql-schema-diff"
 description = "Compare GraphQL Schemas"
 readme = "README.md"
-version = "1.2.2"
+version = "1.2.4"
 authors = [
     { name = "Nahuel Ambrosini", email = "ambro17.1@gmail.com" }
 ]
@@ -37,5 +37,5 @@ dev = [
     "pytest-cov",
     "codecov",
     "pdoc3==0.9.1",
-#    "-e ."
+    "hatch",
 ]
