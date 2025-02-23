@@ -42,7 +42,7 @@ class InterfaceFieldRemoved(Change):
         return f"{self.interface.name}.{self.field_name}"
 
 
-class AbstractInterfanceChange(Change):
+class AbstractInterfaceChange(Change):
     def __init__(self, interface, field_name, old_field, new_field):
         self.interface = interface
         self.field_name = field_name
@@ -54,7 +54,7 @@ class AbstractInterfanceChange(Change):
         return f"{self.interface.name}.{self.field_name}"
 
 
-class InterfaceFieldTypeChanged(AbstractInterfanceChange):
+class InterfaceFieldTypeChanged(AbstractInterfaceChange):
 
     @property
     def message(self):
@@ -104,7 +104,7 @@ class DroppedInterfaceImplementation(Change):
         return f"{self.type_}"
 
 
-class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
+class InterfaceFieldDescriptionChanged(AbstractInterfaceChange):
     criticality = Criticality.safe()
 
     @property
@@ -115,7 +115,7 @@ class InterfaceFieldDescriptionChanged(AbstractInterfanceChange):
         )
 
 
-class InterfaceFieldDeprecationReasonChanged(AbstractInterfanceChange):
+class InterfaceFieldDeprecationReasonChanged(AbstractInterfaceChange):
     criticality = Criticality.breaking('Breaking change')  # TODO: Improve this logic to check if it was deprecated before
 
     @property
