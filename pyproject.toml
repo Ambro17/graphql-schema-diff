@@ -39,3 +39,6 @@ dev = [
     "pdoc3==0.9.1",
     "hatch",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["schemadiff"]
