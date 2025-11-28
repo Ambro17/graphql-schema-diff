@@ -8,11 +8,6 @@ from graphql import (
     is_interface_type,
 )
 
-try:
-    from graphql.type.introspection import TypeResolvers
-except ImportError:
-    from graphql.type.introspection import TypeFieldResolvers as TypeResolvers  # graphql-core < 3.2.0
-
 from schemadiff.changes.directive import RemovedDirective, AddedDirective
 from schemadiff.changes.schema import (
     SchemaQueryTypeChanged,
@@ -31,6 +26,36 @@ from schemadiff.diff.interface import InterfaceType
 from schemadiff.diff.object_type import ObjectType
 from schemadiff.diff.union_type import UnionType
 from schemadiff.diff.input_object_type import InputObjectType
+
+
+def _get_type_resolvers():
+    """Get TypeResolvers/TypeFields with fallback for different graphql-core versions."""
+    # Try modern graphql-core (>= 3.2.7) - TypeFields is the official replacement
+    try:
+        from graphql.type.introspection import TypeFields
+        return TypeFields
+    except ImportError:
+        pass
+
+    # Try graphql-core 3.2.0 - 3.2.6
+    try:
+        from graphql.type.introspection import TypeResolvers
+        return TypeResolvers
+    except ImportError:
+        pass
+
+    # Fallback for older graphql-core (< 3.2.0)
+    try:
+        from graphql.type.introspection import TypeFieldResolvers
+        return TypeFieldResolvers
+    except ImportError:
+        raise ImportError(
+            "Could not import TypeFields, TypeResolvers, or TypeFieldResolvers from graphql-core. "
+            "Please upgrade to a supported version of graphql-core."
+        )
+
+
+TypeResolvers = _get_type_resolvers()
 
 type_kind = partial(TypeResolvers.kind, _info={})
 
