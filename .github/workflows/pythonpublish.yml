@@ -24,8 +24,8 @@ jobs:
         pip install setuptools wheel twine
     - name: Build and publish
       env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+          HATCH_INDEX_USER: "__token__"
+          HATCH_INDEX_AUTH: ${{ secrets.PYPI_API_TOKEN }}
       run: |
         hatch build
         hatch publish
