@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "graphql-schema-diff"
 description = "Compare GraphQL Schemas"
 readme = "README.md"
-version = "1.2.4"
+version = "1.2.5"
 authors = [
     { name = "Nahuel Ambrosini", email = "ambro17.1@gmail.com" }
 ]
